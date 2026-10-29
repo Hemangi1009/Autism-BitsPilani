@@ -1,0 +1,458 @@
+{
+    "sessionId": "20261029_095433_851",
+    "startedUtc": "2026-10-29T09:54:33.8512934Z",
+    "completedUtc": "2026-10-29T09:57:17.7957381Z",
+    "clues": [
+        "Hands covering his ears",
+        "His body has become tense",
+        "Loud party speaker"
+    ],
+    "guesses": [
+        {
+            "idea": "He finds the sound too loud",
+            "confidence": 2
+        }
+    ],
+    "firstResponse": "Offer ear defenders",
+    "firstOutcome": "Hands lowered; calmer still pose",
+    "firstResponseSeconds": 15.058189392089844,
+    "reflectionAnswers": [
+        "Skipped - recording not implemented",
+        "Skipped - recording not implemented",
+        "Skipped - recording not implemented"
+    ],
+    "replayCount": 1,
+    "replayIntervenedEarly": true,
+    "replaySecondsBeforePop": 10.999725341796875,
+    "replayResponse": "Ear defenders",
+    "replayOutcome": "Early support; child remained calmer",
+    "events": [
+        {
+            "utc": "2026-10-29T09:54:33.8528124Z",
+            "step": "Loading",
+            "action": "SessionStarted",
+            "detail": "Module 1 / Too Loud on the Slide",
+            "elapsed": 0.0009593963623046875
+        },
+        {
+            "utc": "2026-10-29T09:54:33.8659955Z",
+            "step": "Loading",
+            "action": "StepEntered",
+            "detail": "",
+            "elapsed": 0.013973236083984375
+        },
+        {
+            "utc": "2026-10-29T09:54:41.7041124Z",
+            "step": "EnterPlayground",
+            "action": "StepEntered",
+            "detail": "",
+            "elapsed": 7.852235794067383
+        },
+        {
+            "utc": "2026-10-29T09:54:41.7172108Z",
+            "step": "EnterPlayground",
+            "action": "Voiceover",
+            "detail": "VO_01_Enter",
+            "elapsed": 7.864717483520508
+        },
+        {
+            "utc": "2026-10-29T09:55:40.3602513Z",
+            "step": "EnterPlayground",
+            "action": "GazeCompleted",
+            "detail": "Child",
+            "elapsed": 66.50779724121094
+        },
+        {
+            "utc": "2026-10-29T09:55:40.3788994Z",
+            "step": "EnterPlayground",
+            "action": "GazeCompleted",
+            "detail": "Onlooker",
+            "elapsed": 66.5264892578125
+        },
+        {
+            "utc": "2026-10-29T09:55:40.3939348Z",
+            "step": "EnterPlayground",
+            "action": "GazeCompleted",
+            "detail": "Party; observation circle enabled",
+            "elapsed": 66.5421371459961
+        },
+        {
+            "utc": "2026-10-29T09:55:40.4322366Z",
+            "step": "EnterPlayground",
+            "action": "ObservationCircleReached",
+            "detail": "",
+            "elapsed": 66.57976531982422
+        },
+        {
+            "utc": "2026-10-29T09:55:40.4327404Z",
+            "step": "WatchChanges",
+            "action": "StepEntered",
+            "detail": "",
+            "elapsed": 66.58080291748047
+        },
+        {
+            "utc": "2026-10-29T09:55:40.4379800Z",
+            "step": "WatchChanges",
+            "action": "Voiceover",
+            "detail": "VO_02_Watch",
+            "elapsed": 66.5859603881836
+        },
+        {
+            "utc": "2026-10-29T09:55:44.4362822Z",
+            "step": "WatchChanges",
+            "action": "EarlyCue",
+            "detail": "Hand to ear; crowd louder; still pose",
+            "elapsed": 70.58416748046875
+        },
+        {
+            "utc": "2026-10-29T09:55:50.4389186Z",
+            "step": "WatchChanges",
+            "action": "BalloonPopped",
+            "detail": "Optional VFX field is empty; sound and story event played",
+            "elapsed": 76.58662414550781
+        },
+        {
+            "utc": "2026-10-29T09:55:50.4439951Z",
+            "step": "WatchChanges",
+            "action": "Voiceover",
+            "detail": "VO_02_Change",
+            "elapsed": 76.59197235107422
+        },
+        {
+            "utc": "2026-10-29T09:56:05.4353605Z",
+            "step": "CollectClues",
+            "action": "StepEntered",
+            "detail": "",
+            "elapsed": 91.58287048339844
+        },
+        {
+            "utc": "2026-10-29T09:56:05.4399869Z",
+            "step": "CollectClues",
+            "action": "Voiceover",
+            "detail": "VO_03_Clues",
+            "elapsed": 91.58794403076172
+        },
+        {
+            "utc": "2026-10-29T09:56:05.4410147Z",
+            "step": "CollectClues",
+            "action": "AdvanceBlocked",
+            "detail": "At least three unique clues required",
+            "elapsed": 91.58927917480469
+        },
+        {
+            "utc": "2026-10-29T09:56:05.4634004Z",
+            "step": "CollectClues",
+            "action": "ClueSelected",
+            "detail": "Hands covering his ears",
+            "elapsed": 91.61092376708985
+        },
+        {
+            "utc": "2026-10-29T09:56:05.4634004Z",
+            "step": "CollectClues",
+            "action": "ClueRemoved",
+            "detail": "Hands covering his ears",
+            "elapsed": 91.61138153076172
+        },
+        {
+            "utc": "2026-10-29T09:56:05.4644200Z",
+            "step": "CollectClues",
+            "action": "ClueSelected",
+            "detail": "Hands covering his ears",
+            "elapsed": 91.61193084716797
+        },
+        {
+            "utc": "2026-10-29T09:56:05.4644200Z",
+            "step": "CollectClues",
+            "action": "ClueSelected",
+            "detail": "His body has become tense",
+            "elapsed": 91.6122817993164
+        },
+        {
+            "utc": "2026-10-29T09:56:05.4644200Z",
+            "step": "CollectClues",
+            "action": "ClueSelected",
+            "detail": "Loud party speaker",
+            "elapsed": 91.61260223388672
+        },
+        {
+            "utc": "2026-10-29T09:56:05.4659287Z",
+            "step": "NoteGuesses",
+            "action": "StepEntered",
+            "detail": "",
+            "elapsed": 91.61351013183594
+        },
+        {
+            "utc": "2026-10-29T09:56:05.4714969Z",
+            "step": "NoteGuesses",
+            "action": "Voiceover",
+            "detail": "VO_04_Guesses",
+            "elapsed": 91.61888122558594
+        },
+        {
+            "utc": "2026-10-29T09:56:05.4735198Z",
+            "step": "NoteGuesses",
+            "action": "GuessConfidence",
+            "detail": "He finds the sound too loud / Somewhat sure",
+            "elapsed": 91.62137603759766
+        },
+        {
+            "utc": "2026-10-29T09:56:05.4745253Z",
+            "step": "TestGuesses",
+            "action": "StepEntered",
+            "detail": "",
+            "elapsed": 91.62206268310547
+        },
+        {
+            "utc": "2026-10-29T09:56:05.4781477Z",
+            "step": "TestGuesses",
+            "action": "Voiceover",
+            "detail": "VO_05_Respond",
+            "elapsed": 91.62621307373047
+        },
+        {
+            "utc": "2026-10-29T09:56:05.4970630Z",
+            "step": "TestGuesses",
+            "action": "ChildApproached",
+            "detail": "",
+            "elapsed": 91.64459228515625
+        },
+        {
+            "utc": "2026-10-29T09:56:05.4970630Z",
+            "step": "TestGuesses",
+            "action": "ResponseSelected",
+            "detail": "Offer ear defenders",
+            "elapsed": 91.64555358886719
+        },
+        {
+            "utc": "2026-10-29T09:56:05.5031958Z",
+            "step": "TestGuesses",
+            "action": "Voiceover",
+            "detail": "VO_05_Observe",
+            "elapsed": 91.6509780883789
+        },
+        {
+            "utc": "2026-10-29T09:56:25.4990805Z",
+            "step": "TestGuesses",
+            "action": "ResponseObserved",
+            "detail": "Hands lowered; calmer still pose",
+            "elapsed": 111.64659881591797
+        },
+        {
+            "utc": "2026-10-29T09:56:25.4990805Z",
+            "step": "TestGuesses",
+            "action": "GuessConfidence",
+            "detail": "He finds the sound too loud / Very sure",
+            "elapsed": 111.64759826660156
+        },
+        {
+            "utc": "2026-10-29T09:56:25.5006673Z",
+            "step": "ChildPerspective",
+            "action": "StepEntered",
+            "detail": "",
+            "elapsed": 111.64815521240235
+        },
+        {
+            "utc": "2026-10-29T09:56:25.5096156Z",
+            "step": "ChildPerspective",
+            "action": "Voiceover",
+            "detail": "VO_06_ChildView",
+            "elapsed": 111.65735626220703
+        },
+        {
+            "utc": "2026-10-29T09:56:25.5101289Z",
+            "step": "ChildPerspective",
+            "action": "ChildViewEntered",
+            "detail": "Static view/tint; tracked headset remains active",
+            "elapsed": 111.65809631347656
+        },
+        {
+            "utc": "2026-10-29T09:56:50.5043026Z",
+            "step": "ChildPerspective",
+            "action": "ParentViewRestored",
+            "detail": "",
+            "elapsed": 136.65264892578126
+        },
+        {
+            "utc": "2026-10-29T09:56:50.5053037Z",
+            "step": "OnlookerThought",
+            "action": "StepEntered",
+            "detail": "",
+            "elapsed": 136.6529998779297
+        },
+        {
+            "utc": "2026-10-29T09:56:50.5113983Z",
+            "step": "OnlookerThought",
+            "action": "Voiceover",
+            "detail": "VO_07_Onlooker",
+            "elapsed": 136.65895080566407
+        },
+        {
+            "utc": "2026-10-29T09:56:50.5237434Z",
+            "step": "OnlookerThought",
+            "action": "ThoughtBubbleOpened",
+            "detail": "",
+            "elapsed": 136.67190551757813
+        },
+        {
+            "utc": "2026-10-29T09:56:50.5413980Z",
+            "step": "OnlookerThought",
+            "action": "ThoughtBubbleClosed",
+            "detail": "Reflection begins after four seconds unless reopened",
+            "elapsed": 136.68907165527345
+        },
+        {
+            "utc": "2026-10-29T09:56:50.7409712Z",
+            "step": "OnlookerThought",
+            "action": "ThoughtBubbleOpened",
+            "detail": "",
+            "elapsed": 136.88841247558595
+        },
+        {
+            "utc": "2026-10-29T09:56:50.7542383Z",
+            "step": "OnlookerThought",
+            "action": "ThoughtBubbleClosed",
+            "detail": "Reflection begins after four seconds unless reopened",
+            "elapsed": 136.90167236328126
+        },
+        {
+            "utc": "2026-10-29T09:56:54.7559292Z",
+            "step": "Reflect",
+            "action": "StepEntered",
+            "detail": "",
+            "elapsed": 140.9034423828125
+        },
+        {
+            "utc": "2026-10-29T09:56:54.7634596Z",
+            "step": "Reflect",
+            "action": "Voiceover",
+            "detail": "VO_08_Reflect",
+            "elapsed": 140.91087341308595
+        },
+        {
+            "utc": "2026-10-29T09:56:54.7644661Z",
+            "step": "Reflect",
+            "action": "QuestionShown",
+            "detail": "What did you first think was happening?",
+            "elapsed": 140.91220092773438
+        },
+        {
+            "utc": "2026-10-29T09:56:54.7659725Z",
+            "step": "Reflect",
+            "action": "QuestionSkipped",
+            "detail": "What did you first think was happening?",
+            "elapsed": 140.9136962890625
+        },
+        {
+            "utc": "2026-10-29T09:56:54.7659725Z",
+            "step": "Reflect",
+            "action": "QuestionShown",
+            "detail": "What changed your mind?",
+            "elapsed": 140.91403198242188
+        },
+        {
+            "utc": "2026-10-29T09:56:54.7659725Z",
+            "step": "Reflect",
+            "action": "QuestionSkipped",
+            "detail": "What changed your mind?",
+            "elapsed": 140.9142608642578
+        },
+        {
+            "utc": "2026-10-29T09:56:54.7669814Z",
+            "step": "Reflect",
+            "action": "QuestionShown",
+            "detail": "Is something wrong with him?",
+            "elapsed": 140.91448974609376
+        },
+        {
+            "utc": "2026-10-29T09:56:54.7669814Z",
+            "step": "Reflect",
+            "action": "QuestionSkipped",
+            "detail": "Is something wrong with him?",
+            "elapsed": 140.91470336914063
+        },
+        {
+            "utc": "2026-10-29T09:56:54.7689812Z",
+            "step": "ReplayAndPrevent",
+            "action": "StepEntered",
+            "detail": "",
+            "elapsed": 140.91636657714845
+        },
+        {
+            "utc": "2026-10-29T09:56:54.7750166Z",
+            "step": "ReplayAndPrevent",
+            "action": "Voiceover",
+            "detail": "VO_09_Replay",
+            "elapsed": 140.92262268066407
+        },
+        {
+            "utc": "2026-10-29T09:56:54.7750166Z",
+            "step": "ReplayAndPrevent",
+            "action": "ReplayStarted",
+            "detail": "No introductory gazes; movement remains enabled",
+            "elapsed": 140.92335510253907
+        },
+        {
+            "utc": "2026-10-29T09:56:54.7892579Z",
+            "step": "ReplayAndPrevent",
+            "action": "ReplayCircleReached",
+            "detail": "",
+            "elapsed": 140.9368133544922
+        },
+        {
+            "utc": "2026-10-29T09:56:54.7957105Z",
+            "step": "ReplayAndPrevent",
+            "action": "Voiceover",
+            "detail": "VO_09_EarlySigns",
+            "elapsed": 140.94403076171876
+        },
+        {
+            "utc": "2026-10-29T09:56:57.7909769Z",
+            "step": "ReplayAndPrevent",
+            "action": "EarlyCueShown",
+            "detail": "",
+            "elapsed": 143.93934631347657
+        },
+        {
+            "utc": "2026-10-29T09:56:58.7890815Z",
+            "step": "ReplayAndPrevent",
+            "action": "PreventionSelected",
+            "detail": "Ear defenders; before pop=True",
+            "elapsed": 144.93722534179688
+        },
+        {
+            "utc": "2026-10-29T09:57:09.7927608Z",
+            "step": "ReplayAndPrevent",
+            "action": "BalloonPopped",
+            "detail": "Optional VFX field is empty; sound and story event played",
+            "elapsed": 155.94021606445313
+        },
+        {
+            "utc": "2026-10-29T09:57:09.7927608Z",
+            "step": "ReplayAndPrevent",
+            "action": "PopOutcome",
+            "detail": "Early support in place",
+            "elapsed": 155.9405517578125
+        },
+        {
+            "utc": "2026-10-29T09:57:17.7942132Z",
+            "step": "Summary",
+            "action": "StepEntered",
+            "detail": "",
+            "elapsed": 163.94186401367188
+        },
+        {
+            "utc": "2026-10-29T09:57:17.7957381Z",
+            "step": "Summary",
+            "action": "ModuleCompleted",
+            "detail": "Replays=1; early prevention=True",
+            "elapsed": 163.9437713623047
+        },
+        {
+            "utc": "2026-10-29T09:57:17.8033921Z",
+            "step": "Summary",
+            "action": "Voiceover",
+            "detail": "VO_10_Summary",
+            "elapsed": 163.95150756835938
+        }
+    ]
+}

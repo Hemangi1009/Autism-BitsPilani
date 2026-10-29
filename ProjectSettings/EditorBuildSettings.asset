@@ -6,7 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/_BitsPilani/Scene/BitsPilani.unity
+    path: Assets/_BitsPilani/MySample/Scene/BitsPilani.unity
     guid: 1cf38b25a71e02e4e99a682e851d2295
   - enabled: 0
     path: Assets/BNG Framework/Scenes/Weapons.unity

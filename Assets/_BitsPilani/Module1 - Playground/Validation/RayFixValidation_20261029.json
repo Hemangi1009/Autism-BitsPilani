@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-29",
+  "failed": 0,
+  "checks": [
+    "[M1 RayFix] PASS controller UI stays enabled without headset active",
+    "[M1 RayFix] PASS right ray assigned and active",
+    "[M1 RayFix] PASS parent one step from child",
+    "[M1 RayFix] PASS parent capsule grounded (bottom 0.1209999)",
+    "[M1 RayFix] PASS canvas uses controller camera",
+    "[M1 RayFix] PASS Main UI ray reaches button (hit Primary step action)",
+    "[M1 RayFix] PASS Main UI click delivered once",
+    "[M1 RayFix] PASS Wrist UI ray reaches button (hit Clue tool)",
+    "[M1 RayFix] PASS Wrist UI click delivered once",
+    "[M1 RayFix] PASS Question Skip ray reaches button (hit Skip this reflection question)",
+    "[M1 RayFix] PASS Question Skip click delivered once",
+    "[M1 RayFix] PASS reconfiguration retains controller mode",
+    "[M1 RayFix] COMPLETE failed=0"
+  ],
+  "parentHorizontalDistanceMetres": 0.96177,
+  "parentCapsuleGroundBottom": 0.1209999,
+  "physicalHeadsetTest": false
+}

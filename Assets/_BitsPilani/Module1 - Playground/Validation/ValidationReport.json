@@ -1,0 +1,225 @@
+{
+  "date": "2026-10-29",
+  "scene": "Assets/_BitsPilani/Module1 - Playground/Scenes/Module1_Playground.unity",
+  "fullDurationPlayModeTest": {
+    "failed": 0,
+    "finalStep": "Summary",
+    "replayCount": 1,
+    "checks": [
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: circle starts step 2"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: step 2 locks controller locomotion"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: step 2 pop and static distressed pose"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: 25-second step 2 completes"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: movement restored for clues"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: cannot advance with fewer than three clues"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: BNG controller ray hits clue card"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: BNG controller ray hits wrist clue tool"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: same clue toggles rather than counting twice"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: three unique clues enable Done"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: clue UI text fits"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: step 4 has cards and no speaking UI"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: guess is required"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: one guess and confidence recorded"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: response waits for approaching child"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: response blocked before approach"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: child approach circle enables response cards"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: response offers defenders while movement remains available"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: 20-second response observation completes"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: supportive response ends in calm static pose"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: guess review leads to step 6"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: child view uses static tint"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: child view has child eye height"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: speaker appears larger"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: early return blocked until observation period"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: child view return unlocks after 25 seconds"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: parent pose and prop sizes restored"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: step 7 opens"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: thought gaze opens bubble"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: thought bubble can reopen"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: reflection follows closing delay"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: reflection question UI text fits"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: step 8 recording is a disabled placeholder with Skip"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: first Skip advances question"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: second Skip advances question"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: all three skipped answers logged honestly"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: reflection feedback text fits"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: step 9 ready"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: one replay begins with movement available"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: second replay request blocked"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: introduction gazes do not repeat"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: replay circle starts warning period"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: prevention logged before pop"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: single replay ends at summary"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: early support preserves calm outcome"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: summary comparison text fits"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: summary cannot replay again"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST PASS: all actor feet and prop bases remain on support surfaces"
+      },
+      {
+        "type": "Info",
+        "message": "M1 TEST COMPLETE: failed=0; current=Summary; replayCount=1"
+      }
+    ]
+  },
+  "finalEditModeChecks": {
+    "missingScripts": 0,
+    "sceneObjects": 3088,
+    "firstNarrationDelaySeconds": 6,
+    "sliderTrackWidth": 900,
+    "sliderFillWidths": [
+      0,
+      450,
+      900
+    ],
+    "existingScriptsChecked": 206,
+    "existingScriptsChanged": 0
+  },
+  "limitations": [
+    "Physical headset testing was not performed.",
+    "Recording is intentionally a UI placeholder; reflection Skip is logged.",
+    "No character animation or flashing effect is implemented."
+  ]
+}

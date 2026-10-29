@@ -1,0 +1,30 @@
+Module 1 Playground
+
+Scene: Scenes/Module1_Playground.unity
+Controller: M1 SYSTEMS - flow and audio / Module1 Playground Flow
+
+Flow
+0. Wait at least six seconds before the first narration.
+1. Use MySample FactoryManager.CreateGaze callbacks: child, onlooker, party. Move onto the observation circle.
+2. Observe early cues, then the balloon pop, for 25 seconds. Controller movement is locked; head tracking stays active.
+3. Open the left-hand clue tool and choose at least three different cards.
+4. Choose at least one guess card and its confidence. No speaking interface is present.
+5. Approach the child's circle, choose a response card, observe for 20 seconds, and review confidence.
+6. Select Look Beyond the Scene. Static child-height view, enlarged nearby party props, sound changes and a static amber tint. Return unlocks after 25 seconds. There are no flashes.
+7. Use the onlooker's thought-bubble gaze. The bubble can reopen. Four seconds after closing, reflection starts.
+8. Three questions, one at a time, with a disabled recording placeholder and a Skip button. No microphone access or audio recording.
+9. Replay once without the three introduction gazes. Movement stays enabled. Support the child during the 15-second warning period.
+10. Show the first-attempt versus replay summary. No second replay is available.
+
+Characters are Unity primitives with immediate still-pose changes. No character Animator, tween, or movement animation is used. All characters are snapped using their shoe renderers to explicitly marked support surfaces.
+
+Future balloon VFX
+Assign the controller's balloonPopVfx (VisualEffect component) or balloonPopVfxPrefab. Both the first event and the one replay use the same pop origin and invoke onBalloonPopped. Leave these fields empty for sound-only placeholder behaviour.
+
+Session logs
+Every step transition and important action logs with the [M1 Playground] prefix. Completion writes a JSON file under Application.persistentDataPath/Module1Playground. The exact saved path is logged. No recordings or fake spoken responses are stored; reflection answers are marked skipped.
+
+VR controls: use the existing MySample controller rig. Point with the right controller and release its trigger to select UI. Controller-ray input is the default, including when XR activates after startup. The existing gaze Pointer / GazeButton / FactoryManager scripts are reused unchanged. The parent starts about 0.96 metres from the child, on the same playground surface, facing the child.
+Desktop preview: explicitly enable Desktop Preview on PlaygroundRigAdapter for mouse/keyboard preview. WASD to move, Q/E to turn, hold the right mouse button to look, click UI with the left mouse button. Connecting tracked controllers switches this optional preview back to controller UI.
+
+Only new module scripts belong to this folder. The reference rig and gaze prefab are reused from MySample. Existing package and MySample scripts are not edited.
