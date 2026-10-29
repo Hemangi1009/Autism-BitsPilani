@@ -41476,6 +41476,11 @@ PrefabInstance:
       propertyPath: ToggleObject
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 5787202721426139191, guid: 239ec7f82f20495408a19c5a4b47faa8,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7075715278996453256, guid: 239ec7f82f20495408a19c5a4b47faa8,
         type: 3}
       propertyPath: DebugTextHolder

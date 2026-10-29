@@ -54,8 +54,33 @@ namespace BitsPilani.Module1.Playground {
         public int SelectedClueCount => session.Data == null ? 0 : session.Data.clues.Count;
         public int GuessCount => session.Data == null ? 0 : session.Data.guesses.Count;
 
-        static readonly string[] Clues = { "Hands covering his ears", "His body has become tense", "Looking toward the speaker", "Loud party speaker", "Balloons near the slide", "Nearby crowd and voices" };
-        static readonly string[] GuessCards = { "He finds the sound too loud", "He is scared of the balloons", "He wants to leave this area" };
+        static readonly string[] Clues = {
+            "Hands covering his ears", "His attention stays on the birthday cake",
+            "His body has become tense", "He is pointing toward the slide entrance",
+            "He is pulling at his clothes", "Nearby crowd and voices",
+            "His hands are resting by his sides", "Looking toward the speaker",
+            "Loud party speaker", "He is reaching for a balloon",
+            "Balloons near the slide", "He is looking at another child's toy"
+        };
+        static readonly bool[] ClueObserved = { true, false, true, false, false, true, false, true, true, false, true, false };
+        static readonly string[] GuessCards = {
+            "He finds the sound too loud", "He is frustrated about waiting for a turn",
+            "He is scared of the balloons", "He is hungry and wants some cake",
+            "The nearby crowd feels too close", "He is tired and needs a rest",
+            "He is worried another balloon might pop", "He wants to leave this area",
+            "He feels too warm in his clothes", "He wants to join the birthday party",
+            "He is worried about going down the slide", "He wants another child's toy"
+        };
+        // Scenario evidence for facilitator logs only. Do not reveal an answer key on the cards.
+        // A plausible hypothesis is not a diagnosis or an established fact about the child.
+        static readonly string[] GuessEvidence = {
+            "Supported by sound-linked cues", "Not supported by the shown cues",
+            "Plausible; needs checking", "Not supported by the shown cues",
+            "Plausible; needs checking", "Not supported by the shown cues",
+            "Supported by the sudden-sound event", "Plausible; needs checking",
+            "Not supported by the shown cues", "Not supported by the shown cues",
+            "Not supported by the shown cues", "Not supported by the shown cues"
+        };
         static readonly string[] Confidence = { "Not sure", "Somewhat sure", "Very sure" };
         static readonly string[] ResponseCards = { "Speak softly and ask gently", "Offer ear defenders", "Move him away from the speaker", "Wait quietly and watch", "Use a loud voice or sudden touch" };
         static readonly string[] ReflectionQuestions = { "What did you first think was happening?", "What changed your mind?", "Is something wrong with him?" };
@@ -69,6 +94,7 @@ namespace BitsPilani.Module1.Playground {
         int introCount, reflectionIndex, gazeToken;
         float firstPopAt, replayStartedAt, thoughtClosedAt = -1;
         int pendingGuess = -1;
+        int cluePage, guessPage;
         Coroutine routine;
         bool initialized;
         bool completedEventSent;
@@ -171,15 +197,18 @@ namespace BitsPilani.Module1.Playground {
         }
 
         void BeginClues() {
+            cluePage = 0; guessPage = 0;
             SetStep(PlaygroundStep.CollectClues); SpeakStep(3);
             ui.Show("Collect the clues", "The scene is holding at the foot of the slide. Open the clue tool on your left hand, then choose at least three different clues from the cards.", "Three unique clues are required.");
             ui.SetPrimary("Open clue tool", OpenClueTool); ui.SetWristTools(true, false, OpenClueTool, null); ui.wristStatus.text = "Clues: 0 / 3 required";
         }
         public void OpenClueTool() {
             if (CurrentStep != PlaygroundStep.CollectClues) return;
-            ui.Show("Clue tool", "Choose what you noticed in the child and in the playground. Select at least three different cards.", session.Data.clues.Count + " unique clues selected.", true);
+            ui.Show("Clue tool", "Choose the observations that match what you saw. Browse both pages, then select at least three different cards.", session.Data.clues.Count + " unique clues selected.", true);
             bool[] selected = new bool[Clues.Length]; for (int i = 0; i < Clues.Length; i++) selected[i] = session.Data.clues.Contains(Clues[i]);
-            ui.DrawChoices(Clues, selected, SelectClue);
+            DrawChoicePage(Clues, selected, cluePage, SelectClue);
+            ui.footer.text = "Page " + (cluePage + 1) + " of " + ChoicePageCount(Clues.Length) + "  |  Selections stay saved across pages.";
+            ui.SetSecondary(cluePage == 0 ? "More clues" : "Previous clues", NextCluePage);
             ui.SetPrimary("Done - collect clues", CompleteClues, session.Data.clues.Count >= 3);
             ui.SetWristTools(true, false, OpenClueTool, null); ui.wristStatus.text = "Clues: " + session.Data.clues.Count + " / 3 required";
         }
@@ -188,6 +217,25 @@ namespace BitsPilani.Module1.Playground {
             string clue = Clues[index]; bool removing = session.Data.clues.Contains(clue);
             if (removing) session.Data.clues.Remove(clue); else session.Data.clues.Add(clue);
             session.Record("CollectClues", removing ? "ClueRemoved" : "ClueSelected", clue); OpenClueTool();
+            if (!removing) session.Record("CollectClues", "ClueEvidence", clue + " / " + (ClueObserved[index] ? "Observed in this scenario" : "Not observed in this scenario"));
+        }
+        int ChoicePageCount(int count) { return Mathf.CeilToInt((float)count / Mathf.Max(1, ui.choices.Length)); }
+        void DrawChoicePage(string[] cards, bool[] selected, int page, Action<int> onSelect) {
+            int start = page * ui.choices.Length;
+            int count = Mathf.Min(ui.choices.Length, cards.Length - start);
+            var labels = new string[count]; var marked = new bool[count];
+            Array.Copy(cards, start, labels, 0, count); Array.Copy(selected, start, marked, 0, count);
+            ui.DrawChoices(labels, marked, localIndex => onSelect(start + localIndex));
+        }
+        public void NextCluePage() {
+            if (CurrentStep != PlaygroundStep.CollectClues) return;
+            cluePage = (cluePage + 1) % ChoicePageCount(Clues.Length);
+            session.Record("CollectClues", "CardPage", (cluePage + 1).ToString()); OpenClueTool();
+        }
+        public void NextGuessPage() {
+            if (CurrentStep != PlaygroundStep.NoteGuesses && !(CurrentStep == PlaygroundStep.TestGuesses && reviewingGuesses)) return;
+            guessPage = (guessPage + 1) % ChoicePageCount(GuessCards.Length);
+            session.Record(CurrentStep.ToString(), "CardPage", (guessPage + 1).ToString()); OpenGuessTool();
         }
         public void CompleteClues() {
             if (CurrentStep != PlaygroundStep.CollectClues || session.Data.clues.Count < 3) { session.Record(CurrentStep.ToString(), "AdvanceBlocked", "At least three unique clues required"); return; }
@@ -200,14 +248,16 @@ namespace BitsPilani.Module1.Playground {
             pendingGuess = -1;
             ui.Show(reviewingGuesses ? "Review your guesses" : "Guess tool", reviewingGuesses ? "What changed after your response? Choose an idea to update its confidence, or add another idea." : "What might be going on? Choose a card, then choose how sure you are.", "Guesses recorded: " + session.Data.guesses.Count, true);
             bool[] selected = new bool[GuessCards.Length]; for (int i = 0; i < GuessCards.Length; i++) selected[i] = FindGuess(GuessCards[i]) != null;
-            ui.DrawChoices(GuessCards, selected, SelectGuess);
-            ui.footer.text = GuessSummary();
+            DrawChoicePage(GuessCards, selected, guessPage, SelectGuess);
+            ui.footer.text = "Page " + (guessPage + 1) + " of " + ChoicePageCount(GuessCards.Length) + "  |  " + session.Data.guesses.Count + " guesses saved. Select a saved card to review confidence.";
+            ui.SetSecondary(guessPage == 0 ? "More guesses" : "Previous guesses", NextGuessPage);
             ui.SetPrimary(reviewingGuesses ? "Continue to child view" : "Done - test guesses", reviewingGuesses ? (UnityAction)CompleteGuessReview : CompleteGuesses, session.Data.guesses.Count >= 1);
             ui.SetWristTools(false, true, null, OpenGuessTool);
             ui.wristStatus.text = reviewingGuesses ? "Review guess confidence" : "Guesses recorded: " + session.Data.guesses.Count;
         }
         public void SelectGuess(int index) {
             if ((CurrentStep != PlaygroundStep.NoteGuesses && !reviewingGuesses) || index < 0 || index >= GuessCards.Length) return;
+            guessPage = index / ui.choices.Length;
             pendingGuess = index; var existing = FindGuess(GuessCards[index]);
             ui.Show("How sure are you?", GuessCards[index], "Choose a confidence level. You can revise it after observing your child.", true);
             bool[] selected = { existing != null && existing.confidence == 0, existing != null && existing.confidence == 1, existing != null && existing.confidence == 2 };
@@ -217,10 +267,12 @@ namespace BitsPilani.Module1.Playground {
             if (pendingGuess < 0 || confidence < 0 || confidence > 2) return;
             string card = GuessCards[pendingGuess]; var guess = FindGuess(card);
             if (guess == null) { guess = new PlaygroundGuess { idea = card }; session.Data.guesses.Add(guess); }
-            guess.confidence = confidence; session.Record(CurrentStep.ToString(), "GuessConfidence", card + " / " + Confidence[confidence]); OpenGuessTool();
+            guess.confidence = confidence; session.Record(CurrentStep.ToString(), "GuessConfidence", card + " / " + Confidence[confidence]);
+            session.Record(CurrentStep.ToString(), "GuessEvidence", card + " / " + GuessEvidence[pendingGuess]); OpenGuessTool();
         }
         PlaygroundGuess FindGuess(string idea) { return session.Data.guesses.Find(g => g.idea == idea); }
-        string GuessSummary() { var b = new StringBuilder(); foreach (var g in session.Data.guesses) b.AppendLine(g.idea + " - " + g.ConfidenceLabel); return b.ToString().Trim(); }
+        string GuessSummary() { var b = new StringBuilder(); int count = Mathf.Min(3, session.Data.guesses.Count); for (int i = 0; i < count; i++) { var g = session.Data.guesses[i]; b.AppendLine(g.idea + " - " + g.ConfidenceLabel); } if (session.Data.guesses.Count > count) b.AppendLine("+ " + (session.Data.guesses.Count - count) + " more guesses saved in the session log."); return b.ToString().Trim(); }
+        string ClueSummary() { int count = Mathf.Min(3, session.Data.clues.Count); var shown = session.Data.clues.GetRange(0, count); return string.Join(", ", shown) + (session.Data.clues.Count > count ? " (+ " + (session.Data.clues.Count - count) + " more saved)" : ""); }
         public void CompleteGuesses() {
             if (CurrentStep != PlaygroundStep.NoteGuesses || session.Data.guesses.Count < 1 || pendingGuess >= 0) return;
             SetStep(PlaygroundStep.TestGuesses); responseReady = false; responding = false; reviewingGuesses = false; approachCircle.SetActive(true); SpeakStep(5);
@@ -329,7 +381,7 @@ namespace BitsPilani.Module1.Playground {
             session.Record("Reflect", "QuestionSkipped", ReflectionQuestions[reflectionIndex]); reflectionIndex++;
             if (reflectionIndex < 3) { ShowReflectionQuestion(); return; }
             reflectionFeedback = true;
-            string feedback = "You noticed: " + string.Join(", ", session.Data.clues) + ".\n\nYour guesses:\n" + GuessSummary() + "\n\nLoud, sudden sounds may feel uncomfortable or overwhelming. His hands and body give clues; a guess is something to check, not a fact. An onlooker's assumption does not tell us what he needs.\n\nYour response: " + session.Data.firstResponse + ".\n\nThe three spoken-answer questions were skipped in this prototype.";
+            string feedback = "You selected: " + ClueSummary() + ".\n\nYour guesses:\n" + GuessSummary() + "\n\nHands over his ears, a tense body and the change after the pop support a sound-related explanation. Cake, clothing, a toy or waiting for a turn were not shown as causes. A guess still needs checking with the child.\n\nYour response: " + session.Data.firstResponse + ".\n\nThe three spoken-answer questions were skipped in this prototype.";
             ui.Show("Reflection feedback", feedback, "Next, replay once and try to act before the balloon pops.");
             ui.body.rectTransform.sizeDelta = new Vector2(900, 480); ui.body.rectTransform.anchoredPosition = new Vector2(0, 100);
             ui.status.rectTransform.anchoredPosition = new Vector2(0, -200);
