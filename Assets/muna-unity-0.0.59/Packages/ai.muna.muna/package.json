@@ -1,0 +1,38 @@
+{
+    "name": "ai.muna.muna",
+    "version": "0.0.59",
+    "displayName": "Muna",
+    "description": "Run AI inference in Unity Engine.",
+    "unity": "2022.3",
+    "dependencies": {
+        "com.unity.nuget.newtonsoft-json": "3.2.2"
+    },
+    "keywords": [
+        "fxn",
+        "natml",
+        "machine learning",
+        "ml",
+        "aritificial intelligence",
+        "ai",
+        "computer vision",
+        "opencv",
+        "android",
+        "ios",
+        "macos",
+        "windows",
+        "coreml",
+        "nnapi",
+        "directml",
+        "tensorflow",
+        "pytorch",
+        "torch",
+        "llm"
+    ],
+    "author": {
+        "name": "NatML Inc",
+        "email": "hi@muna.ai",
+        "url": "https://github.com/muna-ai"
+    },
+    "license": "Apache-2.0",
+    "repository": "github:muna-ai/muna-unity"
+}

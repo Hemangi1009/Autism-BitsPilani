@@ -82,11 +82,19 @@ namespace BitsPilani.Module1.Playground {
             if (MovementLocked == locked) return;
             MovementLocked = locked;
             if (locked) {
-                foreach (var behaviour in locomotionBehaviours) if (behaviour) { movementStates[behaviour] = behaviour.enabled; behaviour.enabled = false; }
+                // Include current rig components as well as Inspector references. New or replaced
+                // locomotion components must not bypass the first observation's movement lock.
+                var drivers = new HashSet<Behaviour>();
+                if (locomotionBehaviours != null) foreach (var behaviour in locomotionBehaviours) if (behaviour) drivers.Add(behaviour);
+                if (playerRoot) foreach (var behaviour in playerRoot.GetComponentsInChildren<MonoBehaviour>(true)) {
+                    if (behaviour is BNG.LocomotionManager || behaviour is BNG.SmoothLocomotion || behaviour is BNG.PlayerTeleport || behaviour is BNG.PlayerRotation) drivers.Add(behaviour);
+                }
+                foreach (var behaviour in drivers) { movementStates[behaviour] = behaviour.enabled; behaviour.enabled = false; }
             } else {
                 foreach (var entry in movementStates) if (entry.Key) entry.Key.enabled = entry.Value;
                 movementStates.Clear();
             }
+            Debug.Log("[M1 Playground][Movement] Controller movement " + (locked ? "locked" : "restored") + "; head tracking remains active.");
         }
 
         public bool IsAt(Transform point, float radius) {

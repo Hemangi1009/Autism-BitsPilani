@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-29",
+  "backend": "Installed NatCorder / NatSuite.Recorders",
+  "automaticModuleStart": true,
+  "normalStopSaved": true,
+  "owningSceneUnloadSaved": true,
+  "editorStopSaved": true,
+  "decodePlaybackVerified": true,
+  "encodedVideo": {
+    "codec": "H.264 / avc1",
+    "width": 1280,
+    "height": 720
+  },
+  "encodedAudio": {
+    "codec": "AAC / mp4a",
+    "channels": 2,
+    "sampleRate": 48000,
+    "nonZeroInputConfirmed": true
+  },
+  "normalClip": "C:/Users/Admin/Documents/BitsPilaniRecordings/Participant001_Module1_20261029_185850_682.mp4",
+  "earlyExitClip": "C:/Users/Admin/Documents/BitsPilaniRecordings/Validation/NATEarlyExit_Module1_20261029_185904_919.mp4",
+  "checks": [
+    "[NatCorder ExitTest] PASS module automatically starts NatCorder",
+    "[M1 Playground][RecordingSaved][NatCorder] reason=Validation normal stop; videoFrames=290; audioBuffers=629; audioPeak=0.3068662; C:\\Users\\Admin\\Documents\\BitsPilaniRecordings\\Participant001_Module1_20261029_185850_682.mp4",
+    "[NatCorder ExitTest] PASS normal stop saves ID-named MP4",
+    "[NatCorder ExitTest] Normal clip: C:\\Users\\Admin\\Documents\\BitsPilaniRecordings\\Participant001_Module1_20261029_185850_682.mp4",
+    "[NatCorder ExitTest] PASS early-exit recorder starts",
+    "[M1 Playground][RecordingSaved][NatCorder] reason=Module disabled / left early; videoFrames=111; audioBuffers=188; audioPeak=0.3339431; C:\\Users\\Admin\\Documents\\BitsPilaniRecordings\\Validation\\NATEarlyExit_Module1_20261029_185904_919.mp4",
+    "[NatCorder ExitTest] PASS unloading owning scene saves partial MP4",
+    "[NatCorder ExitTest] PASS early-exit MP4 receives nonzero game audio and video",
+    "[NatCorder ExitTest] PASS early exit leaves recorder stopped",
+    "[NatCorder ExitTest] Early clip: C:\\Users\\Admin\\Documents\\BitsPilaniRecordings\\Validation\\NATEarlyExit_Module1_20261029_185904_919.mp4",
+    "[NatCorder ExitTest] COMPLETE failures=0"
+  ],
+  "physicalQuestLinkTestPerformed": false
+}

@@ -16,6 +16,9 @@ namespace BitsPilani.Module1.Playground {
         public PlaygroundRigAdapter rig;
         public PlaygroundSessionLog session;
         public PlaygroundCharacterPose child;
+        [Header("Perspective bodies and session video")]
+        public PlaygroundPerspectiveBodies perspectiveBodies;
+        public PlaygroundSessionRecording recording;
         [Header("Story locations")]
         public Transform gazeChild, gazeOnlooker, gazeParty, gazeThought;
         public Transform observationPoint, approachPoint, quietPoint, childViewPoint, partyFocus;
@@ -98,6 +101,7 @@ namespace BitsPilani.Module1.Playground {
         Coroutine routine;
         bool initialized;
         bool completedEventSent;
+        bool retryRecordingRequested, finishingModule;
 
         void Start() {
             if (!ValidateReferences()) { enabled = false; return; }
@@ -133,6 +137,25 @@ namespace BitsPilani.Module1.Playground {
 
         IEnumerator LoadThenEnter() {
             SetStep(PlaygroundStep.Loading); rig.SetMovementLocked(true);
+            if (recording && recording.recordModule) {
+                if (!recording.IsParticipantIdReady) {
+                    ui.Show("Enter participant ID", "Enter the participant ID in the assigned ID field, then submit it. Use letters and numbers only.", "The module will wait for a valid ID before starting.");
+                    ui.SetPrimary("Use entered ID", recording.SubmitParticipantId);
+                    while (!recording.IsParticipantIdReady) yield return null;
+                }
+                bool ready = false;
+                while (!ready) {
+                    ui.Show("Preparing session recording", "The player camera and game audio are being prepared for recording.", "Starting video...");
+                    var startRecording = recording.StartSessionAsync();
+                    while (!startRecording.IsCompleted) yield return null;
+                    ready = startRecording.Result;
+                    if (ready || recording.allowModuleWithoutRecording) break;
+                    retryRecordingRequested = false;
+                    ui.Show("Recording needs attention", recording.LastError, "Check the ID, output folder and recording setup, then retry.");
+                    ui.SetPrimary("Retry recording", () => retryRecordingRequested = true);
+                    while (!retryRecordingRequested) yield return null;
+                }
+            }
             ui.Show("Welcome to the playground", "The scene is getting ready. Narration will begin after the loading pause.", "Please wait at least six seconds.");
             ui.wristStatus.text = "Scene loading...";
             float elapsed = 0; float wait = Mathf.Max(6f, initialLoadSeconds);
@@ -166,17 +189,19 @@ namespace BitsPilani.Module1.Playground {
 
         void Update() {
             if (!initialized) return;
-            if (CurrentStep == PlaygroundStep.EnterPlayground && IntroGazesComplete && !voice.isPlaying && rig.IsAt(observationPoint, arrivalRadius)) {
+            // The visible circles define the destinations. They may be repositioned independently
+            // of the legacy marker transforms when the scene layout is edited.
+            if (CurrentStep == PlaygroundStep.EnterPlayground && IntroGazesComplete && !voice.isPlaying && rig.IsAt(observationCircle.transform, arrivalRadius)) {
                 session.Record("EnterPlayground", "ObservationCircleReached"); observationCircle.SetActive(false); routine = StartCoroutine(WatchChanges());
             }
-            if (CurrentStep == PlaygroundStep.TestGuesses && !responseReady && !responding && !reviewingGuesses && rig.IsAt(approachPoint, arrivalRadius)) {
+            if (CurrentStep == PlaygroundStep.TestGuesses && !responseReady && !responding && !reviewingGuesses && rig.IsAt(approachCircle.transform, arrivalRadius)) {
                 responseReady = true; approachCircle.SetActive(false); session.Record("TestGuesses", "ChildApproached"); ShowResponses();
             }
             if (CurrentStep == PlaygroundStep.OnlookerThought && !thoughtOpen && thoughtClosedAt >= 0 && Time.time - thoughtClosedAt >= thoughtToReflectionSeconds) {
                 gazeToken++; ClearGazeChildren(gazeThought); BeginReflection();
             }
-            if (CurrentStep == PlaygroundStep.ReplayAndPrevent && replayStarted && !replayAreaReached && rig.IsAt(observationPoint, arrivalRadius)) {
-                replayAreaReached = true; observationCircle.SetActive(false); session.Record("ReplayAndPrevent", "ReplayCircleReached"); routine = StartCoroutine(RunReplay());
+            if (CurrentStep == PlaygroundStep.ReplayAndPrevent && replayStarted && !replayAreaReached && rig.IsAt(observationCircle.transform, arrivalRadius)) {
+                replayAreaReached = true; rig.SetMovementLocked(false); observationCircle.SetActive(false); session.Record("ReplayAndPrevent", "ReplayCircleReached", "Visible circle reached; movement remains enabled"); routine = StartCoroutine(RunReplay());
             }
         }
 
@@ -320,6 +345,7 @@ namespace BitsPilani.Module1.Playground {
             if (CurrentStep != PlaygroundStep.ChildPerspective || rig.InChildView) return;
             childViewPoint.position = child.transform.position;
             Vector3 direction = partyFocus.position - childViewPoint.position; direction.y = 0; childViewPoint.rotation = Quaternion.LookRotation(direction);
+            if (perspectiveBodies) perspectiveBodies.EnterChildView(rig);
             rig.EnterChildView(childViewPoint, 1.25f);
             for (int i = 0; i < perspectiveProps.Length; i++) {
                 var prop = perspectiveProps[i]; prop.localScale = propScales[i] * 1.35f;
@@ -338,7 +364,7 @@ namespace BitsPilani.Module1.Playground {
         }
         public void ReturnToMyView() {
             if (CurrentStep != PlaygroundStep.ChildPerspective || !returnReady) return;
-            rig.ReturnToParentView(); ui.SetTint(false); RestorePerspectiveProps(); partyMusic.pitch = 1; partyMusic.volume = .18f; crowd.volume = .09f;
+            rig.ReturnToParentView(); if (perspectiveBodies) perspectiveBodies.RestoreParentView(); ui.SetTint(false); RestorePerspectiveProps(); partyMusic.pitch = 1; partyMusic.volume = .18f; crowd.volume = .09f;
             session.Record("ChildPerspective", "ParentViewRestored"); BeginOnlooker();
         }
         void RestorePerspectiveProps() { if (propPositions == null) return; for (int i = 0; i < perspectiveProps.Length; i++) { perspectiveProps[i].localPosition = propPositions[i]; perspectiveProps[i].localScale = propScales[i]; perspectiveProps[i].localRotation = propRotations[i]; } }
@@ -445,10 +471,19 @@ namespace BitsPilani.Module1.Playground {
             session.Finish(); Speak(summaryVoice);
             if (!completedEventSent) { completedEventSent = true; onModuleCompleted.Invoke(); }
         }
-        public void FinishModule() {
-            if (CurrentStep != PlaygroundStep.Summary) return;
+        public async void FinishModule() {
+            if (CurrentStep != PlaygroundStep.Summary || finishingModule) return;
+            finishingModule = true;
+            if (recording && recording.recordModule) {
+                ui.SetPrimary("Saving video...", null, false);
+                ui.status.text = "Saving your session video and game audio. Please wait.";
+                await recording.StopAndSaveAsync("Finish module clicked");
+                if (!this || !isActiveAndEnabled) return;
+                if (recording.IsSaving) { finishingModule = false; return; }
+            }
             CurrentStep = PlaygroundStep.Complete; ui.SetStep(11, "Complete"); ui.SetPrimary("Module complete", null, false);
-            ui.status.text = "Thank you. Module 1 is complete.";
+            ui.status.text = "Thank you. Module 1 is complete." + (recording && !string.IsNullOrEmpty(recording.LastSavedPath) ? "\nVideo saved for " + recording.LockedParticipantId + "." : "");
+            if (recording && recording.recordModule && string.IsNullOrEmpty(recording.LastSavedPath)) ui.status.text += "\nNo session video was saved. See recording status and Console.";
         }
 
         void SetBalloonVisible(bool visible) { if (eventBalloon) eventBalloon.SetActive(visible); if (balloonString) balloonString.SetActive(visible); }
@@ -467,6 +502,8 @@ namespace BitsPilani.Module1.Playground {
         void OnDisable() {
             if (!initialized) return;
             gazeToken++; StopAllCoroutines();
+            if (recording) recording.RequestStopAndSave("Module left before Finish");
+            if (perspectiveBodies) perspectiveBodies.RestoreParentView();
             if (rig) { rig.ReturnToParentView(); rig.SetMovementLocked(false); }
             if (ui) ui.SetTint(false);
             RestorePerspectiveProps();

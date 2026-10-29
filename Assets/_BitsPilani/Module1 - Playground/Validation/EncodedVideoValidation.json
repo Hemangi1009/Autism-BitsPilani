@@ -1,0 +1,74 @@
+[
+  {
+    "path": "C:\\Users\\Admin\\Documents\\BitsPilaniRecordings\\Participant001_Module1_20261029_185850_682.mp4",
+    "bytes": 2715512,
+    "movie_finalized": true,
+    "has_media_data": true,
+    "tracks": [
+      {
+        "type": "vide",
+        "codec": "avc1",
+        "duration_seconds": 13.497166666666667,
+        "samples": 290,
+        "width": 1280,
+        "height": 720
+      },
+      {
+        "type": "soun",
+        "codec": "mp4a",
+        "duration_seconds": 13.529958333333333,
+        "samples": 562,
+        "channels": 2,
+        "sample_rate": 48000
+      }
+    ]
+  },
+  {
+    "path": "C:\\Users\\Admin\\Documents\\BitsPilaniRecordings\\Participant001_Module1_20261029_185633_089.mp4",
+    "bytes": 2675750,
+    "movie_finalized": true,
+    "has_media_data": true,
+    "tracks": [
+      {
+        "type": "vide",
+        "codec": "avc1",
+        "duration_seconds": 12.0667,
+        "samples": 300,
+        "width": 1280,
+        "height": 720
+      },
+      {
+        "type": "soun",
+        "codec": "mp4a",
+        "duration_seconds": 13.310375,
+        "samples": 556,
+        "channels": 2,
+        "sample_rate": 48000
+      }
+    ]
+  },
+  {
+    "path": "C:\\Users\\Admin\\Documents\\BitsPilaniRecordings\\Validation\\NATEarlyExit_Module1_20261029_185904_919.mp4",
+    "bytes": 750545,
+    "movie_finalized": true,
+    "has_media_data": true,
+    "tracks": [
+      {
+        "type": "vide",
+        "codec": "avc1",
+        "duration_seconds": 3.9898,
+        "samples": 111,
+        "width": 1280,
+        "height": 720
+      },
+      {
+        "type": "soun",
+        "codec": "mp4a",
+        "duration_seconds": 4.015229166666667,
+        "samples": 186,
+        "channels": 2,
+        "sample_rate": 48000
+      }
+    ]
+  }
+]

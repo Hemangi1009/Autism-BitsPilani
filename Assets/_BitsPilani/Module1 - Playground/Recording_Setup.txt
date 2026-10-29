@@ -1,0 +1,32 @@
+MODULE 1 RECORDING - NATCORDER BACKEND
+
+In the Hierarchy select M1 SYSTEMS - flow and audio / Module1 Playground Flow.
+The PlaygroundSessionRecording component contains the same existing fields:
+- Record Module: automatically capture the module, including the six-second loading pause, child view, replay and summary.
+- Output Folder: an absolute accessible path, or a folder name inside Documents on Windows. Creates a missing folder and reuses an existing folder.
+- Default folder: C:\Users\Admin\Documents\BitsPilaniRecordings
+- Participant Id: Inspector fallback when no TMP input is assigned.
+- Participant Id Input: assign your canvas's TMP_InputField. Letters and numbers only, 1-64 characters; no blank/space-only IDs, symbols or path characters.
+- An empty ID input waits for submission. End-edit, SubmitParticipantId, or Use entered ID completes submission. The input locks while recording.
+- Recording Status Text: optional TMP_Text showing starting, recording, saving, saved path or failure.
+- Video Resolution and Frames Per Second: default 1280x720, 30 fps.
+- Open Recording Folder opens/reveals the destination. Stop and Save Video is available in Play Mode.
+
+FILE NAME
+ID_Module1_yyyyMMdd_HHmmss_fff.mp4. Existing files are not overwritten.
+
+VIDEO AND AUDIO
+Uses the NatCorder package imported at Assets/NatML/NatCorder. The module recording scripts no longer use VideoKit or its plan/session APIs. Imported package scripts were not edited.
+A monoscopic camera follows the player camera and renders normally through URP, including scene UI. NatCorder encodes H.264 video and AAC game audio from the player's AudioListener. Narration, music, spatial sounds and effects are included. This does not access the microphone.
+Audio capture starts on the first camera frame. Pending GPU readbacks are flushed before finishing the encoder.
+
+STOP / EARLY EXIT
+Clicking Finish Module waits for video saving. Disabling/leaving the module or unloading its scene also saves the partial session. A persistent recording host survives scene unload until finalization. Application pause saves the session; normal application quit waits for saving. The Editor guard finalizes before Play Mode stops or scripts reload.
+Temporary encoded data is inside Output Folder/.inprogress/<session>/capture.mp4, then renamed to the ID-based destination after finalization. Failed files are preserved and their location is logged.
+Forced process termination/power loss cannot guarantee completion of an MP4.
+
+QUEST LINK
+When Unity runs on the Windows PC through Quest Link, the recording is saved on the PC, not the headset. For a standalone headset build, the configured destination must be writable on that device.
+
+PERSPECTIVE BODIES
+PlaygroundPerspectiveBodies still hides the child and original first-person body meshes during child view, shows the primitive parent at the clicked position, and restores the original states on return or exit.
