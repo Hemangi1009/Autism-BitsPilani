@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-30",
+  "checks": [
+    "[Final Recording Test] PASS attached input waits for explicit ID confirmation",
+    "[Final Recording Test] PASS destination is root Quest/bitspilani",
+    "[Final Recording Test] PASS Inspector filename format is used",
+    "[Final Recording Test] Input canvas mode=WorldSpace",
+    "[Final Recording Test] PASS ID input ray hits correct control",
+    "[Final Recording Test] PASS click opens virtual keyboard",
+    "[Final Recording Test] PASS Q key ray hits correct control",
+    "[Final Recording Test] PASS 1 key ray hits correct control",
+    "[Final Recording Test] PASS typing does not start recording early",
+    "[Final Recording Test] PASS Backspace ray hits correct control",
+    "[Final Recording Test] PASS backspace works",
+    "[Final Recording Test] PASS Done ray hits correct control",
+    "[Final Recording Test] PASS Done closes keyboard and submits ID",
+    "[Final Recording Test] PASS recording starts after keyboard submission",
+    "[Final Recording Test] PASS native finalization and publication do not require a running Unity main thread",
+    "[Final Recording Test] PASS early-quit video is finalized and retained when no headset is connected",
+    "[Final Recording Test] PASS headset transfer remains queued safely",
+    "[Final Recording Test] Early clip: C:\\Users\\Admin\\Documents\\BitsPilaniRecordings\\Q_Module1_20261030_113412_551.mp4",
+    "[Final Recording Test] COMPLETE failed=0"
+  ],
+  "failed": 0,
+  "exactHeadsetTarget": "Internal shared storage/Quest/bitspilani",
+  "androidBridgeCompiled": true,
+  "javaCompileApi": 34,
+  "androidBridgeShrinkRulesIncluded": true,
+  "physicalQuestRootFolderPickerTested": false,
+  "physicalQuestQuitSaveTested": false,
+  "notes": [
+    "Real controller ray clicks opened the assigned TMP input keyboard and activated keys/Done.",
+    "Recording finalized while Unity main thread was blocked.",
+    "Android Storage Access Framework permission is required once for the root Quest directory.",
+    "A force-stop/process kill cannot guarantee execution of shutdown callbacks."
+  ]
+}

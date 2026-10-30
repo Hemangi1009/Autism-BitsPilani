@@ -138,6 +138,11 @@ namespace BitsPilani.Module1.Playground {
         IEnumerator LoadThenEnter() {
             SetStep(PlaygroundStep.Loading); rig.SetMovementLocked(true);
             if (recording && recording.recordModule) {
+                if (!recording.IsQuestFolderReady) {
+                    ui.Show("Choose the Quest recording folder", "Select the Quest folder directly inside Internal shared storage. Recordings will be created in its " + recording.questSubfolderName + " subfolder.", "One-time folder access is required before recording starts.");
+                    ui.SetPrimary("Choose Quest folder", recording.SelectQuestFolder);
+                    while (!recording.IsQuestFolderReady) yield return null;
+                }
                 if (recording.saveToQuest) recording.RetryPendingQuestTransfers();
                 if (!recording.IsParticipantIdReady) {
                     ui.Show("Enter participant ID", "Enter the participant ID in the assigned ID field, then submit it. Use letters and numbers only.", "The module will wait for a valid ID before starting.");

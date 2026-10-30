@@ -11,6 +11,7 @@ namespace BitsPilani.Module1.Playground {
         public bool enabled;
         public bool android;
         public string folderName = "Quest";
+        public string subfolderName = "bitspilani";
         public string adbExecutable;
         public string deviceSerial;
         public bool keepLocalCopy;
@@ -28,21 +29,23 @@ namespace BitsPilani.Module1.Playground {
     public static class PlaygroundQuestVideoStorage {
         const string PendingSuffix = ".quest-transfer.json";
         public static bool IsValidFolderName(string name) { return !string.IsNullOrEmpty(name) && name == name.Trim() && Regex.IsMatch(name, "\\A[A-Za-z0-9][A-Za-z0-9 _-]{0,63}\\z"); }
-        public static string RelativeFolder(string name) {
+        public static string RelativeFolder(string name, string subfolder = "bitspilani") {
             if (!IsValidFolderName(name)) throw new ArgumentException("Quest folder name must use letters, numbers, spaces, underscore or hyphen (1-64 characters), without path separators.");
-            return "Movies/" + name;
+            if (!IsValidFolderName(subfolder)) throw new ArgumentException("Set a valid recordings subfolder name.");
+            return name + "/" + subfolder;
         }
         public static string Queue(string path, PlaygroundQuestStorageSettings settings) {
-            RelativeFolder(settings.folderName);
+            RelativeFolder(settings.folderName, settings.subfolderName);
             string sidecar = path + PendingSuffix;
             File.WriteAllText(sidecar, JsonUtility.ToJson(new PlaygroundQuestTransfer { localPath = path, settings = settings }, true));
             return sidecar;
         }
         public static async Task<PlaygroundQuestExportResult> PublishAsync(string path, PlaygroundQuestStorageSettings settings) {
             try {
-                RelativeFolder(settings.folderName);
+                if (string.IsNullOrEmpty(settings.subfolderName)) settings.subfolderName = "bitspilani";
+                RelativeFolder(settings.folderName, settings.subfolderName);
                 if (!File.Exists(path)) throw new FileNotFoundException("The finalized recording is missing.", path);
-                return settings.android ? await PublishAndroidAsync(path, settings) : await Task.Run(() => PublishDesktop(path, settings));
+                return settings.android ? await PublishAndroidAsync(path, settings).ConfigureAwait(false) : await Task.Run(() => PublishDesktop(path, settings)).ConfigureAwait(false);
             } catch (Exception ex) { return new PlaygroundQuestExportResult { error = ex.Message }; }
         }
         public static void Acknowledge(string path, PlaygroundQuestStorageSettings settings) {
@@ -68,59 +71,13 @@ namespace BitsPilani.Module1.Playground {
             return saved;
         }
 
-        // Android's MediaStore publishes app-created videos without all-files storage permission.
-        static async Task<PlaygroundQuestExportResult> PublishAndroidAsync(string path, PlaygroundQuestStorageSettings settings) {
-            using (var player = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
-            using (var activity = player.GetStatic<AndroidJavaObject>("currentActivity"))
-            using (var resolver = activity.Call<AndroidJavaObject>("getContentResolver")) {
-                string relative = RelativeFolder(settings.folderName) + "/";
-                return await Task.Run(() => {
-                    AndroidJNI.AttachCurrentThread();
-                    AndroidJavaObject uri = null;
-                    try {
-                        using (var version = new AndroidJavaClass("android.os.Build$VERSION")) if (version.GetStatic<int>("SDK_INT") < 29) throw new NotSupportedException("Public Quest video storage requires Android 10 or later.");
-                        using (var media = new AndroidJavaClass("android.provider.MediaStore$Video$Media"))
-                        using (var collection = media.GetStatic<AndroidJavaObject>("EXTERNAL_CONTENT_URI"))
-                        using (var values = new AndroidJavaObject("android.content.ContentValues")) {
-                            values.Call("put", "_display_name", Path.GetFileName(path));
-                            values.Call("put", "mime_type", "video/mp4");
-                            values.Call("put", "relative_path", relative);
-                            using (var one = new AndroidJavaObject("java.lang.Integer", 1)) values.Call("put", "is_pending", one);
-                            uri = resolver.Call<AndroidJavaObject>("insert", collection, values);
-                            if (uri == null) throw new IOException("The Quest media library could not create the video.");
-                        }
-                        long length = new FileInfo(path).Length;
-                        using (var output = resolver.Call<AndroidJavaObject>("openOutputStream", uri, "w")) {
-                            if (output == null) throw new IOException("The Quest media library could not open the video for writing.");
-                            using (var input = File.OpenRead(path)) {
-                                byte[] bytes = new byte[65536]; sbyte[] javaBytes = new sbyte[bytes.Length];
-                                int count;
-                                while ((count = input.Read(bytes, 0, bytes.Length)) > 0) { Buffer.BlockCopy(bytes, 0, javaBytes, 0, count); output.Call("write", javaBytes, 0, count); }
-                            }
-                            output.Call("flush"); output.Call("close");
-                        }
-                        using (var descriptor = resolver.Call<AndroidJavaObject>("openFileDescriptor", uri, "r")) {
-                            long size = descriptor.Call<long>("getStatSize"); descriptor.Call("close");
-                            if (size != length) throw new IOException("The copied Quest video has an unexpected size; its local source was retained.");
-                        }
-                        using (var complete = new AndroidJavaObject("android.content.ContentValues"))
-                        using (var zero = new AndroidJavaObject("java.lang.Integer", 0)) {
-                            complete.Call("put", "is_pending", zero);
-                            if (resolver.Call<int>("update", uri, complete, null, null) < 1) throw new IOException("The Quest media library did not publish the video.");
-                        }
-                        Debug.Log("[M1 Playground][QuestMediaPublished] " + relative + Path.GetFileName(path));
-                        return new PlaygroundQuestExportResult { success = true, location = uri.Call<string>("toString") };
-                    } catch (Exception ex) {
-                        if (uri != null) { try { resolver.Call<int>("delete", uri, null, null); } catch { } }
-                        return new PlaygroundQuestExportResult { error = ex.Message };
-                    } finally { uri?.Dispose(); AndroidJNI.DetachCurrentThread(); }
-                });
-            }
+        static Task<PlaygroundQuestExportResult> PublishAndroidAsync(string path, PlaygroundQuestStorageSettings settings) {
+            return PlaygroundQuestFolderAccess.PublishAsync(path, settings);
         }
 
         public static PlaygroundQuestExportResult PublishDesktop(string path, PlaygroundQuestStorageSettings settings) {
             try {
-                string folder = RelativeFolder(settings.folderName);
+                string folder = RelativeFolder(settings.folderName, settings.subfolderName);
                 if (!Regex.IsMatch(Path.GetFileName(path), "\\A[A-Za-z0-9_.-]+\\.mp4\\z")) throw new ArgumentException("Unexpected recording filename; transfer was not started.");
                 if (string.IsNullOrEmpty(settings.adbExecutable) || !File.Exists(settings.adbExecutable)) throw new FileNotFoundException("Set the ADB Executable field to Android SDK/platform-tools/adb.exe for Quest Link transfers.");
                 string devices = Adb(settings.adbExecutable, new[] { "devices", "-l" }, 10000);

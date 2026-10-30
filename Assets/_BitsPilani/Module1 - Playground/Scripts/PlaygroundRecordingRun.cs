@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using System.Threading;
 using UnityEngine;
 using NatSuite.Recorders;
 using NatSuite.Recorders.Clocks;
@@ -30,8 +31,14 @@ namespace BitsPilani.Module1.Playground {
         PlaygroundQuestStorageSettings questStorage;
         public void ConfigureQuestStorage(PlaygroundQuestStorageSettings settings) { questStorage = settings; }
         public event Action<string> StatusChanged;
+        SynchronizationContext mainContext;
+        int mainThreadId;
+        void ReportStatus(string value) {
+            if (Thread.CurrentThread.ManagedThreadId == mainThreadId) StatusChanged?.Invoke(value);
+            else mainContext?.Post(_ => { if (this) StatusChanged?.Invoke(value); }, null);
+        }
 
-        void Awake() { DontDestroyOnLoad(gameObject); Application.wantsToQuit += WantsToQuit; }
+        void Awake() { mainContext = SynchronizationContext.Current; mainThreadId = Thread.CurrentThread.ManagedThreadId; DontDestroyOnLoad(gameObject); Application.wantsToQuit += WantsToQuit; }
         public Task StartCaptureAsync(Camera camera, AudioListener listener, string directory, string filename, int width, int height, int frameRate) {
             if (Active && Active != this) throw new InvalidOperationException("Another module recording is still active or saving.");
             Active = this;
@@ -40,7 +47,7 @@ namespace BitsPilani.Module1.Playground {
         Task StartCore(Camera camera, AudioListener listener, string directory, string filename, int width, int height, int frameRate) {
             try {
                 Directory.CreateDirectory(directory);
-                if (questStorage != null && questStorage.enabled) PlaygroundQuestVideoStorage.RelativeFolder(questStorage.folderName);
+                if (questStorage != null && questStorage.enabled) PlaygroundQuestVideoStorage.RelativeFolder(questStorage.folderName, questStorage.subfolderName);
                 finalPath = Path.Combine(directory, filename + ".mp4");
                 for (int i = 2; File.Exists(finalPath); i++) finalPath = Path.Combine(directory, filename + "_" + i + ".mp4");
                 pendingDirectory = Path.Combine(directory, ".inprogress", Guid.NewGuid().ToString("N"));
@@ -57,12 +64,12 @@ namespace BitsPilani.Module1.Playground {
                 capture.FirstFrameCaptured = () => { if (audio) audio.Initialize(recorder, clock); };
                 capture.Initialize(camera, recorder, clock, width, height, frameRate);
                 IsRecording = true;
-                StatusChanged?.Invoke("Recording video + game audio");
+                ReportStatus("Recording video + game audio");
                 Debug.Log("[M1 Playground][RecordingStarted][NatCorder] " + finalPath);
                 return Task.CompletedTask;
             } catch (Exception ex) {
                 Error = ex.Message; StopInputs();
-                StatusChanged?.Invoke("Recording could not start: " + Error);
+                ReportStatus("Recording could not start: " + Error);
                 Debug.LogError("[M1 Playground][RecordingStartFailed] " + Error);
                 throw;
             }
@@ -80,36 +87,36 @@ namespace BitsPilani.Module1.Playground {
                 if (startTask != null) { try { await startTask; } catch { } }
                 StopInputs();
                 if (recorder == null) return null;
-                StatusChanged?.Invoke("Saving video...");
-                var asset = await (nativeFinishTask ?? (nativeFinishTask = recorder.FinishWriting()));
+                ReportStatus("Saving video...");
+                var asset = await (nativeFinishTask ?? (nativeFinishTask = recorder.FinishWriting())).ConfigureAwait(false);
                 SaveNativeAsset(asset);
                 if (questStorage != null && questStorage.enabled) {
                     QuestTransferPending = true;
                     PlaygroundQuestVideoStorage.Queue(SavedPath, questStorage);
-                    StatusChanged?.Invoke(questStorage.android ? "Saving video to headset Movies/" + questStorage.folderName + "..." : "Sending video to connected Quest...");
+                    ReportStatus(questStorage.android ? "Saving video to headset " + questStorage.folderName + "/" + questStorage.subfolderName + "..." : "Sending video to connected Quest...");
                     string source = SavedPath;
-                    var published = await PlaygroundQuestVideoStorage.PublishAsync(source, questStorage);
+                    var published = await PlaygroundQuestVideoStorage.PublishAsync(source, questStorage).ConfigureAwait(false);
                     if (published.success) {
                         PlaygroundQuestVideoStorage.Acknowledge(source, questStorage);
                         QuestSavedPath = SavedPath = published.location;
                         QuestTransferPending = false;
                     } else {
                         Error = published.error;
-                        StatusChanged?.Invoke("Quest transfer pending. Recording retained safely on this device. " + Error);
+                        ReportStatus("Quest transfer pending. Recording retained safely on this device. " + Error);
                         Debug.LogWarning("[M1 Playground][QuestTransferPending] " + Error + "; source=" + source);
                         return SavedPath;
                     }
                 }
-                StatusChanged?.Invoke("Video saved: " + SavedPath);
+                ReportStatus("Video saved: " + SavedPath);
                 Debug.Log("[M1 Playground][RecordingSaved][NatCorder] reason=" + reason + "; videoFrames=" + VideoFrames + "; audioBuffers=" + AudioSamples + "; audioPeak=" + AudioPeak + "; " + SavedPath);
                 return SavedPath;
             } catch (Exception ex) {
-                Error = ex.Message; StatusChanged?.Invoke("Video save failed: " + Error);
+                Error = ex.Message; ReportStatus("Video save failed: " + Error);
                 Debug.LogError("[M1 Playground][RecordingSaveFailed] " + Error + "; pending files preserved at " + pendingDirectory);
                 return null;
             } finally {
                 IsSaving = false;
-                if (Active == this) Active = null;
+                if (ReferenceEquals(Active, this)) Active = null;
             }
         }
         void StopInputs() {
@@ -153,8 +160,22 @@ namespace BitsPilani.Module1.Playground {
             return false;
         }
         async void SaveThenQuit() { await StopAndSaveAsync("Application quit"); allowQuit = true; Application.Quit(); }
-        void OnApplicationPause(bool paused) { if (paused && IsRecording) RequestStop("Application paused / left early"); }
-        void OnApplicationQuit() { if (IsRecording || IsSaving) RequestStop("Application quitting"); }
+        void OnApplicationPause(bool paused) {
+            if (!paused || !IsRecording) return;
+            var saving = StopAndSaveAsync("Application paused / left early");
+            // On Android, pause commonly precedes app closure. Give the independent
+            // finalizer a short bounded window before the lifecycle callback returns.
+            try { saving.Wait(TimeSpan.FromSeconds(3)); } catch (Exception ex) { Debug.LogWarning("[M1 Playground][PauseSave] " + ex.Message); }
+        }
+        void OnApplicationQuit() {
+            if (!IsRecording && !IsSaving) return;
+            try {
+                // Finalization and folder publication continue off the Unity main thread.
+                // A bounded wait prevents normal Android quit from abandoning the last file.
+                var saving = StopAndSaveAsync("Application quitting early");
+                if (!saving.Wait(TimeSpan.FromSeconds(12))) Debug.LogWarning("[M1 Playground][QuitSave] Save is still pending; finalized staging data is retained for retry.");
+            } catch (Exception ex) { Debug.LogError("[M1 Playground][QuitSave] " + ex.Message); }
+        }
         void OnDestroy() { Application.wantsToQuit -= WantsToQuit; if (IsRecording) RequestStop("Recording host destroyed"); if (Active == this) Active = null; }
     }
 }

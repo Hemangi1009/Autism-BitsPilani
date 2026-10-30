@@ -1,25 +1,35 @@
-QUEST RECORDING DESTINATION
-
-Public headset folder: Internal shared storage / Movies / Quest
-Quest Folder Name changes the final subfolder; the default is Quest.
+MODULE 1: VIDEO FORMAT, ID KEYBOARD, ROOT QUEST FOLDER, EARLY EXIT
 
 Select M1 SYSTEMS - flow and audio / Module1 Playground Flow > PlaygroundSessionRecording.
-- Save To Quest: enabled.
-- Quest Folder Name: Quest.
-- Keep Local Copy After Quest Save: disabled. Temporary source is removed only after successful verified publication/transfer. A failed or pending transfer always retains it.
-- Output Folder: desktop staging folder for Quest Link. It remains unchanged from the user's configuration.
-- ADB Executable: PC Android SDK/platform-tools/adb.exe. Needed for Link transfer only; APK never uses ADB.
-- Quest Device Serial: optional for a single connected headset; required if multiple Android devices are connected.
-- Send Pending Videos to Quest: retries finalized recordings that could not reach the headset.
 
-APK ON QUEST
-The MP4 is finalized in the app-writable staging directory and published through Android MediaStore to Movies/Quest. The public video stays outside the app's com.company... directory. No all-files storage permission is requested. Participant ID filenames and game audio are preserved. The same route is used for Finish Module, early scene exit and normal quit.
+INSPECTOR
+- Video Format: MP4_H264_AAC (MP4 container, H.264 video, AAC game audio).
+- Filename Format: {id}_Module1_{timestamp}. Both tokens are required; reorder them if desired. Extension is added automatically.
+- Timestamp Format: yyyyMMdd_HHmmss_fff. Inspector shows a live filename preview.
+- Quest Folder Name: Quest (folder directly in Internal shared storage).
+- Quest Subfolder Name: bitspilani. Change this field to change the recordings subfolder.
+- Save To Quest: enabled. No Movies-directory fallback.
+- Participant ID Input: user's existing TMP_InputField, with a TMP-compatible world-space virtual keyboard attached.
 
-QUEST LINK ON PC
-Link executes the Unity app on the PC. It must finalize locally first, then use ADB to copy to the connected headset's /sdcard/Movies/Quest. Enable Developer Mode and allow USB debugging in the headset. The receiving Android device is checked to be a Meta/Oculus Quest. Transfer size and SHA-256 checksums are verified before acknowledging and removing the temporary PC copy.
-If the Quest is missing, unauthorized or transfer fails, the finished PC video and a .quest-transfer.json sidecar are retained. No headset-save success is reported. Reconnect and click Send Pending Videos to Quest. Editor Stop finalizes first, queues the transfer and retries in Edit Mode so copying does not delay native MP4 finalization.
+EXACT DESTINATION
+Quest device / Internal shared storage / Quest / bitspilani / ID_Module1_timestamp.mp4
+The subfolder is created if missing and reused if present. Other files are not overwritten.
 
-VALIDATION LIMITS
-No ADB device was connected when this change was implemented. PC recording, queue/error handling and destination validation can be tested locally. APK MediaStore publication and physical headset transfer require a connected Quest and remain device-test items. The project was not switched away from its Windows build target and no APK was installed automatically.
+APK: ONE-TIME FOLDER GRANT
+Rebuild/install the APK to include the new Android storage bridge.
+Before recording starts, choose Choose Quest folder. In Android's system folder picker, select Quest directly inside Internal shared storage (create Quest there if missing), and grant access to that folder. Do not select the entire Internal storage volume, Movies/Quest, or the bitspilani subfolder itself. The permission is persisted for later launches; the app creates/reuses the configured child folder.
+This uses a folder-specific Android Storage Access Framework grant, not broad all-files permission. If the headset's OS has no system folder-picker activity, the error is reported and recording waits; there is no silent save into another folder.
 
-Normal app/scene exit can save a partial session. Force-killing the app, power loss or disconnecting the device during publication cannot guarantee completion; staging sources are retained when possible.
+QUEST LINK
+Finalization occurs temporarily on the PC, followed by ADB transfer to /sdcard/Quest/bitspilani. USB debugging must be authorized. Size and SHA-256 checks protect the transfer. Temporary PC sources are removed only after successful verification unless Keep Local Copy is enabled. Unavailable-headset transfers retain their source and receipt for retry.
+
+VIRTUAL KEYBOARD
+Click the attached ID field with the controller ray. Numbers and letters, Shift, Backspace, Done and Close are provided. No spaces are allowed for IDs. Done confirms the ID and closes the keyboard. Clicking other keys does not accidentally submit the first character. A prefilled input also waits for confirmation. Recording locks the ID input.
+
+NORMAL QUIT / EARLY EXIT
+On pause or normal quit, the encoder finishes and folder publication proceeds independently of Unity's paused main thread. A short pause-time wait and bounded quit-time wait give normal closure time to complete. Finalized staging files and transfer receipts remain available for retry if publication is interrupted. Scene unload and Finish Module use the same save pipeline.
+Force-stop, process kill, crash or power loss can prevent application callbacks and cannot guarantee the last unfinalized frames. These are different from normal app quit; no complete-video guarantee is made for a forced kill.
+
+VALIDATION
+Real controller-ray clicks on the user's input and keyboard keys passed. Done confirmed the ID and started recording. A native video finalized successfully while the Unity main thread was blocked. Correct Quest/bitspilani destination and retained pending-transfer receipts passed local tests. The Java folder-access bridge compiled against Android API 34 and is enabled for Android import. Physical Quest folder selection/publication and a rebuilt APK remain device-test items.
+The Android bridge source is included in Plugins/Android/QuestStorageSource~ (ignored by Unity as source assets to avoid duplicate Java classes); the compiled AAR is alongside it.
