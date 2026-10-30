@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-30",
+  "destination": "Internal shared storage/Movies/Quest",
+  "standaloneAndroidImplementation": "MediaStore video collection with relative_path and pending publication",
+  "questLinkImplementation": "ADB copy with size and SHA256 verification; retry receipt retained on failure",
+  "localChecks": [
+    "[Quest Storage Test] PASS valid folder Quest",
+    "[Quest Storage Test] PASS valid folder Training Videos",
+    "[Quest Storage Test] PASS valid folder Session_1-A",
+    "[Quest Storage Test] PASS invalid folder rejected []",
+    "[Quest Storage Test] PASS invalid folder rejected [ ]",
+    "[Quest Storage Test] PASS invalid folder rejected [../Quest]",
+    "[Quest Storage Test] PASS invalid folder rejected [Quest/Other]",
+    "[Quest Storage Test] PASS invalid folder rejected [Quest\\Other]",
+    "[Quest Storage Test] PASS invalid folder rejected [Quest']",
+    "[Quest Storage Test] PASS invalid folder rejected [ Quest]",
+    "[Quest Storage Test] PASS invalid folder rejected [Quest ]",
+    "[Quest Storage Test] PASS public destination is Movies/Quest",
+    "[Quest Storage Test] PASS transfer receipt persisted",
+    "[Quest Storage Test] PASS unavailable Quest reports pending rather than success",
+    "[Quest Storage Test] PASS failed transfer preserves source and receipt",
+    "[Quest Storage Test] PASS retry with no matching device preserves the source",
+    "[Quest Storage Test] PASS keep-local-copy option retains source after acknowledgment",
+    "[Quest Storage Test] COMPLETE failed=0; device publication deferred by user"
+  ],
+  "realRecordingChecks": [
+    "[Quest Recording Test] PASS Quest destination enabled",
+    "[Quest Recording Test] PASS native recording still starts",
+    "[Quest Recording Test] PASS disconnected headset retains finalized recording",
+    "[Quest Recording Test] PASS pending transfer persisted for reconnection",
+    "[Quest Recording Test] PASS no false headset-save success",
+    "[Quest Recording Test] PASS recorder stops normally despite unavailable headset",
+    "[Quest Recording Test] Source C:\\Users\\Admin\\Documents\\BitsPilaniRecordings\\Participant001_Module1_20261030_100322_205.mp4",
+    "[Quest Recording Test] COMPLETE failed=0"
+  ],
+  "physicalQuestTransferValidated": false,
+  "apkPublicationValidatedOnDevice": false,
+  "deviceTestingDeferredByUser": true,
+  "windowsBuildTargetPreserved": true
+}

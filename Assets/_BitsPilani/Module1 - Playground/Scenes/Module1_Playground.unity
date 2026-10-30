@@ -58112,6 +58112,11 @@ MonoBehaviour:
   recordingCamera: {fileID: 750917183}
   gameAudioListener: {fileID: 750917184}
   outputFolder: BitsPilaniRecordings
+  saveToQuest: 1
+  questFolderName: Quest
+  keepLocalCopyAfterQuestSave: 0
+  adbExecutable: C:\Program Files\Unity\Hub\Editor\6000.3.24f1\Editor\Data\PlaybackEngines\AndroidPlayer\SDK\platform-tools\adb.exe
+  questDeviceSerial: 
   participantId: Participant001
   participantIdInput: {fileID: 0}
   recordingStatusText: {fileID: 1261407694}

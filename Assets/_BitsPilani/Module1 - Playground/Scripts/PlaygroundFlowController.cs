@@ -138,6 +138,7 @@ namespace BitsPilani.Module1.Playground {
         IEnumerator LoadThenEnter() {
             SetStep(PlaygroundStep.Loading); rig.SetMovementLocked(true);
             if (recording && recording.recordModule) {
+                if (recording.saveToQuest) recording.RetryPendingQuestTransfers();
                 if (!recording.IsParticipantIdReady) {
                     ui.Show("Enter participant ID", "Enter the participant ID in the assigned ID field, then submit it. Use letters and numbers only.", "The module will wait for a valid ID before starting.");
                     ui.SetPrimary("Use entered ID", recording.SubmitParticipantId);
@@ -482,8 +483,9 @@ namespace BitsPilani.Module1.Playground {
                 if (recording.IsSaving) { finishingModule = false; return; }
             }
             CurrentStep = PlaygroundStep.Complete; ui.SetStep(11, "Complete"); ui.SetPrimary("Module complete", null, false);
-            ui.status.text = "Thank you. Module 1 is complete." + (recording && !string.IsNullOrEmpty(recording.LastSavedPath) ? "\nVideo saved for " + recording.LockedParticipantId + "." : "");
+            ui.status.text = "Thank you. Module 1 is complete." + (recording && !string.IsNullOrEmpty(recording.LastSavedPath) && (!recording.saveToQuest || !string.IsNullOrEmpty(recording.LastQuestSavedPath)) ? "\nVideo saved for " + recording.LockedParticipantId + "." : "");
             if (recording && recording.recordModule && string.IsNullOrEmpty(recording.LastSavedPath)) ui.status.text += "\nNo session video was saved. See recording status and Console.";
+            if (recording && recording.QuestTransferPending) ui.status.text += "\nQuest transfer is pending. The temporary recording is retained safely.";
         }
 
         void SetBalloonVisible(bool visible) { if (eventBalloon) eventBalloon.SetActive(visible); if (balloonString) balloonString.SetActive(visible); }

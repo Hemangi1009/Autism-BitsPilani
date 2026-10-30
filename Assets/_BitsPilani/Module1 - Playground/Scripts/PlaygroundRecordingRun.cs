@@ -12,6 +12,8 @@ namespace BitsPilani.Module1.Playground {
         public bool IsRecording { get; private set; }
         public bool IsSaving { get; private set; }
         public string SavedPath { get; private set; }
+        public string QuestSavedPath { get; private set; }
+        public bool QuestTransferPending { get; private set; }
         public string Error { get; private set; }
         public int VideoFrames { get; private set; }
         public long AudioSamples => audio ? audio.BufferCount : audioSamples;
@@ -25,6 +27,8 @@ namespace BitsPilani.Module1.Playground {
         Task<string> nativeFinishTask;
         bool stopRequested, allowQuit, quitPending;
         long audioSamples;
+        PlaygroundQuestStorageSettings questStorage;
+        public void ConfigureQuestStorage(PlaygroundQuestStorageSettings settings) { questStorage = settings; }
         public event Action<string> StatusChanged;
 
         void Awake() { DontDestroyOnLoad(gameObject); Application.wantsToQuit += WantsToQuit; }
@@ -36,6 +40,7 @@ namespace BitsPilani.Module1.Playground {
         Task StartCore(Camera camera, AudioListener listener, string directory, string filename, int width, int height, int frameRate) {
             try {
                 Directory.CreateDirectory(directory);
+                if (questStorage != null && questStorage.enabled) PlaygroundQuestVideoStorage.RelativeFolder(questStorage.folderName);
                 finalPath = Path.Combine(directory, filename + ".mp4");
                 for (int i = 2; File.Exists(finalPath); i++) finalPath = Path.Combine(directory, filename + "_" + i + ".mp4");
                 pendingDirectory = Path.Combine(directory, ".inprogress", Guid.NewGuid().ToString("N"));
@@ -78,6 +83,23 @@ namespace BitsPilani.Module1.Playground {
                 StatusChanged?.Invoke("Saving video...");
                 var asset = await (nativeFinishTask ?? (nativeFinishTask = recorder.FinishWriting()));
                 SaveNativeAsset(asset);
+                if (questStorage != null && questStorage.enabled) {
+                    QuestTransferPending = true;
+                    PlaygroundQuestVideoStorage.Queue(SavedPath, questStorage);
+                    StatusChanged?.Invoke(questStorage.android ? "Saving video to headset Movies/" + questStorage.folderName + "..." : "Sending video to connected Quest...");
+                    string source = SavedPath;
+                    var published = await PlaygroundQuestVideoStorage.PublishAsync(source, questStorage);
+                    if (published.success) {
+                        PlaygroundQuestVideoStorage.Acknowledge(source, questStorage);
+                        QuestSavedPath = SavedPath = published.location;
+                        QuestTransferPending = false;
+                    } else {
+                        Error = published.error;
+                        StatusChanged?.Invoke("Quest transfer pending. Recording retained safely on this device. " + Error);
+                        Debug.LogWarning("[M1 Playground][QuestTransferPending] " + Error + "; source=" + source);
+                        return SavedPath;
+                    }
+                }
                 StatusChanged?.Invoke("Video saved: " + SavedPath);
                 Debug.Log("[M1 Playground][RecordingSaved][NatCorder] reason=" + reason + "; videoFrames=" + VideoFrames + "; audioBuffers=" + AudioSamples + "; audioPeak=" + AudioPeak + "; " + SavedPath);
                 return SavedPath;
@@ -114,6 +136,11 @@ namespace BitsPilani.Module1.Playground {
                 nativeFinishTask = nativeFinishTask ?? recorder.FinishWriting();
                 if (!nativeFinishTask.Wait(TimeSpan.FromSeconds(15))) throw new TimeoutException("Timed out finalizing video before Editor Stop. Use Stop and Save before stopping Play Mode.");
                 SaveNativeAsset(nativeFinishTask.GetAwaiter().GetResult());
+                if (questStorage != null && questStorage.enabled && !questStorage.android) {
+                    QuestTransferPending = true;
+                    PlaygroundQuestVideoStorage.Queue(SavedPath, questStorage);
+                    Debug.Log("[M1 Playground][QuestTransferQueued] Native recording finalized; transfer will resume in Edit Mode. " + SavedPath);
+                }
                 Debug.Log("[M1 Playground][RecordingSaved] Editor Stop / reload: " + SavedPath);
             } catch (Exception ex) { Error = ex.Message; Debug.LogError("[M1 Playground][EditorRecordingSave] " + Error + "; pending files: " + pendingDirectory); }
             finally { IsSaving = false; if (Active == this) Active = null; }

@@ -16,6 +16,16 @@ namespace BitsPilani.Module1.Playground {
         [Header("Output folder")]
         [Tooltip("An absolute folder path, or a folder name under Documents on desktop. Created if missing; existing folders are reused.")]
         public string outputFolder = "BitsPilaniRecordings";
+        [Header("Quest headset destination")]
+        [Tooltip("APK: publish to the headset media library. Quest Link: transfer the finished PC recording to the USB-connected Quest.")]
+        public bool saveToQuest;
+        public string questFolderName = "Quest";
+        [Tooltip("Retain a PC/app-private duplicate after successful headset publication. Failed/pending transfers always retain the source.")]
+        public bool keepLocalCopyAfterQuestSave;
+        [Tooltip("For Quest Link on PC only: Android SDK/platform-tools/adb.exe. Not used by an APK running on Quest.")]
+        public string adbExecutable;
+        [Tooltip("Optional. Set this when multiple Android devices are connected.")]
+        public string questDeviceSerial;
         [Header("Participant identity")]
         [Tooltip("Letters and numbers only, 1 to 64 characters. Used when Participant ID Input is unassigned.")]
         public string participantId = "Participant001";
@@ -27,12 +37,15 @@ namespace BitsPilani.Module1.Playground {
         [Range(10, 60)] public int framesPerSecond = 30;
         public string LastError { get; private set; }
         public string LastSavedPath { get; private set; }
+        public string LastQuestSavedPath { get; private set; }
+        public bool QuestTransferPending => saveToQuest && run && run.QuestTransferPending;
         public string LockedParticipantId { get; private set; }
         public bool IsRecording => run && run.IsRecording;
         public bool IsSaving => run && run.IsSaving;
         PlaygroundRecordingRun run;
         Task<bool> startTask;
         bool idSubmitted;
+        bool retryingQuestTransfers;
         public bool IsParticipantIdReady => participantIdInput ? idSubmitted && IsValidParticipantId(participantIdInput.text) : IsValidParticipantId(participantId);
 
         void OnEnable() {
@@ -49,6 +62,7 @@ namespace BitsPilani.Module1.Playground {
 
         public static bool IsValidParticipantId(string value) { return !string.IsNullOrEmpty(value) && Regex.IsMatch(value, "\\A[A-Za-z0-9]{1,64}\\z"); }
         public string ResolveOutputFolder() {
+            if (saveToQuest && Application.platform == RuntimePlatform.Android && !Application.isEditor) return Path.Combine(Application.persistentDataPath, "RecordingStaging");
             if (string.IsNullOrWhiteSpace(outputFolder)) throw new ArgumentException("Set an output folder name or absolute path.");
             if (Path.IsPathRooted(outputFolder)) return Path.GetFullPath(outputFolder);
             string documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
@@ -78,6 +92,11 @@ namespace BitsPilani.Module1.Playground {
                 if (participantIdInput) participantIdInput.interactable = false;
                 var host = new GameObject("Module1 video recording session - saves across scene exit");
                 run = host.AddComponent<PlaygroundRecordingRun>(); run.StatusChanged += SetStatus;
+                run.ConfigureQuestStorage(new PlaygroundQuestStorageSettings {
+                    enabled = saveToQuest, android = Application.platform == RuntimePlatform.Android && !Application.isEditor,
+                    folderName = questFolderName, adbExecutable = adbExecutable,
+                    deviceSerial = questDeviceSerial, keepLocalCopy = keepLocalCopyAfterQuestSave
+                });
                 SetStatus("Starting video + game audio...");
                 await run.StartCaptureAsync(recordingCamera, gameAudioListener, folder, filename,
                     Mathf.Max(16, videoResolution.x / 2 * 2), Mathf.Max(16, videoResolution.y / 2 * 2), framesPerSecond);
@@ -94,11 +113,22 @@ namespace BitsPilani.Module1.Playground {
             if (startTask != null && !startTask.IsCompleted) await startTask;
             if (!run) return LastSavedPath;
             LastSavedPath = await run.StopAndSaveAsync(reason);
+            LastQuestSavedPath = run.QuestSavedPath;
             LastError = run.Error;
             if (participantIdInput) participantIdInput.interactable = true;
             return LastSavedPath;
         }
         public bool HasUnsavedRecording => run && (run.IsRecording || run.IsSaving);
+        [ContextMenu("Send Pending Videos to Quest")]
+        public async void RetryPendingQuestTransfers() {
+            if (!saveToQuest || retryingQuestTransfers) return;
+            retryingQuestTransfers = true;
+            try {
+                int count = await PlaygroundQuestVideoStorage.RetryPendingAsync(ResolveOutputFolder());
+                if (count > 0) SetStatus(count + " pending video(s) saved to headset Movies/" + questFolderName + ".");
+            } catch (Exception ex) { SetStatus("Quest transfer pending: " + ex.Message); }
+            finally { retryingQuestTransfers = false; }
+        }
         public async void StopAndSave() { await StopAndSaveAsync("Manual stop / leaving module"); }
         public async void RequestStopAndSave(string reason) { await StopAndSaveAsync(reason); }
         void SetStatus(string message) { if (recordingStatusText) recordingStatusText.text = message; Debug.Log("[M1 Playground][RecordingStatus] " + message); }

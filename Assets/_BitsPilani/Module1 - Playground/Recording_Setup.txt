@@ -1,3 +1,6 @@
+CURRENT DESTINATION: QUEST HEADSET
+See Quest_Recording_Setup.txt. APK publishes to Movies/Quest. Quest Link transfers to that folder using USB debugging; the PC Output Folder is temporary staging. Failed transfers remain queued until the Quest is available.
+
 MODULE 1 RECORDING - NATCORDER BACKEND
 
 In the Hierarchy select M1 SYSTEMS - flow and audio / Module1 Playground Flow.
