@@ -1,0 +1,21 @@
+PERSISTENT APP STORAGE - 2026-10-30
+Quest APK destination:
+Application.persistentDataPath/Autism - Videos & Audios/Module1/<ID>/
+On Android this is usually /storage/emulated/0/Android/data/<application package>/files/Autism - Videos & Audios/Module1/<ID>/.
+
+FolderManager controls the root folder and creates/reuses Module1, Module2, Module3, Module4 and the selected module/ID directory. FolderManager.PersistentRoot exposes the persistent path; LocalRoot uses that path in Android players. Desktop/Quest Link continues saving in the PC Documents hierarchy.
+Only the module ID is entered at runtime. No storage permission dialog, folder picker, shared-storage bridge, ADB transfer, or administrator setup is used by the recording flow.
+
+PlaygroundSessionRecording prepares the FolderManager destination and starts capture. PlaygroundRecordingRun finalizes the native MP4 into that same participant directory. Finished videos stay there: no export, source deletion, or transfer receipt is created. Retired transfer fields and methods remain for scene/API compatibility but cannot route the recording through the old export path.
+The Inspector shows the destination formula, current local directory and actual safe filename preview. Recording start/save logs print the full path.
+
+ID Done > first recorded frame > ID panel hides > original six-second loading wait > original module flow.
+Recorder startup failures offer Retry / Return to entry. Startup, finalization and scene-transition protections remain.
+The filename remains Video_yyyy-MM-dd_HH-mm-ss.mp4; unsafe colon time separators are normalized to hyphens.
+
+Verification:
+Editor C# compilation had no errors.
+Startup, actual frames/audio, early save and return to entry passed.
+A second recording was finalized directly inside Application.persistentDataPath. It remained there despite deliberately passing old enabled Android export settings. No transfer receipt was created. The native run reports no transfer pending.
+The Module1 scene file was unchanged by this task; environment and user layout were preserved.
+No APK was built or installed. Headset runtime testing is still pending.

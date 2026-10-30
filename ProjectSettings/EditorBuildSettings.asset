@@ -5,6 +5,12 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
+  - enabled: 1
+    path: Assets/_BitsPilani/Module Selection/Scenes/Autism_ModuleEntry.unity
+    guid: a163a6ccd110b7e4cbeefe84411c7413
+  - enabled: 1
+    path: Assets/_BitsPilani/Module1 - Playground/Scenes/Module1_Playground.unity
+    guid: c4b224f3f14c6b14fbdd246379987839
   - enabled: 0
     path: Assets/_BitsPilani/MySample/Scene/BitsPilani.unity
     guid: 1cf38b25a71e02e4e99a682e851d2295
@@ -29,9 +35,6 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/BNG Framework/Scenes/Quest Demo.unity
     guid: 20abffae0ea5004438fe0e95b6627841
-  - enabled: 1
-    path: Assets/_BitsPilani/Module1 - Playground/Scenes/Module1_Playground.unity
-    guid: c4b224f3f14c6b14fbdd246379987839
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: a39c8083d0c8d2f46ae6563e510071e3,
       type: 2}

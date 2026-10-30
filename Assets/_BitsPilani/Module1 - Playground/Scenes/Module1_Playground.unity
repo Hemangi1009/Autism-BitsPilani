@@ -58598,13 +58598,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BitsPilani.Module1.Playground.PlaygroundSessionRecording
   recordModule: 1
-  allowModuleWithoutRecording: 1
+  allowModuleWithoutRecording: 0
   recordingCamera: {fileID: 750917183}
   gameAudioListener: {fileID: 750917184}
+  folderManager: {fileID: 1168105214}
+  moduleNumber: 1
+  participantIdPanel: {fileID: 557021198}
+  returnToEntryOnCompletion: 1
   outputFolder: BitsPilaniRecordings
   saveToQuest: 1
-  questFolderName: Quest
-  questSubfolderName: bitspilani
+  questFolderName: Autism - Videos & Audios
+  questSubfolderName: Module1
   keepLocalCopyAfterQuestSave: 0
   adbExecutable: C:\Program Files\Unity\Hub\Editor\6000.3.24f1\Editor\Data\PlaybackEngines\AndroidPlayer\SDK\platform-tools\adb.exe
   questDeviceSerial: 
@@ -58613,8 +58617,8 @@ MonoBehaviour:
   recordingStatusText: {fileID: 1261407694}
   showVirtualKeyboard: 1
   videoFormat: 0
-  filenameFormat: '{id}_Module1_{timestamp}'
-  timestampFormat: yyyyMMdd_HHmmss_fff
+  filenameFormat: Video_{timestamp}
+  timestampFormat: yyyy-MM-dd_HH:mm:ss
   videoResolution: {x: 1280, y: 720}
   framesPerSecond: 30
 --- !u!114 &979108876
@@ -71503,6 +71507,61 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1167056558}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1168105213
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1168105215}
+  - component: {fileID: 1168105214}
+  m_Layer: 0
+  m_Name: FolderManager - shared module storage
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1168105214
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1168105213}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1101d10f8ec9a2b43bfadff25362b3b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BitsPilani.Module1.Playground.FolderManager
+  rootFolderName: Autism - Videos & Audios
+  entrySceneName: Autism_ModuleEntry
+  moduleSceneNames:
+  - Module1_Playground
+  - 
+  - 
+  - 
+  moduleAvailable: 01000000
+  saveToQuest: 1
+  adbExecutable: C:\Program Files\Unity\Hub\Editor\6000.3.24f1\Editor\Data\PlaybackEngines\AndroidPlayer\SDK\platform-tools\adb.exe
+  questDeviceSerial: 
+--- !u!4 &1168105215
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1168105213}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1168576436
 GameObject:
   m_ObjectHideFlags: 0
@@ -83012,7 +83071,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Enter text...
+  m_text: ID, e.g. AB12 (4+ letters/numbers)
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -128588,3 +128647,4 @@ SceneRoots:
   - {fileID: 734029231}
   - {fileID: 919384057}
   - {fileID: 557021202}
+  - {fileID: 1168105215}

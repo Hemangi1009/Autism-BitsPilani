@@ -68,7 +68,7 @@ namespace BitsPilani.Module1.Playground {
             input.SetTextWithoutNotify(value);input.onValueChanged.Invoke(value);input.caretPosition=value.Length;input.ForceLabelUpdate();preview.text=value;
         }
         public void Done() {
-            if (!input || !PlaygroundSessionRecording.IsValidParticipantId(input.text)) { if(preview)preview.text="Enter letters and numbers only.";return; }
+            if (!input || !PlaygroundSessionRecording.IsValidParticipantId(input.text)) { if(preview)preview.text="Use 4+ characters, including a letter and a number. No spaces.";return; }
             Close(); if(recording)recording.SetParticipantId(input.text); else input.onEndEdit.Invoke(input.text);
         }
         public void Close() { IsOpen=false;if(KeyboardCanvas)KeyboardCanvas.gameObject.SetActive(false); }

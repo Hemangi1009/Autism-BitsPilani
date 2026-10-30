@@ -138,27 +138,25 @@ namespace BitsPilani.Module1.Playground {
         IEnumerator LoadThenEnter() {
             SetStep(PlaygroundStep.Loading); rig.SetMovementLocked(true);
             if (recording && recording.recordModule) {
-                if (!recording.IsQuestFolderReady) {
-                    ui.Show("Choose the Quest recording folder", "Select the Quest folder directly inside Internal shared storage. Recordings will be created in its " + recording.questSubfolderName + " subfolder.", "One-time folder access is required before recording starts.");
-                    ui.SetPrimary("Choose Quest folder", recording.SelectQuestFolder);
-                    while (!recording.IsQuestFolderReady) yield return null;
-                }
-                if (recording.saveToQuest) recording.RetryPendingQuestTransfers();
+                if (recording.participantIdPanel) recording.participantIdPanel.SetActive(true);
                 if (!recording.IsParticipantIdReady) {
-                    ui.Show("Enter participant ID", "Enter the participant ID in the assigned ID field, then submit it. Use letters and numbers only.", "The module will wait for a valid ID before starting.");
-                    ui.SetPrimary("Use entered ID", recording.SubmitParticipantId);
+                    ui.Show("Enter participant ID", "Enter at least four characters, including letters and numbers. Spaces and symbols are not allowed.", "Confirm your ID to create this module's session folder.");
+                    ui.SetPrimary("Confirm ID", recording.SubmitParticipantId);
                     while (!recording.IsParticipantIdReady) yield return null;
                 }
+
                 bool ready = false;
                 while (!ready) {
                     ui.Show("Preparing session recording", "The player camera and game audio are being prepared for recording.", "Starting video...");
                     var startRecording = recording.StartSessionAsync();
                     while (!startRecording.IsCompleted) yield return null;
-                    ready = startRecording.Result;
+                    ready = startRecording.Status == System.Threading.Tasks.TaskStatus.RanToCompletion && startRecording.Result;
+                    if (startRecording.IsFaulted) Debug.LogError("[ModuleStart] Recording task failed: " + startRecording.Exception);
                     if (ready || recording.allowModuleWithoutRecording) break;
                     retryRecordingRequested = false;
                     ui.Show("Recording needs attention", recording.LastError, "Check the ID, output folder and recording setup, then retry.");
                     ui.SetPrimary("Retry recording", () => retryRecordingRequested = true);
+                    ui.SetSecondary("Return to entry", ReturnToEntryAfterRecordingError);
                     while (!retryRecordingRequested) yield return null;
                 }
             }
@@ -167,6 +165,11 @@ namespace BitsPilani.Module1.Playground {
             float elapsed = 0; float wait = Mathf.Max(6f, initialLoadSeconds);
             while (elapsed < wait) { elapsed += Time.deltaTime; ui.SetProgress(elapsed / wait); yield return null; }
             rig.SetMovementLocked(false); BeginIntro();
+        }
+
+        async void ReturnToEntryAfterRecordingError() {
+            var manager = FolderManager.Instance ? FolderManager.Instance : recording.folderManager;
+            if (manager) await manager.ReturnToEntryAsync(recording);
         }
 
         void BeginIntro() {
@@ -373,7 +376,7 @@ namespace BitsPilani.Module1.Playground {
             rig.ReturnToParentView(); if (perspectiveBodies) perspectiveBodies.RestoreParentView(); ui.SetTint(false); RestorePerspectiveProps(); partyMusic.pitch = 1; partyMusic.volume = .18f; crowd.volume = .09f;
             session.Record("ChildPerspective", "ParentViewRestored"); BeginOnlooker();
         }
-        void RestorePerspectiveProps() { if (propPositions == null) return; for (int i = 0; i < perspectiveProps.Length; i++) { perspectiveProps[i].localPosition = propPositions[i]; perspectiveProps[i].localScale = propScales[i]; perspectiveProps[i].localRotation = propRotations[i]; } }
+        void RestorePerspectiveProps() { if (propPositions == null) return; for (int i = 0; i < perspectiveProps.Length; i++) { if (!perspectiveProps[i]) continue; perspectiveProps[i].localPosition = propPositions[i]; perspectiveProps[i].localScale = propScales[i]; perspectiveProps[i].localRotation = propRotations[i]; } }
 
         void BeginOnlooker() {
             SetStep(PlaygroundStep.OnlookerThought); thoughtClosedAt = -1; thoughtOpen = false; SpeakStep(7);
@@ -491,6 +494,10 @@ namespace BitsPilani.Module1.Playground {
             ui.status.text = "Thank you. Module 1 is complete." + (recording && !string.IsNullOrEmpty(recording.LastSavedPath) && (!recording.saveToQuest || !string.IsNullOrEmpty(recording.LastQuestSavedPath)) ? "\nVideo saved for " + recording.LockedParticipantId + "." : "");
             if (recording && recording.recordModule && string.IsNullOrEmpty(recording.LastSavedPath)) ui.status.text += "\nNo session video was saved. See recording status and Console.";
             if (recording && recording.QuestTransferPending) ui.status.text += "\nQuest transfer is pending. The temporary recording is retained safely.";
+            if (recording && recording.returnToEntryOnCompletion) {
+                var manager = FolderManager.Instance ? FolderManager.Instance : recording.folderManager;
+                if (manager) await manager.ReturnToEntryAsync(recording);
+            }
         }
 
         void SetBalloonVisible(bool visible) { if (eventBalloon) eventBalloon.SetActive(visible); if (balloonString) balloonString.SetActive(visible); }
