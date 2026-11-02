@@ -36,7 +36,7 @@ namespace BitsPilani.Module1.Playground.Editor {
             var recording=flow.recording;var manager=UnityEngine.Object.FindFirstObjectByType<FolderManager>();if(!manager)manager=Manager(recording);
             manager.rootFolderName="Autism - Videos & Audios";
             recording.folderManager=manager;recording.moduleNumber=1;recording.questFolderName=manager.rootFolderName;recording.questSubfolderName="Module1";
-            recording.returnToEntryOnCompletion=true;recording.filenameFormat="Video_{timestamp}";recording.timestampFormat="yyyy-MM-dd_HH:mm:ss";
+            recording.returnToEntryOnCompletion=true;recording.filenameFormat="Video_{timestamp}";recording.timestampFormat="yyyy-MM-dd_HH-mm-ss";
             if(recording.participantIdInput){var canvas=recording.participantIdInput.GetComponentInParent<Canvas>();recording.participantIdPanel=canvas&&canvas!=flow.ui.mainCanvas?canvas.gameObject:recording.participantIdInput.gameObject;recording.participantIdInput.interactable=true;if(recording.participantIdInput.placeholder is TMP_Text placeholder)placeholder.text="ID, e.g. AB12 (4+ letters/numbers)";EditorUtility.SetDirty(recording.participantIdInput);}
             EditorUtility.SetDirty(recording);EditorUtility.SetDirty(manager);EditorSceneManager.MarkSceneDirty(scene);EditorSceneManager.SaveScene(scene);AssetDatabase.SaveAssets();
             string adb=recording.adbExecutable,serial=recording.questDeviceSerial;bool toQuest=recording.saveToQuest;

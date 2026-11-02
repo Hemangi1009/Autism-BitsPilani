@@ -10,6 +10,12 @@ namespace BitsPilani.Module1.Playground {
     public sealed class FolderManager : MonoBehaviour {
         public static FolderManager Instance { get; private set; }
         public string rootFolderName = "Autism - Videos & Audios";
+        [Header("Quest APK storage only")]
+        [Tooltip("Try four parent folders above persistentDataPath (Quest shared-storage root). Android may deny this; app storage is used automatically if so. Desktop/Quest Link is unchanged.")]
+        public bool preferQuestSharedStorageRoot = true;
+        string resolvedQuestRoot;
+        public bool QuestRootFallbackUsed { get; private set; }
+        public string QuestRootAccessMessage { get; private set; }
         public string entrySceneName = "Autism_ModuleEntry";
         public string[] moduleSceneNames = { "Module1_Playground", "", "", "" };
         public bool[] moduleAvailable = { true, false, false, false };
@@ -30,51 +36,29 @@ namespace BitsPilani.Module1.Playground {
             if (Instance && Instance != this) { Destroy(gameObject); return; }
             Instance = this; DontDestroyOnLoad(gameObject); _ = PrepareModuleFoldersAsync();
         }
-        void Start() { if (Instance == this) LogUnityStoragePaths(); }
-        [ContextMenu("Log Unity Storage Paths")]
-        public void LogUnityStoragePaths() {
-            string runtime = Application.platform == RuntimePlatform.Android && !Application.isEditor
-                ? "Quest/Android APK: these are device paths."
-                : Application.platform + ": these are host paths. Quest Link runs on the PC, so it does not report headset storage paths.";
-            LogStoragePath("Application.persistentDataPath", Application.persistentDataPath,
-                "Writable app storage on Quest; suitable for recorded videos.", runtime, true);
-            LogStoragePath("Application.dataPath", Application.dataPath,
-                "Quest APK: points to the installed APK (or OBB), not a writable recording directory.", runtime, false);
-            LogStoragePath("Application.streamingAssetsPath", Application.streamingAssetsPath,
-                "Quest APK: read-only assets inside the APK/JAR, not writable recording storage.", runtime, false);
-        }
-        static string PathPreview(string parent, string child) {
-            if (string.IsNullOrEmpty(parent)) return "<unavailable>";
-            // These are display-only paths and may contain the <ID> placeholder.
-            return parent.TrimEnd('/', '\\') + "/" + child.Replace('\\', '/');
-        }
-        void LogStoragePath(string api, string basePath, string suitability, string runtime, bool showRecordingRoot) {
-            string root = PathPreview(basePath, rootFolderName);
-            string session = PathPreview(PathPreview(root, "Module" + SelectedModule),
-                string.IsNullOrEmpty(ParticipantId) ? "<ID>" : ParticipantId);
-            Debug.Log("[UnityPath] " + api
-                + "\nRuntime: " + runtime
-                + "\nBase path (" + (basePath == null ? 0 : basePath.Length) + " characters): " + basePath
-                + "\nRoot folder preview (" + root.Length + " characters): " + root
-                + "\nSession folder preview: " + session
-                + "\nQuest saving: " + suitability
-                + (showRecordingRoot ? "\nActual configured recording root: " + LocalRoot : "")
-                + "\nComparison only: no folders are created at these preview paths.", this);
-        }
-
         public string PersistentRoot => Path.Combine(Application.persistentDataPath, rootFolderName);
         public static bool IsValidId(string id) { return !string.IsNullOrEmpty(id) && Regex.IsMatch(id, "\\A(?=.*[A-Za-z])(?=.*[0-9])[A-Za-z0-9]{4,64}\\z"); }
         public string LocalRoot {
             get {
-                string parent = Application.platform == RuntimePlatform.Android && !Application.isEditor ? Application.persistentDataPath : Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+#if UNITY_ANDROID && !UNITY_EDITOR
+                return ResolveQuestRoot();
+#else
+                string parent = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
                 if (string.IsNullOrEmpty(parent)) parent = Application.persistentDataPath;
-                return Application.platform == RuntimePlatform.Android && !Application.isEditor ? PersistentRoot : Path.Combine(parent, rootFolderName);
-                // return Path.Combine("/sdcard", rootFolderName);
+                return Path.Combine(parent, rootFolderName);
+#endif
             }
         }
+        string ResolveQuestRoot() {
+            if (!string.IsNullOrEmpty(resolvedQuestRoot)) return resolvedQuestRoot;
+            string selected = PlaygroundStoragePaths.ChooseQuestRoot(Application.persistentDataPath, rootFolderName,
+                preferQuestSharedStorageRoot, PlaygroundStoragePaths.EnsureWritable, out bool fallback, out string reason);
+            QuestRootFallbackUsed = fallback; QuestRootAccessMessage = reason; resolvedQuestRoot = selected;
+            if (fallback) Debug.LogWarning("[FolderManager] Quest storage-root write was denied or unavailable. Recording will use writable app storage: " + selected + ". " + reason);
+            else Debug.Log("[FolderManager] Quest recording root: " + selected);
+            return selected;
+        }
         public void CreateLocalModuleFolders() { for (int i=1;i<=4;i++) { string folder=Path.Combine(LocalRoot,"Module"+i); try { Directory.CreateDirectory(folder); } catch(Exception ex) { LastStorageError="Cannot create recording folder: "+folder+"; "+ex.Message; Debug.LogError("[StorageError] Operation: create module folder\nPath: "+folder+"\n"+ex); throw; } } }
-        [ContextMenu("Print Last Storage Error Log")]
-        public void PrintLastStorageErrorLog() { PlaygroundStorageDiagnostics.PrintSavedLog(); }
         public bool IsAvailable(int module) { return module >= 1 && module <= 4 && moduleAvailable.Length >= module && moduleAvailable[module - 1] && moduleSceneNames.Length >= module && !string.IsNullOrEmpty(moduleSceneNames[module - 1]); }
         public PlaygroundQuestStorageSettings Settings(string relative = "") {
             return new PlaygroundQuestStorageSettings { enabled = false, android = Application.platform == RuntimePlatform.Android && !Application.isEditor,

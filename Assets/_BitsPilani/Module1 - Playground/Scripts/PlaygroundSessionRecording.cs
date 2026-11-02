@@ -44,7 +44,7 @@ namespace BitsPilani.Module1.Playground {
         public PlaygroundVideoFormat videoFormat = PlaygroundVideoFormat.MP4_H264_AAC;
         [Tooltip("Keep {id} and {timestamp}. The .mp4 extension is added automatically.")]
         public string filenameFormat = "Video_{timestamp}";
-        public string timestampFormat = "yyyy-MM-dd_HH:mm:ss";
+        public string timestampFormat = "yyyy-MM-dd_HH-mm-ss";
         [Header("Video quality")]
         public Vector2Int videoResolution = new Vector2Int(1280, 720);
         [Range(10, 60)] public int framesPerSecond = 30;
@@ -62,7 +62,10 @@ namespace BitsPilani.Module1.Playground {
         PlaygroundParticipantKeyboard keyboard;
 
         public bool IsQuestFolderReady => true; // Actual directory writes are probed asynchronously, never via a setup gate.
-        public string FileNamePreview { get { try { return BuildFileName(IsValidParticipantId(participantId) ? participantId : "ID", DateTime.Now).Replace(':','-') + ".mp4"; } catch (Exception ex) { return ex.Message; } } }
+        public string FileNamePreview { get { try { return PlatformFileName(BuildFileName(IsValidParticipantId(participantId) ? participantId : "ID", DateTime.Now)) + ".mp4"; } catch (Exception ex) { return ex.Message; } } }
+        // Use a download-compatible filename on Quest, Windows and Quest Link alike.
+        // This also normalizes older scenes that still serialize HH:mm:ss in the Inspector.
+        public static string PlatformFileName(string name) { return name.Replace(':', '-'); }
         public string BuildFileName(string id, DateTime time) {
             if (string.IsNullOrEmpty(filenameFormat) || !filenameFormat.Contains("{timestamp}")) throw new ArgumentException("Filename Format must contain {timestamp}.");
             string name = filenameFormat.Replace("{id}", id).Replace("{timestamp}", time.ToString(timestampFormat));
@@ -142,7 +145,7 @@ namespace BitsPilani.Module1.Playground {
                 if (folderManager) { questFolderName = folderManager.rootFolderName; questSubfolderName = folderManager.SessionRelativeFolder(moduleNumber, id); }
                 Directory.CreateDirectory(folder);
                 string requestedFilename = BuildFileName(id, DateTime.Now);
-                string filename = requestedFilename.Replace(':', '-'); // Windows-compatible staging filename.
+                string filename = PlatformFileName(requestedFilename);
                 if (participantIdInput) participantIdInput.interactable = false;
                 var host = new GameObject("Module1 video recording session - saves across scene exit");
                 run = host.AddComponent<PlaygroundRecordingRun>(); run.StatusChanged += SetStatus;

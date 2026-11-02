@@ -58618,7 +58618,7 @@ MonoBehaviour:
   showVirtualKeyboard: 1
   videoFormat: 0
   filenameFormat: Video_{timestamp}
-  timestampFormat: yyyy-MM-dd_HH:mm:ss
+  timestampFormat: yyyy-MM-dd_HH-mm-ss
   videoResolution: {x: 1280, y: 720}
   framesPerSecond: 30
 --- !u!114 &979108876

@@ -86,6 +86,15 @@ namespace BitsPilani.Module1.Playground {
         };
         static readonly string[] Confidence = { "Not sure", "Somewhat sure", "Very sure" };
         static readonly string[] ResponseCards = { "Speak softly and ask gently", "Offer ear defenders", "Move him away from the speaker", "Wait quietly and watch", "Use a loud voice or sudden touch" };
+        static readonly string[] ReplayCards = {
+            "Offer ear defenders before the sound builds",
+            "Invite him closer to the cake to distract him",
+            "Move together to a quieter spot",
+            "Keep his place at the slide and wait nearby",
+            "Ask him to try one more turn before leaving",
+            "Offer a balloon to hold while the party continues"
+        };
+        public static bool ReplayChoiceReducesSound(int index) { return index == 0 || index == 2; }
         static readonly string[] ReflectionQuestions = { "What did you first think was happening?", "What changed your mind?", "Is something wrong with him?" };
         static readonly string[] StepCaptions = { "Getting ready", "Explore", "Watch what changes", "Collect clues", "Note guesses", "Test guesses", "Child view", "Onlooker thought", "Reflect", "Replay and prevent", "Summary", "Complete" };
         readonly List<GameObject> spawnedPopEffects = new List<GameObject>();
@@ -93,7 +102,7 @@ namespace BitsPilani.Module1.Playground {
         Quaternion[] propRotations;
         bool responseReady, reviewingGuesses, returnReady, thoughtOpen, reflectionFeedback;
         bool replayStarted, replayAreaReached, replayPop, replayChoiceMade, firstPop;
-        bool responding;
+        bool responding, replaySupportChosen;
         int introCount, reflectionIndex, gazeToken;
         float firstPopAt, replayStartedAt, thoughtClosedAt = -1;
         int pendingGuess = -1;
@@ -105,7 +114,7 @@ namespace BitsPilani.Module1.Playground {
 
         void Start() {
             if (!ValidateReferences()) { enabled = false; return; }
-            initialized = true; session.BeginSession(); ui.Initialize(); child.CaptureRestPose();
+            initialized = true; session.BeginSession(); ui.sessionVideoStatus = recording ? recording.recordingStatusText : null; ui.Initialize(); ui.sceneFocus = child.transform; child.CaptureRestPose();
             propPositions = new Vector3[perspectiveProps.Length]; propScales = new Vector3[perspectiveProps.Length]; propRotations = new Quaternion[perspectiveProps.Length];
             for (int i = 0; i < perspectiveProps.Length; i++) { propPositions[i] = perspectiveProps[i].localPosition; propScales[i] = perspectiveProps[i].localScale; propRotations[i] = perspectiveProps[i].localRotation; }
             observationCircle.SetActive(false); approachCircle.SetActive(false);
@@ -127,7 +136,7 @@ namespace BitsPilani.Module1.Playground {
         }
 
         void SetStep(PlaygroundStep next) {
-            CurrentStep = next; ui.SetStep((int)next, StepCaptions[(int)next]); ui.SetProgress(0);
+            CurrentStep = next; ui.sceneFocus = next == PlaygroundStep.OnlookerThought ? gazeOnlooker : next == PlaygroundStep.ChildPerspective ? partyFocus : child.transform; ui.SetStep((int)next, StepCaptions[(int)next]); ui.SetProgress(0);
             ui.wristStatus.text = StepCaptions[(int)next];
             ui.SetWristTools(false, false, null, null);
             session.Record(next.ToString(), "StepEntered");
@@ -144,7 +153,13 @@ namespace BitsPilani.Module1.Playground {
                     ui.SetPrimary("Confirm ID", recording.SubmitParticipantId);
                     while (!recording.IsParticipantIdReady) yield return null;
                 }
-
+            }
+#if UNITY_ANDROID && !UNITY_EDITOR
+            ui.Show("Microphone access", "Allow microphone access in the Quest permission prompt. Spoken-answer recording will be added later.", "Waiting for your microphone permission choice...");
+#endif
+            // Request before capture: an Android permission dialog can pause the app.
+            yield return PlaygroundMicrophonePermission.RequestAtModuleStart();
+            if (recording && recording.recordModule) {
                 bool ready = false;
                 while (!ready) {
                     ui.Show("Preparing session recording", "The player camera and game audio are being prepared for recording.", "Starting video...");
@@ -418,20 +433,18 @@ namespace BitsPilani.Module1.Playground {
             reflectionFeedback = true;
             string feedback = "You selected: " + ClueSummary() + ".\n\nYour guesses:\n" + GuessSummary() + "\n\nHands over his ears, a tense body and the change after the pop support a sound-related explanation. Cake, clothing, a toy or waiting for a turn were not shown as causes. A guess still needs checking with the child.\n\nYour response: " + session.Data.firstResponse + ".\n\nThe three spoken-answer questions were skipped in this prototype.";
             ui.Show("Reflection feedback", feedback, "Next, replay once and try to act before the balloon pops.");
-            ui.body.rectTransform.sizeDelta = new Vector2(900, 480); ui.body.rectTransform.anchoredPosition = new Vector2(0, 100);
-            ui.status.rectTransform.anchoredPosition = new Vector2(0, -200);
             ui.SetPrimary("Replay and prevent", PrepareReplay); ui.wristStatus.text = "Reflection finished  /  Replay next";
         }
 
         public void PrepareReplay() {
             if (CurrentStep != PlaygroundStep.Reflect || !reflectionFeedback || session.Data.replayCount > 0) return;
             SetStep(PlaygroundStep.ReplayAndPrevent); SpeakStep(9);
-            ui.Show("Replay and prevent", "You will replay the scene once. The three introductory gazes will not repeat.\n\nGo to the observation circle, watch the early cues, and use ear defenders or move your child away before the pop. You can move throughout this attempt.", "One replay is available. After it, the module ends at the summary.");
+            ui.Show("Replay and prevent", "You will replay the scene once. The three introductory gazes will not repeat.\n\nGo to the observation circle, watch the early cues, and choose how to respond before the pop. Consider what each action changes for your child. You can move throughout this attempt.", "One replay is available. After it, the module ends at the summary.");
             ui.SetPrimary("Replay once", StartReplay); ui.wristStatus.text = "Replay 0 / 1";
         }
         public void StartReplay() {
             if (CurrentStep != PlaygroundStep.ReplayAndPrevent || replayStarted || session.Data.replayCount != 0) return;
-            replayStarted = true; session.Data.replayCount = 1; replayAreaReached = false; replayPop = false; replayChoiceMade = false;
+            replayStarted = true; session.Data.replayCount = 1; replayAreaReached = false; replayPop = false; replayChoiceMade = false; replaySupportChosen = false;
             child.ResetChild(); SetBalloonVisible(true); partyMusic.volume = .1f; crowd.volume = .04f;
             if (balloonPopVfx) balloonPopVfx.Stop();
             rig.SetMovementLocked(false); observationCircle.SetActive(true); ui.SetPrimary("Replay used", null, false);
@@ -441,41 +454,42 @@ namespace BitsPilani.Module1.Playground {
         IEnumerator RunReplay() {
             replayStartedAt = Time.time;
             ui.Show("Act on the early signs", "Look for an early hand-to-ear cue and a change in posture. You can move freely. Choose a preventive response before the pop.", "Replay warning period has begun.", true);
-            ui.DrawChoices(new[] { "Offer ear defenders early", "Move to a quieter spot early" }, null, ChooseReplayPrevention); Speak(replayHintVoice);
+            ui.DrawChoices(ReplayCards, null, ChooseReplayPrevention); Speak(replayHintVoice);
             float total = replayWarningSeconds + replayAfterPopSeconds; bool warned = false;
             while (Time.time - replayStartedAt < total) {
                 float elapsed = Time.time - replayStartedAt;
-                if (!warned && elapsed >= 3f) { warned = true; crowd.volume = .1f; if (!replayChoiceMade) child.SetState(PlaygroundChildState.EarlyWarning); session.Record("ReplayAndPrevent", "EarlyCueShown"); }
+                if (!warned && elapsed >= 3f) { warned = true; crowd.volume = .1f; if (!replaySupportChosen) child.SetState(PlaygroundChildState.EarlyWarning); session.Record("ReplayAndPrevent", "EarlyCueShown"); }
                 if (!replayPop && elapsed >= replayWarningSeconds) {
-                    replayPop = true; PopBalloon(); child.SetState(replayChoiceMade ? PlaygroundChildState.Calm : PlaygroundChildState.Distressed);
-                    session.Record("ReplayAndPrevent", "PopOutcome", replayChoiceMade ? "Early support in place" : "No early support");
+                    replayPop = true; PopBalloon(); child.SetState(replaySupportChosen ? PlaygroundChildState.Calm : PlaygroundChildState.Distressed);
+                    session.Record("ReplayAndPrevent", "PopOutcome", replaySupportChosen ? "Sound-reducing support in place" : "Sound exposure unchanged");
                 }
                 ui.SetProgress(elapsed / total);
                 ui.status.text = !replayPop ? "Time before the pop: " + Mathf.CeilToInt(Mathf.Max(0, replayWarningSeconds - elapsed)) + "s. Movement is enabled." : "Observe the result. Summary in " + Mathf.CeilToInt(Mathf.Max(0, total - elapsed)) + "s.";
                 ui.wristStatus.text = !replayPop ? "Pop in " + Mathf.CeilToInt(Mathf.Max(0, replayWarningSeconds - elapsed)) + "s" : "Replay 1 / 1 - observe result";
                 yield return null;
             }
-            session.Data.replayOutcome = replayChoiceMade ? (session.Data.replayIntervenedEarly ? "Early support; child remained calmer" : "Support offered after the pop") : "No intervention; distress remained";
+            session.Data.replayOutcome = replaySupportChosen ? (session.Data.replayIntervenedEarly ? "Early sound-reducing support; child remained calmer" : "Sound-reducing support offered after the pop") : replayChoiceMade ? "The chosen action did not reduce sound exposure; distress remained" : "No intervention; distress remained";
             ShowSummary();
         }
         public void ChooseReplayPrevention(int index) {
-            if (CurrentStep != PlaygroundStep.ReplayAndPrevent || !replayAreaReached || replayChoiceMade || index < 0 || index > 1) return;
-            replayChoiceMade = true; session.Data.replayIntervenedEarly = !replayPop;
+            if (CurrentStep != PlaygroundStep.ReplayAndPrevent || !replayAreaReached || replayChoiceMade || index < 0 || index >= ReplayCards.Length) return;
+            replayChoiceMade = true; replaySupportChosen = ReplayChoiceReducesSound(index);
+            session.Data.replayIntervenedEarly = replaySupportChosen && !replayPop;
             session.Data.replaySecondsBeforePop = Mathf.Max(0, replayWarningSeconds - (Time.time - replayStartedAt));
-            session.Data.replayResponse = index == 0 ? "Ear defenders" : "Moved to quieter spot";
-            if (index == 0) child.OfferDefenders(); else child.MoveToQuietSpot(quietPoint);
-            child.SetState(PlaygroundChildState.Calm);
-            ui.DrawChoices(new[] { "Ear defenders selected", "Quieter spot selected" }, new[] { index == 0, index == 1 }, null, false);
-            ui.footer.text = session.Data.replayIntervenedEarly ? "Support was offered before the pop." : "Support was offered after the pop.";
-            session.Record("ReplayAndPrevent", "PreventionSelected", session.Data.replayResponse + "; before pop=" + session.Data.replayIntervenedEarly);
+            session.Data.replayResponse = ReplayCards[index];
+            if (index == 0) child.OfferDefenders();
+            else if (index == 2) child.MoveToQuietSpot(quietPoint);
+            child.SetState(replaySupportChosen ? PlaygroundChildState.Calm : replayPop ? PlaygroundChildState.Distressed : PlaygroundChildState.EarlyWarning);
+            bool[] selected = new bool[ReplayCards.Length]; selected[index] = true;
+            ui.DrawChoices(ReplayCards, selected, null, false);
+            ui.footer.text = "Response selected. Watch your child's hands and posture as the scene continues.";
+            session.Record("ReplayAndPrevent", "PreventionSelected", session.Data.replayResponse + "; before pop=" + !replayPop + "; reduces sound exposure=" + replaySupportChosen);
         }
         void ShowSummary() {
             SetStep(PlaygroundStep.Summary); rig.SetMovementLocked(false); ui.SetTint(false); observationCircle.SetActive(false); approachCircle.SetActive(false);
             var d = session.Data;
             string comparison = "FIRST ATTEMPT\nClues selected: " + d.clues.Count + "   |   Guesses recorded: " + d.guesses.Count + "\nResponse: " + d.firstResponse + "\nActed " + d.firstResponseSeconds.ToString("F1") + " seconds after the pop.\nResult: " + d.firstOutcome + "\n\nONE REPLAY\nResponse: " + d.replayResponse + "\n" + (d.replayIntervenedEarly ? "Acted " + d.replaySecondsBeforePop.ToString("F1") + " seconds before the pop." : "No support was selected before the pop.") + "\nResult: " + d.replayOutcome + "\n\nReflection recording remains a UI placeholder. No audio answers were recorded.";
             ui.Show("Module 1 summary", comparison, "Replay used: 1 of 1. The module is finished; no second replay is available.");
-            ui.body.rectTransform.sizeDelta = new Vector2(900, 480); ui.body.rectTransform.anchoredPosition = new Vector2(0, 100);
-            ui.status.rectTransform.anchoredPosition = new Vector2(0, -200);
             ui.SetPrimary("Finish module", FinishModule); ui.wristStatus.text = "Module finished  /  Replay 1 of 1"; ui.SetProgress(1);
             session.Finish(); Speak(summaryVoice);
             if (!completedEventSent) { completedEventSent = true; onModuleCompleted.Invoke(); }
