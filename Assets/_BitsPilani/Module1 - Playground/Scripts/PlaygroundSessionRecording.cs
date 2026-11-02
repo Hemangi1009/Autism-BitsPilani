@@ -190,6 +190,8 @@ namespace BitsPilani.Module1.Playground {
             try { string folder = ResolveOutputFolder(); Directory.CreateDirectory(folder);
 #if UNITY_EDITOR
                 UnityEditor.EditorUtility.RevealInFinder(folder);
+#elif UNITY_ANDROID
+                Debug.Log("[RecordingFolder] Saved-video directory: " + folder + ". The app does not open private Android folders through file URLs.");
 #else
                 Application.OpenURL(new Uri(folder + Path.DirectorySeparatorChar).AbsoluteUri);
 #endif
