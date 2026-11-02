@@ -189,7 +189,12 @@ namespace BitsPilani.Module1.Playground {
         public void RetryPendingQuestTransfers() { /* Retired: persistent videos remain on this device. */ }
         public async void StopAndSave() { await StopAndSaveAsync("Manual stop / leaving module"); }
         public async void RequestStopAndSave(string reason) { await StopAndSaveAsync(reason); }
-        void SetStatus(string message) { if (recordingStatusText) recordingStatusText.text = message; Debug.Log("[M1 Playground][RecordingStatus] " + message); }
+        void SetStatus(string message) {
+            string display = message.StartsWith("Video saved: ", StringComparison.Ordinal) ? "Session video saved." : message;
+            if (display.Length > 42) display = "Recording needs attention.";
+            if (recordingStatusText) recordingStatusText.text = display;
+            Debug.Log("[M1 Playground][RecordingStatus] " + message);
+        }
         [ContextMenu("Open Recording Folder")]
         public void OpenRecordingFolder() {
             try { string folder = ResolveOutputFolder(); Directory.CreateDirectory(folder);
@@ -209,3 +214,4 @@ namespace BitsPilani.Module1.Playground {
         void OnDestroy() { if (run) run.StatusChanged -= SetStatus; }
     }
 }
+

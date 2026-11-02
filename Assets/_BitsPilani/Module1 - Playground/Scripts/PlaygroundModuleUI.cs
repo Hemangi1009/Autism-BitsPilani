@@ -25,6 +25,68 @@ namespace BitsPilani.Module1.Playground {
         [InspectorName("Record Answer Button")] public Button recordingPlaceholder;
         public PlaygroundChoiceSlot[] choices;
         public Slider progress;
+        [Header("Landscape narrative and child-view return")]
+        public ScrollRect narrativeScroll;
+        public Button narrativeUp, narrativeDown, wristReturn;
+        [Header("Narrative layout variants (canvas pixels)")]
+        public Vector2 textOnlyNarrativeSize = new Vector2(1740, 500);
+        public Vector2 textOnlyNarrativePosition = new Vector2(0, 80);
+        public Vector2 selectionNarrativeSize = new Vector2(820, 500);
+        public Vector2 selectionNarrativePosition = new Vector2(-465, 80);
+                public void SetNarrativeColumns(bool split) {
+            if (!narrativeScroll) return;
+            var rect = (RectTransform)narrativeScroll.transform;
+            rect.sizeDelta = split ? selectionNarrativeSize : textOnlyNarrativeSize;
+            rect.anchoredPosition = split ? selectionNarrativePosition : textOnlyNarrativePosition;
+            if (narrativeUp) ((RectTransform)narrativeUp.transform).anchoredPosition = new Vector2(split ? -280 : 625, -200);
+            if (narrativeDown) ((RectTransform)narrativeDown.transform).anchoredPosition = new Vector2(split ? -125 : 780, -200);
+            RefreshNarrative();
+        }
+        [ContextMenu("Preview layout/Text only (full width)")]
+        public void PreviewTextOnlyLayout() {
+            recordingGroup.SetActive(false);
+            foreach (var choice in choices) choice.button.gameObject.SetActive(false);
+            SetNarrativeColumns(false);
+        }
+        [ContextMenu("Preview layout/Choices (two columns)")]
+        public void PreviewChoiceLayout() {
+            recordingGroup.SetActive(false);
+            foreach (var choice in choices) choice.button.gameObject.SetActive(true);
+            SetNarrativeColumns(true);
+        }
+        public void RefreshNarrative() {
+            if (!narrativeScroll || !body || !narrativeScroll.viewport) return;
+            Canvas.ForceUpdateCanvases();
+            var viewport = narrativeScroll.viewport;
+            float width = Mathf.Max(100, body.rectTransform.rect.width);
+            float height = Mathf.Max(viewport.rect.height, body.GetPreferredValues(body.text, width, Mathf.Infinity).y + 24);
+            body.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
+            body.rectTransform.anchoredPosition = new Vector2(body.rectTransform.anchoredPosition.x, 0);
+            Canvas.ForceUpdateCanvases(); narrativeScroll.verticalNormalizedPosition = 1;
+            UpdateNarrativeButtons();
+        }
+        void UpdateNarrativeButtons() {
+            if (!narrativeScroll || !narrativeScroll.viewport || !narrativeScroll.content) return;
+            bool overflow = narrativeScroll.content.rect.height > narrativeScroll.viewport.rect.height + 1;
+            narrativeScroll.vertical = overflow;
+            float position = narrativeScroll.verticalNormalizedPosition;
+            if (narrativeUp) { narrativeUp.gameObject.SetActive(overflow); narrativeUp.interactable = overflow && position < .999f; }
+            if (narrativeDown) { narrativeDown.gameObject.SetActive(overflow); narrativeDown.interactable = overflow && position > .001f; }
+        }
+        void ScrollNarrative(float amount) {
+            if (!narrativeScroll) return;
+            narrativeScroll.verticalNormalizedPosition = Mathf.Clamp01(narrativeScroll.verticalNormalizedPosition + amount);
+            UpdateNarrativeButtons();
+        }
+        public void SetChildViewReturn(bool visible, bool ready, UnityAction callback) {
+            if (wristCanvas && visible) wristCanvas.gameObject.SetActive(true);
+            if (!wristReturn) { if (visible) { SetWristShortcut(ready ? "Return to my view" : "Observe first", callback); wristHelp.interactable = ready; } return; }
+            wristReturn.gameObject.SetActive(visible); wristHelp.gameObject.SetActive(!visible);
+            wristReturn.onClick.RemoveAllListeners(); if (callback != null) wristReturn.onClick.AddListener(callback);
+            wristReturn.interactable = visible && ready && callback != null;
+            var label = wristReturn.GetComponentInChildren<TMP_Text>(true);
+            if (label) label.text = ready ? "Return to my view" : "Return after observation";
+        }
         public GameObject recordingGroup;
         public Image tint;
         [Min(1.3f)] public float panelDistance = 1.9f;
@@ -51,6 +113,7 @@ namespace BitsPilani.Module1.Playground {
         bool initialized, followInitialized, expanded;
         TMP_Text recordAnswerLabel, nextQuestionLabel;
         int activeQuestion;
+        string recordingQuestion;
         Vector3 panelForward = Vector3.forward, followVelocity;
         float followedYaw, yawVelocity, side = 1;
         RectTransform background;
@@ -77,6 +140,9 @@ namespace BitsPilani.Module1.Playground {
             statusBackground = authoredStatusBackground; hidePanel = authoredHidePanel;
             hover = mainCanvas.GetComponent<PlaygroundPanelHover>();
             if (hidePanel) hidePanel.onClick.AddListener(HideInstructions);
+            if (narrativeUp) narrativeUp.onClick.AddListener(() => ScrollNarrative(.5f));
+            if (narrativeDown) narrativeDown.onClick.AddListener(() => ScrollNarrative(-.5f));
+            if (narrativeScroll) narrativeScroll.onValueChanged.AddListener(_ => UpdateNarrativeButtons());
         }
         void HideInstructions() { mainCanvas.gameObject.SetActive(false); }
         // Called explicitly once by the Editor authoring tool, never on entering Play mode.
@@ -179,13 +245,13 @@ namespace BitsPilani.Module1.Playground {
             }
         }
         public void SetStep(int step, string caption) {
-            Initialize(); Recenter(); SetWristShortcut("Show instructions", ShowFixedInstructions);
+            Initialize(); Recenter(); SetChildViewReturn(false, false, null); SetWristShortcut("Show instructions", ShowFixedInstructions);
             stepLabel.text = step == 0 ? "MODULE 1  /  GETTING READY" : step > 9 ? "MODULE 1  /  COMPLETE" : "MODULE 1  /  STEP " + step + " OF 9";
             wristStep.text = step == 0 ? "GETTING READY" : step > 9 ? "MODULE COMPLETE" : "STEP " + step + "  /  " + caption;
         }
         public void Show(string heading, string description, string state, bool withChoices = false) {
             Initialize(); mainCanvas.gameObject.SetActive(true);
-            title.text = heading; body.text = description; status.text = state; footer.text = "";
+            title.text = heading; body.text = description; status.text = state; footer.text = ""; RefreshNarrative();
             Layout(withChoices || description.Length > 440, withChoices);
             hint.text = "Point with the right ray and release trigger. Hide clears the view; wrist Instructions reopens it.";
             recordingGroup.SetActive(false); DrawChoices(Array.Empty<string>(), null, null);
@@ -204,10 +270,12 @@ namespace BitsPilani.Module1.Playground {
             for (int i = 0; i < choices.Length; i++) {
                 var c = choices[i]; bool shown = i < VisibleChoiceCount; c.button.gameObject.SetActive(shown); c.button.onClick.RemoveAllListeners(); if (!shown) continue;
                 bool picked = selected != null && i < selected.Length && selected[i];
-                c.label.text = (picked ? "Selected\n" : "") + labels[i];
+                c.label.text = labels[i];
+                if (useAuthoredCanvas && c.button.TryGetComponent<PlaygroundButtonFeedback>(out var feedback)) feedback.SetChoiceSelected(picked);
                 c.button.interactable = enabled && callback != null; StyleButton(c.button, c.label, false, picked);
                 int index = i; if (callback != null) c.button.onClick.AddListener(() => callback(index));
             }
+            SetNarrativeColumns(VisibleChoiceCount > 0 || recordingGroup.activeSelf);
         }
         public void SetWristTools(bool clues, bool guesses, UnityAction onClues, UnityAction onGuesses) {
             clueTool.onClick.RemoveAllListeners(); guessTool.onClick.RemoveAllListeners();
@@ -222,8 +290,8 @@ namespace BitsPilani.Module1.Playground {
                 Place(statusBackground.rectTransform, new Vector2(900, 76), new Vector2(0, 68));
                 ((RectTransform)recordingGroup.transform).anchoredPosition = new Vector2(0, -112);
             }
-            recordingGroup.SetActive(true);
-            activeQuestion = index + 1;
+            recordingGroup.SetActive(true); SetNarrativeColumns(true);
+            activeQuestion = index + 1; recordingQuestion = question;
             recordAnswerLabel = recordingPlaceholder.GetComponentInChildren<TMP_Text>(true);
             nextQuestionLabel = skipQuestion.GetComponentInChildren<TMP_Text>(true);
             recordingPlaceholder.onClick.RemoveAllListeners(); if (onRecord != null) recordingPlaceholder.onClick.AddListener(onRecord);
@@ -241,7 +309,9 @@ namespace BitsPilani.Module1.Playground {
             StyleButton(recordingPlaceholder, recordAnswerLabel, true);
             questionCount.text = "QUESTION " + activeQuestion + " OF 3   /   " + savedCount + (savedCount == 1 ? " CLIP SAVED" : " CLIPS SAVED");
             int elapsed = Mathf.FloorToInt(seconds);
-            status.text = !string.IsNullOrEmpty(error) ? error : saving ? "Saving your microphone recording..." : recording
+            string questionDetails = recordingQuestion + (string.IsNullOrEmpty(error) ? "" : "\n\nRecording details:\n" + error);
+            if (body.text != questionDetails) { body.text = questionDetails; RefreshNarrative(); }
+            status.text = !string.IsNullOrEmpty(error) ? "Recording needs attention. Read the details next to your question." : saving ? "Saving your microphone recording..." : recording
                 ? "Recording " + (elapsed / 60).ToString("00") + ":" + (elapsed % 60).ToString("00") + ". Select Stop and save answer when finished."
                 : savedCount > 0 ? "Answer saved. Record another clip, or select Next to continue." : "Select Record answer, speak, then select the same button to stop and save.";
             footer.text = "Microphone clips are saved beside your session video. Next requires at least one saved clip for this question.";
@@ -253,6 +323,7 @@ namespace BitsPilani.Module1.Playground {
         public void SetProgress(float value) { progress.value = Mathf.Clamp01(value); }
         public void SetWristShortcut(string caption, UnityAction action) {
             var label = wristHelp.GetComponentInChildren<TMP_Text>(true); if (label) label.text = caption;
+            wristHelp.interactable = action != null;
             wristHelp.onClick.RemoveAllListeners(); if (action != null) wristHelp.onClick.AddListener(action);
         }
         void ShowFixedInstructions() { mainCanvas.gameObject.SetActive(true); Recenter(); }

@@ -32,13 +32,13 @@ namespace BitsPilani.Module1.Playground {
             UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(root, input.gameObject.scene);
             root.layer = 5;
             KeyboardCanvas = root.AddComponent<Canvas>(); KeyboardCanvas.renderMode = RenderMode.WorldSpace; KeyboardCanvas.sortingOrder = 75;
-            var rect = (RectTransform)root.transform; rect.sizeDelta = new Vector2(940, 490); rect.localScale = Vector3.one * .001f;
+            var rect = (RectTransform)root.transform; rect.sizeDelta = new Vector2(1920, 1080); rect.localScale = Vector3.one * .00075f;
             root.AddComponent<GraphicRaycaster>(); var image = root.AddComponent<Image>(); PlaygroundUIStyle.Surface(image, PlaygroundUIStyle.Panel, true); PlaygroundUIStyle.CardShadow(image, .18f, 8f);
             var source = input.GetComponentInParent<Canvas>(); if (source) KeyboardCanvas.worldCamera = source.worldCamera;
             var rig = recording ? recording.GetComponent<PlaygroundFlowController>()?.rig : null;
             if (rig && rig.vrUi && rig.vrUi.enabled) rig.vrUi.AddCanvas(KeyboardCanvas);
-            preview = Label(root.transform, "Participant ID", new Vector2(850,48), new Vector2(0,207), 30);
-            hoverReadout = Label(root.transform, "Point at a key, then release the trigger to type", new Vector2(860,32), new Vector2(0,162), 22);
+            preview = Label(root.transform, "Participant ID", new Vector2(1720,100), new Vector2(0,430), 64);
+            hoverReadout = Label(root.transform, "Point at a key, then release the trigger to type", new Vector2(1760,76), new Vector2(0,325), 44);
             hoverReadout.color = PlaygroundUIStyle.Mint;
             input.selectionColor = new Color(.7f,.7f,.7f,.5f);
             input.customCaretColor = true; input.caretColor = Color.black;
@@ -47,27 +47,28 @@ namespace BitsPilani.Module1.Playground {
             string[] rows = { "1234567890", "QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM" };
             for (int row=0; row<rows.Length; row++) for (int col=0; col<rows[row].Length; col++) {
                 string key = rows[row][col].ToString();
-                Key(root.transform,key,new Vector2(66,53),new Vector2((col-(rows[row].Length-1)*.5f)*76,108-row*63),()=>Press(key));
+                Key(root.transform,key,new Vector2(140,110),new Vector2((col-(rows[row].Length-1)*.5f)*170,200-row*135),()=>Press(key));
             }
-            Key(root.transform,"Shift",new Vector2(150,53),new Vector2(-300,-168),()=>Press("shift"));
-            Key(root.transform,"Backspace",new Vector2(200,53),new Vector2(-110,-168),()=>Press("backspace"));
-            Key(root.transform,"Done",new Vector2(180,53),new Vector2(110,-168),Done);
-            Key(root.transform,"Close",new Vector2(150,53),new Vector2(300,-168),Close);
+            Key(root.transform,"Shift",new Vector2(320,110),new Vector2(-640,-400),()=>Press("shift"));
+            Key(root.transform,"Backspace",new Vector2(420,110),new Vector2(-240,-400),()=>Press("backspace"));
+            Key(root.transform,"Done",new Vector2(340,110),new Vector2(190,-400),Done);
+            Key(root.transform,"Close",new Vector2(320,110),new Vector2(560,-400),Close);
             input.shouldHideSoftKeyboard = true;
         }
         TMP_Text Label(Transform parent,string text,Vector2 size,Vector2 pos,float font) {
             var go=new GameObject("Label",typeof(RectTransform));go.layer=5;go.transform.SetParent(parent,false);
             var rect=(RectTransform)go.transform;rect.sizeDelta=size;rect.anchoredPosition=pos;
             var label=go.AddComponent<TextMeshProUGUI>();label.font=input.textComponent?input.textComponent.font:TMP_Settings.defaultFontAsset;
-            label.text=text;label.fontSize=font;label.color=Color.black;label.alignment=TextAlignmentOptions.Center;label.raycastTarget=false;return label;
+            label.text=text;label.fontSize=font;label.fontStyle=FontStyles.Bold;label.color=Color.black;label.alignment=TextAlignmentOptions.Center;label.raycastTarget=false;return label;
         }
         void Key(Transform parent,string text,Vector2 size,Vector2 pos,UnityEngine.Events.UnityAction callback) {
             var go=new GameObject(text,typeof(RectTransform));go.layer=5;go.transform.SetParent(parent,false);
             var rect=(RectTransform)go.transform;rect.sizeDelta=size;rect.anchoredPosition=pos;
             var image=go.AddComponent<Image>();image.color=Color.white;
             var button=go.AddComponent<Button>();button.targetGraphic=image;button.onClick.AddListener(callback);KeyButtons.Add(button);
-            var label = Label(go.transform,text,size - new Vector2(10,4),Vector2.zero,24);
+            var label = Label(go.transform,text,size - new Vector2(16,10),Vector2.zero,64);
             PlaygroundUIStyle.Button(button, label, text == "Done");
+            label.fontStyle=FontStyles.Bold; label.enableAutoSizing=true; label.fontSize=64; label.fontSizeMin=48; label.fontSizeMax=64;
             if (text.Length == 1 && char.IsLetter(text[0])) letterLabels.Add(label);
             button.GetComponent<PlaygroundButtonFeedback>().HoverChanged = focused => {
                 if (!hoverReadout) return;
@@ -92,6 +93,6 @@ namespace BitsPilani.Module1.Playground {
         }
         public void Close() { IsOpen=false;if(KeyboardCanvas)KeyboardCanvas.gameObject.SetActive(false); }
         void OnDisable() { Close(); }
-        void OnDestroy() { if(KeyboardCanvas)Destroy(KeyboardCanvas.gameObject); }
+        void OnDestroy() { if(KeyboardCanvas) { if(Application.isPlaying)Destroy(KeyboardCanvas.gameObject); else DestroyImmediate(KeyboardCanvas.gameObject); } }
     }
 }

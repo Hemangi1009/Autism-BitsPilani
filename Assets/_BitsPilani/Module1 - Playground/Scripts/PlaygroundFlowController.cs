@@ -385,16 +385,18 @@ namespace BitsPilani.Module1.Playground {
             }
             partyMusic.volume = .32f; partyMusic.pitch = 1.12f; crowd.volume = .18f; ui.SetTint(true); SpeakStep(6);
             returnReady = false;
-            ui.Show("From the child's position", "Look toward the speaker and the balloons. Notice how their size and the sharper sound change the scene.\n\nYou can look around. Return to My View will appear after the observation time.", "Static amber tint active; no flashes.");
+            ui.Show("From the child's position", "Look toward the speaker and the balloons. Notice how their size and the sharper sound change the scene.\n\nYou can look around. The Return to my view button on your left hand will unlock after the observation time.", "Static amber tint active; no flashes.");
+            ui.SetChildViewReturn(true, false, ReturnToMyView);
             routine = StartCoroutine(PerspectiveTimer()); session.Record("ChildPerspective", "ChildViewEntered", "Static view/tint; tracked headset remains active");
         }
         IEnumerator PerspectiveTimer() {
             float start = Time.time;
             while (Time.time - start < perspectiveSeconds) { float elapsed = Time.time - start; ui.SetProgress(elapsed / perspectiveSeconds); ui.status.text = "Listen and look: " + Mathf.CeilToInt(Mathf.Max(0, perspectiveSeconds - elapsed)) + "s remaining"; ui.wristStatus.text = "Child view: " + Mathf.CeilToInt(Mathf.Max(0, perspectiveSeconds - elapsed)) + "s"; yield return null; }
-            returnReady = true; ui.status.text = "You can return to your own view now."; ui.wristStatus.text = "Return to my view is ready"; ui.SetPrimary("Return to my view", ReturnToMyView); ui.SetWristShortcut("Return to my view", ReturnToMyView);
+            returnReady = true; ui.status.text = "You can return to your own view now."; ui.wristStatus.text = "Return to my view is ready"; ui.SetPrimary("Return to my view", ReturnToMyView); ui.SetChildViewReturn(true, true, ReturnToMyView);
         }
         public void ReturnToMyView() {
             if (CurrentStep != PlaygroundStep.ChildPerspective || !returnReady) return;
+            ui.SetChildViewReturn(false, false, null);
             rig.ReturnToParentView(); if (perspectiveBodies) perspectiveBodies.RestoreParentView(); ui.SetTint(false); RestorePerspectiveProps(); partyMusic.pitch = 1; partyMusic.volume = .18f; crowd.volume = .09f;
             session.Record("ChildPerspective", "ParentViewRestored"); BeginOnlooker();
         }

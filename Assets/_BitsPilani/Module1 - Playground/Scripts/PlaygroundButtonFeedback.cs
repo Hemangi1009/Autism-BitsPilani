@@ -15,7 +15,7 @@ namespace BitsPilani.Module1.Playground {
         readonly Dictionary<TMP_Text, Color> idleLabels = new Dictionary<TMP_Text, Color>();
         Color idleFill = Color.white, idleBorder;
         Outline border;
-        bool lastCanInteract;
+        bool lastCanInteract, choiceSelected;
         Vector3 authoredScale;
         bool hasAuthoredScale, hovered, selected;
         float factor = 1f, velocity;
@@ -46,6 +46,7 @@ namespace BitsPilani.Module1.Playground {
             foreach (var pair in idleLabels) if (pair.Key) pair.Key.color = pair.Value;
             ResetScale();
         }
+        public void SetChoiceSelected(bool value) { CaptureAuthoredAppearance(); choiceSelected = value; Paint(); }
         bool CanInteract => button && button.IsActive() && button.IsInteractable();
         public void OnPointerEnter(PointerEventData data) { hovered = true; Paint(); HoverChanged?.Invoke(CanInteract); }
         public void OnPointerExit(PointerEventData data) { hovered = selected = false; Paint(); HoverChanged?.Invoke(false); }
@@ -62,9 +63,9 @@ namespace BitsPilani.Module1.Playground {
                 if (!idleLabels.ContainsKey(text)) idleLabels[text] = text.color;
                 text.color = focused ? Color.white : !interactive ? PlaygroundUIStyle.Muted : idleLabels[text];
             }
-            if (border) border.effectColor = focused ? Color.black : idleBorder;
+            if (border) border.effectColor = focused || choiceSelected ? Color.black : idleBorder;
             if (button && button.targetGraphic) {
-                button.targetGraphic.color = focused ? Color.black : !interactive ? PlaygroundUIStyle.Disabled : idleFill;
+                button.targetGraphic.color = focused ? Color.black : !interactive ? PlaygroundUIStyle.Disabled : choiceSelected ? Color.Lerp(idleFill, Color.black, .12f) : idleFill;
                 button.targetGraphic.CrossFadeColor(Color.white, 0, true, true);
             }
             lastCanInteract = interactive;
@@ -82,3 +83,4 @@ namespace BitsPilani.Module1.Playground {
         void OnDisable() { hovered = selected = false; ResetScale(); if (Application.isPlaying) Paint(); HoverChanged?.Invoke(false); }
     }
 }
+
