@@ -19,6 +19,8 @@ namespace BitsPilani.Module1.Playground {
         [Header("Perspective bodies and session video")]
         public PlaygroundPerspectiveBodies perspectiveBodies;
         public PlaygroundSessionRecording recording;
+        [Header("Step 8 microphone answers")]
+        public PlaygroundAnswerRecorder answerRecorder;
         [Header("Story locations")]
         public Transform gazeChild, gazeOnlooker, gazeParty, gazeThought;
         public Transform observationPoint, approachPoint, quietPoint, childViewPoint, partyFocus;
@@ -111,9 +113,11 @@ namespace BitsPilani.Module1.Playground {
         bool initialized;
         bool completedEventSent;
         bool retryRecordingRequested, finishingModule;
+        int lastAnswerUiSecond = -1;
 
         void Start() {
             if (!ValidateReferences()) { enabled = false; return; }
+            InitializeAnswerRecording();
             initialized = true; session.BeginSession(); ui.sessionVideoStatus = recording ? recording.recordingStatusText : null; ui.Initialize(); ui.sceneFocus = child.transform; child.CaptureRestPose();
             propPositions = new Vector3[perspectiveProps.Length]; propScales = new Vector3[perspectiveProps.Length]; propRotations = new Quaternion[perspectiveProps.Length];
             for (int i = 0; i < perspectiveProps.Length; i++) { propPositions[i] = perspectiveProps[i].localPosition; propScales[i] = perspectiveProps[i].localScale; propRotations[i] = perspectiveProps[i].localRotation; }
@@ -155,7 +159,7 @@ namespace BitsPilani.Module1.Playground {
                 }
             }
 #if UNITY_ANDROID && !UNITY_EDITOR
-            ui.Show("Microphone access", "Allow microphone access in the Quest permission prompt. Spoken-answer recording will be added later.", "Waiting for your microphone permission choice...");
+            ui.Show("Microphone access", "Allow microphone access in the Quest permission prompt. Microphone recording is used for the three reflection answers later in the module.", "Waiting for your microphone permission choice...");
 #endif
             // Request before capture: an Android permission dialog can pause the app.
             yield return PlaygroundMicrophonePermission.RequestAtModuleStart();
@@ -213,6 +217,10 @@ namespace BitsPilani.Module1.Playground {
 
         void Update() {
             if (!initialized) return;
+            if (CurrentStep == PlaygroundStep.Reflect && !reflectionFeedback && answerRecorder && answerRecorder.IsRecording) {
+                int second = Mathf.FloorToInt(answerRecorder.RecordedSeconds);
+                if (second != lastAnswerUiSecond) { lastAnswerUiSecond = second; RefreshAnswerRecordingUI(); }
+            }
             // The visible circles define the destinations. They may be repositioned independently
             // of the legacy marker transforms when the scene layout is edited.
             if (CurrentStep == PlaygroundStep.EnterPlayground && IntroGazesComplete && !voice.isPlaying && rig.IsAt(observationCircle.transform, arrivalRadius)) {
@@ -417,21 +425,57 @@ namespace BitsPilani.Module1.Playground {
             ui.wristStatus.text = "Reflection starts shortly";
         }
 
+        void InitializeAnswerRecording() {
+            if (!answerRecorder) answerRecorder = GetComponent<PlaygroundAnswerRecorder>();
+            if (!answerRecorder) answerRecorder = gameObject.AddComponent<PlaygroundAnswerRecorder>();
+            answerRecorder.ClipSaved -= OnAnswerClipSaved; answerRecorder.StateChanged -= RefreshAnswerRecordingUI;
+            answerRecorder.ClipSaved += OnAnswerClipSaved; answerRecorder.StateChanged += RefreshAnswerRecordingUI;
+        }
         void BeginReflection() {
             SetStep(PlaygroundStep.Reflect); reflectionIndex = 0; reflectionFeedback = false; SpeakStep(8); ShowReflectionQuestion();
         }
         void ShowReflectionQuestion() {
-            ui.ShowRecordingQuestion(ReflectionQuestions[reflectionIndex], reflectionIndex, SkipReflectionQuestion);
-            ui.wristStatus.text = "Reflection " + (reflectionIndex + 1) + " / 3  -  Skip available";
+            answerRecorder.ClearStatus();
+            ui.ShowRecordingQuestion(ReflectionQuestions[reflectionIndex], reflectionIndex, ToggleAnswerRecording, NextReflectionQuestion);
+            lastAnswerUiSecond = -1; RefreshAnswerRecordingUI();
             session.Record("Reflect", "QuestionShown", ReflectionQuestions[reflectionIndex]);
         }
-        public void SkipReflectionQuestion() {
-            if (CurrentStep != PlaygroundStep.Reflect || reflectionFeedback || reflectionIndex > 2) return;
-            session.Data.reflectionAnswers[reflectionIndex] = "Skipped - recording not implemented";
-            session.Record("Reflect", "QuestionSkipped", ReflectionQuestions[reflectionIndex]); reflectionIndex++;
+        void RefreshAnswerRecordingUI() {
+            if (!ui || CurrentStep != PlaygroundStep.Reflect || reflectionFeedback || reflectionIndex > 2 || !answerRecorder) return;
+            int count = answerRecorder.SavedCount(reflectionIndex + 1);
+            ui.UpdateAnswerRecordingState(answerRecorder.IsRecording, answerRecorder.IsSaving, count, answerRecorder.RecordedSeconds, answerRecorder.LastError);
+            ui.wristStatus.text = "Reflection " + (reflectionIndex + 1) + " / 3  /  " + (answerRecorder.IsRecording ? "Recording answer" : count + " clip(s) saved");
+        }
+        public void ToggleAnswerRecording() {
+            if (CurrentStep != PlaygroundStep.Reflect || reflectionFeedback || reflectionIndex > 2 || !answerRecorder || answerRecorder.IsSaving) return;
+            if (answerRecorder.IsRecording) { answerRecorder.StopAndSave(); return; }
+            try {
+                if (!recording || !FolderManager.IsValidId(recording.LockedParticipantId)) throw new InvalidOperationException("Confirm your participant ID and start the session before recording an answer.");
+                string folder = string.IsNullOrEmpty(recording.SessionOutputFolder) ? recording.ResolveOutputFolder() : recording.SessionOutputFolder;
+                if (answerRecorder.BeginAnswer(reflectionIndex + 1, folder)) {
+                    session.Record("Reflect", "AnswerRecordingStarted", "Q" + (reflectionIndex + 1) + "; next clip=" + (answerRecorder.SavedCount(reflectionIndex + 1) + 1));
+                }
+                RefreshAnswerRecordingUI();
+            } catch (Exception ex) { ui.status.text = ex.Message; session.Record("Reflect", "AnswerRecordingError", ex.Message); }
+        }
+        void OnAnswerClipSaved(PlaygroundAnswerClip clip) {
+            if (!session || session.Data == null) return;
+            session.Data.reflectionClips.Add(clip);
+            var names = new List<string>(); foreach (var item in session.Data.reflectionClips) if (item.question == clip.question) names.Add(item.fileName);
+            session.Data.reflectionAnswers[clip.question - 1] = string.Join("\n", names);
+            session.Record("Reflect", "AnswerClipSaved", "Q" + clip.question + "; clip=" + clip.clip + "; seconds=" + clip.seconds.ToString("F2") + "; " + clip.path);
+            RefreshAnswerRecordingUI();
+        }
+        string ReflectionRecordingSummary() {
+            return "Saved microphone answers: Q1 (" + answerRecorder.SavedCount(1) + "), Q2 (" + answerRecorder.SavedCount(2) + "), Q3 (" + answerRecorder.SavedCount(3) + "). Audio files are in the same participant folder as the video.";
+        }
+        public void NextReflectionQuestion() {
+            if (CurrentStep != PlaygroundStep.Reflect || reflectionFeedback || reflectionIndex > 2 || !answerRecorder || answerRecorder.IsRecording || answerRecorder.IsSaving) return;
+            if (answerRecorder.SavedCount(reflectionIndex + 1) < 1) { RefreshAnswerRecordingUI(); return; }
+            session.Record("Reflect", "QuestionAnswered", ReflectionQuestions[reflectionIndex] + "; clips=" + answerRecorder.SavedCount(reflectionIndex + 1)); reflectionIndex++;
             if (reflectionIndex < 3) { ShowReflectionQuestion(); return; }
             reflectionFeedback = true;
-            string feedback = "You selected: " + ClueSummary() + ".\n\nYour guesses:\n" + GuessSummary() + "\n\nHands over his ears, a tense body and the change after the pop support a sound-related explanation. Cake, clothing, a toy or waiting for a turn were not shown as causes. A guess still needs checking with the child.\n\nYour response: " + session.Data.firstResponse + ".\n\nThe three spoken-answer questions were skipped in this prototype.";
+            string feedback = "You selected: " + ClueSummary() + ".\n\nYour guesses:\n" + GuessSummary() + "\n\nHands over his ears, a tense body and the change after the pop support a sound-related explanation. Cake, clothing, a toy or waiting for a turn were not shown as causes. A guess still needs checking with the child.\n\nYour response: " + session.Data.firstResponse + ".\n\n" + ReflectionRecordingSummary();
             ui.Show("Reflection feedback", feedback, "Next, replay once and try to act before the balloon pops.");
             ui.SetPrimary("Replay and prevent", PrepareReplay); ui.wristStatus.text = "Reflection finished  /  Replay next";
         }
@@ -488,7 +532,7 @@ namespace BitsPilani.Module1.Playground {
         void ShowSummary() {
             SetStep(PlaygroundStep.Summary); rig.SetMovementLocked(false); ui.SetTint(false); observationCircle.SetActive(false); approachCircle.SetActive(false);
             var d = session.Data;
-            string comparison = "FIRST ATTEMPT\nClues selected: " + d.clues.Count + "   |   Guesses recorded: " + d.guesses.Count + "\nResponse: " + d.firstResponse + "\nActed " + d.firstResponseSeconds.ToString("F1") + " seconds after the pop.\nResult: " + d.firstOutcome + "\n\nONE REPLAY\nResponse: " + d.replayResponse + "\n" + (d.replayIntervenedEarly ? "Acted " + d.replaySecondsBeforePop.ToString("F1") + " seconds before the pop." : "No support was selected before the pop.") + "\nResult: " + d.replayOutcome + "\n\nReflection recording remains a UI placeholder. No audio answers were recorded.";
+            string comparison = "FIRST ATTEMPT\nClues selected: " + d.clues.Count + "   |   Guesses recorded: " + d.guesses.Count + "\nResponse: " + d.firstResponse + "\nActed " + d.firstResponseSeconds.ToString("F1") + " seconds after the pop.\nResult: " + d.firstOutcome + "\n\nONE REPLAY\nResponse: " + d.replayResponse + "\n" + (d.replayIntervenedEarly ? "Acted " + d.replaySecondsBeforePop.ToString("F1") + " seconds before the pop." : "No support was selected before the pop.") + "\nResult: " + d.replayOutcome + "\n\n" + ReflectionRecordingSummary();
             ui.Show("Module 1 summary", comparison, "Replay used: 1 of 1. The module is finished; no second replay is available.");
             ui.SetPrimary("Finish module", FinishModule); ui.wristStatus.text = "Module finished  /  Replay 1 of 1"; ui.SetProgress(1);
             session.Finish(); Speak(summaryVoice);
@@ -530,6 +574,10 @@ namespace BitsPilani.Module1.Playground {
         void OnDisable() {
             if (!initialized) return;
             gazeToken++; StopAllCoroutines();
+            if (answerRecorder) {
+                answerRecorder.StopAndSave("Module left / scene disabled");
+                answerRecorder.ClipSaved -= OnAnswerClipSaved; answerRecorder.StateChanged -= RefreshAnswerRecordingUI;
+            }
             if (recording) recording.RequestStopAndSave("Module left before Finish");
             if (perspectiveBodies) perspectiveBodies.RestoreParentView();
             if (rig) { rig.ReturnToParentView(); rig.SetMovementLocked(false); }

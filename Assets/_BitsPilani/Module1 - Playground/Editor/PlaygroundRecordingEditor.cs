@@ -9,7 +9,7 @@ namespace BitsPilani.Module1.Playground.Editor {
             EditorApplication.playModeStateChanged += state => { if(state==PlayModeStateChange.ExitingPlayMode)Flush(); };
             AssemblyReloadEvents.beforeAssemblyReload += Flush;
         }
-        static void Flush() { if(PlaygroundRecordingRun.Active)PlaygroundRecordingRun.Active.SaveBeforeEditorStops(); }
+        static void Flush() { if(PlaygroundAnswerRecorder.Active)PlaygroundAnswerRecorder.Active.StopAndSave("Editor stop / reload"); if(PlaygroundRecordingRun.Active)PlaygroundRecordingRun.Active.SaveBeforeEditorStops(); }
     }
     [CustomEditor(typeof(PlaygroundSessionRecording))]
     sealed class PlaygroundRecordingInspector : UnityEditor.Editor {

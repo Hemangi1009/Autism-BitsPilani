@@ -20,6 +20,7 @@ namespace BitsPilani.Module1.Playground {
         public string firstResponse = "No response", firstOutcome = "Not observed";
         public float firstResponseSeconds = -1;
         public string[] reflectionAnswers = new string[3];
+        public List<PlaygroundAnswerClip> reflectionClips = new List<PlaygroundAnswerClip>();
         public int replayCount;
         public bool replayIntervenedEarly;
         public float replaySecondsBeforePop;

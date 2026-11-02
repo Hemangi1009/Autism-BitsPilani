@@ -53,6 +53,7 @@ namespace BitsPilani.Module1.Playground {
         public string LastQuestSavedPath { get; private set; }
         public bool QuestTransferPending => false;
         public string LockedParticipantId { get; private set; }
+        public string SessionOutputFolder { get; private set; }
         public bool IsRecording => run && run.IsRecording;
         public bool IsSaving => run && run.IsSaving;
         PlaygroundRecordingRun run;
@@ -143,7 +144,7 @@ namespace BitsPilani.Module1.Playground {
                 folderManager = FolderManager.Instance ? FolderManager.Instance : folderManager;
                 string folder = folderManager ? await folderManager.PrepareParticipantAsync(moduleNumber, id) : ResolveOutputFolder();
                 if (folderManager) { questFolderName = folderManager.rootFolderName; questSubfolderName = folderManager.SessionRelativeFolder(moduleNumber, id); }
-                Directory.CreateDirectory(folder);
+                Directory.CreateDirectory(folder); SessionOutputFolder = folder;
                 string requestedFilename = BuildFileName(id, DateTime.Now);
                 string filename = PlatformFileName(requestedFilename);
                 if (participantIdInput) participantIdInput.interactable = false;

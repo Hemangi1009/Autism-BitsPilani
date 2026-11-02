@@ -13,7 +13,10 @@ namespace BitsPilani.Module1.Playground {
         [HideInInspector] public TMP_Text sessionVideoStatus;
         public TMP_Text stepLabel, title, body, status, footer, hint;
         public TMP_Text primaryLabel, secondaryLabel, wristStep, wristStatus, thoughtText, questionCount;
-        public Button primary, secondary, clueTool, guessTool, wristHelp, thoughtClose, skipQuestion, recordingPlaceholder;
+        public Button primary, secondary, clueTool, guessTool, wristHelp, thoughtClose;
+        // Retain serialized field names so the user's existing canvas references survive.
+        [InspectorName("Next Question Button")] public Button skipQuestion;
+        [InspectorName("Record Answer Button")] public Button recordingPlaceholder;
         public PlaygroundChoiceSlot[] choices;
         public Slider progress;
         public GameObject recordingGroup;
@@ -29,6 +32,8 @@ namespace BitsPilani.Module1.Playground {
         public int VisibleChoiceCount { get; private set; }
         public string CurrentTitle => title ? title.text : "";
         bool initialized, followInitialized, expanded;
+        TMP_Text recordAnswerLabel, nextQuestionLabel;
+        int activeQuestion;
         Vector3 panelForward = Vector3.forward, followVelocity;
         float followedYaw, yawVelocity, side = 1;
         RectTransform background;
@@ -43,6 +48,9 @@ namespace BitsPilani.Module1.Playground {
             recordingGroup.SetActive(false); thoughtCanvas.gameObject.SetActive(false); tintCanvas.gameObject.SetActive(false);
             foreach (var c in choices) c.button.gameObject.SetActive(false);
             recordingPlaceholder.interactable = false;
+            recordingPlaceholder.gameObject.name = "Record or stop microphone answer";
+            skipQuestion.gameObject.name = "Next reflection question";
+            recordingGroup.name = "Step 8 microphone answers";
             if (progress && progress.fillRect) { progress.fillRect.sizeDelta = Vector2.zero; progress.fillRect.anchoredPosition = Vector2.zero; }
             ApplyStyle(); SetWristTools(false, false, null, null);
         }
@@ -157,15 +165,35 @@ namespace BitsPilani.Module1.Playground {
             if (onClues != null) clueTool.onClick.AddListener(onClues); if (onGuesses != null) guessTool.onClick.AddListener(onGuesses);
             clueTool.interactable = clues && onClues != null; guessTool.interactable = guesses && onGuesses != null;
         }
-        public void ShowRecordingQuestion(string question, int index, UnityAction onSkip) {
-            Show("Reflect on what you noticed", question, "Spoken answers will be added later. Use Skip to continue for now."); Layout(true, false);
+        public void ShowRecordingQuestion(string question, int index, UnityAction onRecord, UnityAction onNext) {
+            Show("Reflect on what you noticed", question, "Record and save an answer to continue."); Layout(true, false);
             Place(body.rectTransform, new Vector2(900, 220), new Vector2(0, 232));
             Place(status.rectTransform, new Vector2(864, 64), new Vector2(0, 68));
             Place(statusBackground.rectTransform, new Vector2(900, 76), new Vector2(0, 68));
             recordingGroup.SetActive(true); ((RectTransform)recordingGroup.transform).anchoredPosition = new Vector2(0, -112);
-            recordingPlaceholder.interactable = false; questionCount.text = "QUESTION " + (index + 1) + " OF 3";
-            skipQuestion.onClick.RemoveAllListeners(); skipQuestion.onClick.AddListener(onSkip); skipQuestion.interactable = true;
-            footer.text = "Spoken-answer recording is not enabled yet. Your session video continues recording.";
+            activeQuestion = index + 1;
+            recordAnswerLabel = recordingPlaceholder.GetComponentInChildren<TMP_Text>(true);
+            nextQuestionLabel = skipQuestion.GetComponentInChildren<TMP_Text>(true);
+            recordingPlaceholder.onClick.RemoveAllListeners(); if (onRecord != null) recordingPlaceholder.onClick.AddListener(onRecord);
+            skipQuestion.onClick.RemoveAllListeners(); if (onNext != null) skipQuestion.onClick.AddListener(onNext);
+            UpdateAnswerRecordingState(false, false, 0, 0);
+        }
+        public void UpdateAnswerRecordingState(bool recording, bool saving, int savedCount, float seconds, string error = null) {
+            if (!recordAnswerLabel) recordAnswerLabel = recordingPlaceholder.GetComponentInChildren<TMP_Text>(true);
+            if (!nextQuestionLabel) nextQuestionLabel = skipQuestion.GetComponentInChildren<TMP_Text>(true);
+            recordAnswerLabel.text = saving ? "Saving answer..." : recording ? "Stop and save answer" : savedCount > 0 ? "Record another answer" : "Record answer";
+            nextQuestionLabel.text = "Next";
+            recordingPlaceholder.interactable = !saving;
+            skipQuestion.interactable = savedCount > 0 && !recording && !saving;
+            PlaygroundUIStyle.Button(skipQuestion, nextQuestionLabel, skipQuestion.interactable);
+            PlaygroundUIStyle.Button(recordingPlaceholder, recordAnswerLabel, true);
+            if (recording) { var colors = recordingPlaceholder.colors; colors.normalColor = PlaygroundUIStyle.Gold; recordingPlaceholder.colors = colors; }
+            questionCount.text = "QUESTION " + activeQuestion + " OF 3   /   " + savedCount + (savedCount == 1 ? " CLIP SAVED" : " CLIPS SAVED");
+            int elapsed = Mathf.FloorToInt(seconds);
+            status.text = !string.IsNullOrEmpty(error) ? error : saving ? "Saving your microphone recording..." : recording
+                ? "Recording " + (elapsed / 60).ToString("00") + ":" + (elapsed % 60).ToString("00") + ". Select Stop and save answer when finished."
+                : savedCount > 0 ? "Answer saved. Record another clip, or select Next to continue." : "Select Record answer, speak, then select the same button to stop and save.";
+            footer.text = "Microphone clips are saved beside your session video. Next requires at least one saved clip for this question.";
         }
         public void ShowThought(string text, UnityAction onClose) {
             thoughtText.text = text; thoughtCanvas.gameObject.SetActive(true); thoughtClose.onClick.RemoveAllListeners(); thoughtClose.onClick.AddListener(onClose);

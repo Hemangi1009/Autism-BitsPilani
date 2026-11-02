@@ -336,10 +336,10 @@ namespace BitsPilani.Module1.Playground.Editor {
             ui.primary = Button("Primary step action", bg.transform, new Vector2(510, 66), new Vector2(-195, -378), "Continue", out ui.primaryLabel);
             ui.secondary = Button("Secondary action", bg.transform, new Vector2(350, 66), new Vector2(275, -378), "Back", out ui.secondaryLabel);
             ui.hint = Text("Control hint", bg.transform, new Vector2(900, 40), new Vector2(0, -442), "Right controller: point and release trigger to select.", 19, new Color(.6f, .72f, .76f));
-            var recording = Panel("Step 8 recording placeholder only", bg.transform, new Vector2(900, 150), new Vector2(0, -184), new Color(.10f, .20f, .26f)); ui.recordingGroup = recording.gameObject;
+            var recording = Panel("Step 8 microphone answers", bg.transform, new Vector2(900, 150), new Vector2(0, -184), new Color(.10f, .20f, .26f)); ui.recordingGroup = recording.gameObject;
             ui.questionCount = Text("Question counter", recording.transform, new Vector2(840, 32), new Vector2(0, 46), "QUESTION 1 OF 3", 23, new Color(.95f, .8f, .48f));
-            TMP_Text ignored; ui.recordingPlaceholder = Button("Recording not implemented", recording.transform, new Vector2(570, 58), new Vector2(-130, -14), "Record answer - coming later", out ignored); ui.recordingPlaceholder.interactable = false;
-            ui.skipQuestion = Button("Skip this reflection question", recording.transform, new Vector2(215, 58), new Vector2(310, -14), "Skip", out ignored);
+            TMP_Text ignored; ui.recordingPlaceholder = Button("Record microphone answer", recording.transform, new Vector2(570, 58), new Vector2(-130, -14), "Record answer", out ignored); ui.recordingPlaceholder.interactable = true;
+            ui.skipQuestion = Button("Next reflection question", recording.transform, new Vector2(215, 58), new Vector2(310, -14), "Next", out ignored);
             ui.wristCanvas = Canvas("Left-hand module tools", left, new Vector2(540, 300), .00058f); ui.wristCanvas.transform.localPosition = new Vector3(-.015f, .13f, .08f);
             var wrist = Panel("Wrist background", ui.wristCanvas.transform, new Vector2(540, 300), Vector2.zero, new Color(.055f, .13f, .18f));
             ui.wristStep = Text("Wrist step", wrist.transform, new Vector2(490, 56), new Vector2(0, 102), "MODULE 1", 25, new Color(.96f, .81f, .46f));
