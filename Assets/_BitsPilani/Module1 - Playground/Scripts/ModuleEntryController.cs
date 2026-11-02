@@ -10,8 +10,10 @@ namespace BitsPilani.Module1.Playground {
         public BNG.VRUISystem vrUi;
         public BNG.UIPointer rightPointer;
         public Canvas menuCanvas;
+        [Tooltip("Preserve the saved canvas appearance and layout when entering Play mode.")] public bool useAuthoredCanvas;
         [HideInInspector] public Button administratorSetupButton;
         [Header("Menu comfort")]
+        [Tooltip("Disabled by default: the entry menu stays at its authored world position.")] public bool followPlayer = false;
         [Min(1.5f)] public float menuDistance = 2.1f;
         [Range(.1f, 1)] public float menuFollowSmoothTime = .4f;
         bool styled, menuPlaced;
@@ -47,11 +49,11 @@ namespace BitsPilani.Module1.Playground {
         public void ApplyVisualStyle() {
             if (styled || !menuCanvas || moduleButtons == null || moduleButtons.Length != 4) return;
             styled = true;
+            if (useAuthoredCanvas) { BindMenuPose(); return; }
             var root = (RectTransform)menuCanvas.transform;
             root.sizeDelta = new Vector2(1280, 1040); root.localScale = Vector3.one * .00165f;
             PlaygroundUIStyle.Surface(menuCanvas.GetComponent<Image>(), PlaygroundUIStyle.Panel, true);
-            var shadow = menuCanvas.GetComponent<Shadow>(); if (!shadow) shadow = menuCanvas.gameObject.AddComponent<Shadow>();
-            shadow.effectColor = new Color(0, .02f, .04f, .35f); shadow.effectDistance = new Vector2(0, -8);
+            PlaygroundUIStyle.CardShadow(menuCanvas.GetComponent<Image>(), .12f, 6f);
             var heading = root.Find("Title")?.GetComponent<TMP_Text>();
             var subtitle = root.Find("Subtitle")?.GetComponent<TMP_Text>();
             var font = heading ? heading.font : TMP_Settings.defaultFontAsset;
@@ -68,7 +70,7 @@ namespace BitsPilani.Module1.Playground {
                 if (label) { label.fontSizeMin = 30; label.fontSizeMax = 38; }
                 var number = PlaygroundUIStyle.Label("Module number", button.transform, font, "MODULE " + (i + 1).ToString("00"), new Vector2(482, 36), new Vector2(0, 76), 22);
                 var detail = PlaygroundUIStyle.Label("Module description", button.transform, font, i == 0 ? "Too loud on the slide\nExplore, notice and reflect" : "This module is being prepared", new Vector2(478, 68), new Vector2(0, -66), 23);
-                number.color = detail.color = i == 0 ? PlaygroundUIStyle.Ink : PlaygroundUIStyle.Muted;
+                number.color = PlaygroundUIStyle.Muted; detail.color = i == 0 ? PlaygroundUIStyle.Text : PlaygroundUIStyle.Muted;
                 if (label && i != 0) label.color = PlaygroundUIStyle.Muted;
             }
             if (status) {
@@ -76,18 +78,23 @@ namespace BitsPilani.Module1.Playground {
                 status.enableAutoSizing = true; status.fontSizeMin = 20; status.fontSizeMax = 25;
                 var statusRoot = new GameObject("Session message inset", typeof(RectTransform)); statusRoot.layer = 5; statusRoot.transform.SetParent(root, false);
                 Place((RectTransform)statusRoot.transform, new Vector2(1140, 108), new Vector2(0, -370));
-                var image = statusRoot.AddComponent<Image>(); PlaygroundUIStyle.Surface(image, new Color(.08f, .19f, .23f)); image.raycastTarget = false;
+                var image = statusRoot.AddComponent<Image>(); PlaygroundUIStyle.Surface(image, PlaygroundUIStyle.Inset); PlaygroundUIStyle.CardShadow(image, .08f, 3f); image.raycastTarget = false;
                 statusRoot.transform.SetSiblingIndex(status.transform.GetSiblingIndex());
             }
             var help = PlaygroundUIStyle.Label("Selection help", root, font, "Right controller: point and release the trigger to select", new Vector2(1140, 34), new Vector2(0, -470), 21);
             help.color = PlaygroundUIStyle.Muted;
             foreach (var text in menuCanvas.GetComponentsInChildren<TMP_Text>(true)) text.raycastTarget = false;
             menuHover = menuCanvas.GetComponent<PlaygroundPanelHover>(); if (!menuHover) menuHover = menuCanvas.gameObject.AddComponent<PlaygroundPanelHover>();
+            BindMenuPose();
+        }
+        public void BakeCanvasForEditing() { if (useAuthoredCanvas) return; ApplyVisualStyle(); useAuthoredCanvas = true; }
+        void BindMenuPose() {
+            menuHover = menuCanvas ? menuCanvas.GetComponent<PlaygroundPanelHover>() : null;
             if (rightPointer) { var player = rightPointer.GetComponentInParent<BNG.BNGPlayerController>(); if (player) menuHead = player.CenterEyeAnchor; }
         }
         static void Place(RectTransform rect, Vector2 size, Vector2 position) { rect.sizeDelta = size; rect.anchoredPosition = position; }
         void LateUpdate() {
-            if (!menuHead || !menuCanvas) return;
+            if (!followPlayer || !menuHead || !menuCanvas) return;
             Vector3 look = Vector3.ProjectOnPlane(menuHead.forward, Vector3.up).normalized;
             if (look.sqrMagnitude < .1f) return;
             if (!menuPlaced || (!menuHover || !menuHover.IsHovered) && Vector3.Angle(menuForward, look) > 75) menuForward = look;

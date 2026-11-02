@@ -18,6 +18,7 @@ namespace BitsPilani.Module1.Playground {
         public FolderManager folderManager;
         [Range(1,4)] public int moduleNumber = 1;
         public GameObject participantIdPanel;
+        [Tooltip("Preserve the ID panel design saved in the scene.")] public bool useAuthoredIdPanel;
         public bool returnToEntryOnCompletion = true;
         [Header("Output folder")]
         [Tooltip("An absolute folder path, or a folder name under Documents on desktop. Created if missing; existing folders are reused.")]
@@ -85,7 +86,7 @@ namespace BitsPilani.Module1.Playground {
                 saveToQuest = false;
                 folderManager = FolderManager.Instance ? FolderManager.Instance : folderManager;
                 if (folderManager) questFolderName = folderManager.rootFolderName;
-                if (participantIdPanel) participantIdPanel.SetActive(true);
+                if (participantIdPanel) { participantIdPanel.SetActive(true); if (!useAuthoredIdPanel) PlaygroundUIStyle.LightPanel(participantIdPanel); }
                 if (participantIdInput) { participantIdInput.SetTextWithoutNotify(""); participantIdInput.interactable = true; }
             }
 

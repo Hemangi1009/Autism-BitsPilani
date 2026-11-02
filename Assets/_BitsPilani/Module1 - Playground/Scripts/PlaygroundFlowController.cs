@@ -118,14 +118,13 @@ namespace BitsPilani.Module1.Playground {
         void Start() {
             if (!ValidateReferences()) { enabled = false; return; }
             InitializeAnswerRecording();
-            initialized = true; session.BeginSession(); ui.sessionVideoStatus = recording ? recording.recordingStatusText : null; ui.Initialize(); ui.sceneFocus = child.transform; child.CaptureRestPose();
+            initialized = true; session.BeginSession(); ui.sessionVideoStatus = recording ? recording.recordingStatusText : null; ui.panelReferenceChild = child.transform; ui.Initialize(); ui.sceneFocus = child.transform; child.CaptureRestPose();
             propPositions = new Vector3[perspectiveProps.Length]; propScales = new Vector3[perspectiveProps.Length]; propRotations = new Quaternion[perspectiveProps.Length];
             for (int i = 0; i < perspectiveProps.Length; i++) { propPositions[i] = perspectiveProps[i].localPosition; propScales[i] = perspectiveProps[i].localScale; propRotations[i] = perspectiveProps[i].localRotation; }
             observationCircle.SetActive(false); approachCircle.SetActive(false);
             partyMusic.volume = .10f; crowd.volume = .04f;
             if (balloonPopVfx) balloonPopVfx.Stop();
             partyMusic.Play(); crowd.Play();
-            ui.wristHelp.onClick.AddListener(() => { ui.mainCanvas.gameObject.SetActive(true); ui.Recenter(); });
             routine = StartCoroutine(LoadThenEnter());
         }
 
@@ -392,7 +391,7 @@ namespace BitsPilani.Module1.Playground {
         IEnumerator PerspectiveTimer() {
             float start = Time.time;
             while (Time.time - start < perspectiveSeconds) { float elapsed = Time.time - start; ui.SetProgress(elapsed / perspectiveSeconds); ui.status.text = "Listen and look: " + Mathf.CeilToInt(Mathf.Max(0, perspectiveSeconds - elapsed)) + "s remaining"; ui.wristStatus.text = "Child view: " + Mathf.CeilToInt(Mathf.Max(0, perspectiveSeconds - elapsed)) + "s"; yield return null; }
-            returnReady = true; ui.status.text = "You can return to your own view now."; ui.wristStatus.text = "Return to my view is ready"; ui.SetPrimary("Return to my view", ReturnToMyView);
+            returnReady = true; ui.status.text = "You can return to your own view now."; ui.wristStatus.text = "Return to my view is ready"; ui.SetPrimary("Return to my view", ReturnToMyView); ui.SetWristShortcut("Return to my view", ReturnToMyView);
         }
         public void ReturnToMyView() {
             if (CurrentStep != PlaygroundStep.ChildPerspective || !returnReady) return;

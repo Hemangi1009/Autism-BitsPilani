@@ -9,6 +9,12 @@ namespace BitsPilani.Module1.Playground {
 
     public sealed class PlaygroundModuleUI : MonoBehaviour {
         public Canvas mainCanvas, wristCanvas, thoughtCanvas, tintCanvas;
+        [Header("Scene-authored canvas")]
+        [Tooltip("Keep enabled to preserve the canvas transforms, colors, fonts and layout you edit outside Play mode. Step text and button availability still update.")]
+        public bool useAuthoredCanvas;
+        [SerializeField, HideInInspector] RectTransform authoredBackground, authoredAccent;
+        [SerializeField, HideInInspector] Image authoredStatusBackground;
+        [SerializeField, HideInInspector] Button authoredHidePanel;
         public Transform head, leftHand;
         [HideInInspector] public TMP_Text sessionVideoStatus;
         public TMP_Text stepLabel, title, body, status, footer, hint;
@@ -22,7 +28,18 @@ namespace BitsPilani.Module1.Playground {
         public GameObject recordingGroup;
         public Image tint;
         [Min(1.3f)] public float panelDistance = 1.9f;
-        public bool followParent = true;
+        [Tooltip("Leave disabled for the fixed world-space panel near the child.")]
+        public bool followParent = false;
+        [Header("Fixed panel placement")]
+        public Transform panelReferenceChild;
+        [Tooltip("Optional authored world-space pose. If empty, the panel is placed behind/right of the child's starting position.")]
+        public Transform fixedPanelAnchor;
+        [Tooltip("Metres: right of the child, height above the child's ground, behind the child as seen from the initial parent position.")]
+        public Vector3 fixedPanelOffset = new Vector3(1.35f, 1.65f, 1.35f);
+        [Min(.0005f)] public float fixedPanelScale = .00135f;
+        bool fixedPanelPlaced;
+        Vector3 fixedPanelPosition;
+        Quaternion fixedPanelRotation;
         [Header("Comfortable panel following")]
         [Range(32, 65)] public float panelSideAngle = 44;
         [Range(.1f, 1f)] public float followSmoothTime = .35f;
@@ -51,24 +68,52 @@ namespace BitsPilani.Module1.Playground {
             recordingPlaceholder.gameObject.name = "Record or stop microphone answer";
             skipQuestion.gameObject.name = "Next reflection question";
             recordingGroup.name = "Step 8 microphone answers";
-            if (progress && progress.fillRect) { progress.fillRect.sizeDelta = Vector2.zero; progress.fillRect.anchoredPosition = Vector2.zero; }
-            ApplyStyle(); SetWristTools(false, false, null, null);
+            if (!useAuthoredCanvas && progress && progress.fillRect) { progress.fillRect.sizeDelta = Vector2.zero; progress.fillRect.anchoredPosition = Vector2.zero; }
+            if (useAuthoredCanvas) BindAuthoredCanvas(); else ApplyStyle();
+            SetWristTools(false, false, null, null);
+        }
+        void BindAuthoredCanvas() {
+            background = authoredBackground; accent = authoredAccent;
+            statusBackground = authoredStatusBackground; hidePanel = authoredHidePanel;
+            hover = mainCanvas.GetComponent<PlaygroundPanelHover>();
+            if (hidePanel) hidePanel.onClick.AddListener(HideInstructions);
+        }
+        void HideInstructions() { mainCanvas.gameObject.SetActive(false); }
+        // Called explicitly once by the Editor authoring tool, never on entering Play mode.
+        public void BakeCanvasForEditing() {
+            if (useAuthoredCanvas) return;
+            Initialize(); Layout(true, true);
+            ((RectTransform)mainCanvas.transform).sizeDelta = new Vector2(1000, 1100);
+            background.sizeDelta = new Vector2(1000, 1100);
+            if (accent) accent.anchoredPosition = new Vector2(-404, 533);
+            stepLabel.rectTransform.anchoredPosition = new Vector2(-95, 493);
+            title.rectTransform.anchoredPosition = new Vector2(0, 435);
+            ((RectTransform)hidePanel.transform).anchoredPosition = new Vector2(385, 493);
+            Place(body.rectTransform, new Vector2(900, 180), new Vector2(0, 300));
+            // All step variants share these editable slots; only their contents/visibility change.
+            foreach (var c in choices) c.button.gameObject.SetActive(true);
+            mainCanvas.gameObject.SetActive(true);
+            authoredBackground = background; authoredAccent = accent;
+            authoredStatusBackground = statusBackground; authoredHidePanel = hidePanel;
+            useAuthoredCanvas = true;
+        }
+        void StyleButton(Button button, TMP_Text label, bool primary = false, bool selected = false) {
+            if (!useAuthoredCanvas) PlaygroundUIStyle.Button(button, label, primary, selected);
         }
         void ApplyStyle() {
             background = title.transform.parent as RectTransform;
             PlaygroundUIStyle.Surface(background.GetComponent<Image>(), PlaygroundUIStyle.Panel, true);
-            var shadow = background.GetComponent<Shadow>(); if (!shadow) shadow = background.gameObject.AddComponent<Shadow>();
-            shadow.effectColor = new Color(0, .02f, .04f, .30f); shadow.effectDistance = new Vector2(0, -8);
+            PlaygroundUIStyle.CardShadow(background.GetComponent<Image>(), .12f, 6f);
             var oldAccent = background.Find("Gold accent"); accent = oldAccent as RectTransform;
             if (accent) { accent.sizeDelta = new Vector2(92, 5); accent.GetComponent<Image>().color = PlaygroundUIStyle.Gold; accent.GetComponent<Image>().raycastTarget = false; }
             foreach (var text in mainCanvas.GetComponentsInChildren<TMP_Text>(true)) { text.color = PlaygroundUIStyle.Text; text.raycastTarget = false; }
             stepLabel.color = PlaygroundUIStyle.Mint; stepLabel.fontSize = 21; stepLabel.characterSpacing = 1.5f;
             title.fontSize = 38; title.fontStyle = FontStyles.Bold; title.enableAutoSizing = true; title.fontSizeMin = 30; title.fontSizeMax = 38;
-            body.color = new Color(.85f, .92f, .94f); body.enableAutoSizing = true; body.fontSizeMin = 22; body.fontSizeMax = 28; body.overflowMode = TextOverflowModes.Overflow;
+            body.color = PlaygroundUIStyle.Text; body.enableAutoSizing = true; body.fontSizeMin = 22; body.fontSizeMax = 28; body.overflowMode = TextOverflowModes.Overflow;
             footer.color = PlaygroundUIStyle.Muted; footer.enableAutoSizing = true; footer.fontSizeMin = 19; footer.fontSizeMax = 22;
             status.color = PlaygroundUIStyle.Mint; status.enableAutoSizing = true; status.fontSizeMin = 20; status.fontSizeMax = 24;
             hint.color = PlaygroundUIStyle.Muted; hint.fontSize = 18;
-            statusBackground = NewSurface("Status inset", background, new Vector2(900, 70), Vector2.zero, new Color(.08f, .19f, .23f));
+            statusBackground = NewSurface("Status inset", background, new Vector2(900, 70), Vector2.zero, PlaygroundUIStyle.Inset);
             statusBackground.transform.SetSiblingIndex(status.transform.GetSiblingIndex());
             PlaygroundUIStyle.Button(primary, primaryLabel, true); PlaygroundUIStyle.Button(secondary, secondaryLabel);
             foreach (var c in choices) PlaygroundUIStyle.Button(c.button, c.label);
@@ -76,13 +121,16 @@ namespace BitsPilani.Module1.Playground {
                 PlaygroundUIStyle.Button(button, button.GetComponentInChildren<TMP_Text>(true), button == skipQuestion);
             if (wristCanvas) {
                 PlaygroundUIStyle.Surface(wristStep.transform.parent.GetComponent<Image>(), PlaygroundUIStyle.Panel, true);
+                PlaygroundUIStyle.CardShadow(wristStep.transform.parent.GetComponent<Image>());
                 wristStep.color = PlaygroundUIStyle.Gold; wristStatus.color = PlaygroundUIStyle.Text;
             }
             PlaygroundUIStyle.Surface(recordingGroup.GetComponent<Image>(), PlaygroundUIStyle.Card, true);
-            PlaygroundUIStyle.Surface(thoughtText.transform.parent.GetComponent<Image>(), new Color(.94f, .97f, .94f), true);
+            PlaygroundUIStyle.CardShadow(recordingGroup.GetComponent<Image>(), .10f, 3f);
+            PlaygroundUIStyle.Surface(thoughtText.transform.parent.GetComponent<Image>(), Color.white, true);
+            PlaygroundUIStyle.CardShadow(thoughtText.transform.parent.GetComponent<Image>(), .17f, 8f);
             thoughtText.color = PlaygroundUIStyle.Ink;
             if (progress) {
-                var track = progress.GetComponent<Image>(); if (track) { track.color = PlaygroundUIStyle.Card; track.raycastTarget = false; }
+                var track = progress.GetComponent<Image>(); if (track) { track.color = new Color(.9f, .9f, .9f); track.raycastTarget = false; }
                 var fill = progress.fillRect ? progress.fillRect.GetComponent<Image>() : null;
                 if (fill) { fill.color = PlaygroundUIStyle.Mint; fill.raycastTarget = false; }
             }
@@ -101,10 +149,11 @@ namespace BitsPilani.Module1.Playground {
         static Image NewSurface(string name, Transform parent, Vector2 size, Vector2 position, Color color) {
             var go = new GameObject(name, typeof(RectTransform)); go.layer = 5; go.transform.SetParent(parent, false);
             var rect = (RectTransform)go.transform; rect.sizeDelta = size; rect.anchoredPosition = position;
-            var image = go.AddComponent<Image>(); PlaygroundUIStyle.Surface(image, color); image.raycastTarget = false; return image;
+            var image = go.AddComponent<Image>(); PlaygroundUIStyle.Surface(image, color); PlaygroundUIStyle.CardShadow(image, .08f, 3f); image.raycastTarget = false; return image;
         }
         static void Place(RectTransform rect, Vector2 size, Vector2 position) { rect.sizeDelta = size; rect.anchoredPosition = position; }
         void Layout(bool large, bool cards) {
+            if (useAuthoredCanvas) return;
             expanded = large;
             float top = large ? 480 : 310;
             ((RectTransform)mainCanvas.transform).sizeDelta = new Vector2(1000, top * 2);
@@ -130,7 +179,7 @@ namespace BitsPilani.Module1.Playground {
             }
         }
         public void SetStep(int step, string caption) {
-            Initialize(); Recenter();
+            Initialize(); Recenter(); SetWristShortcut("Show instructions", ShowFixedInstructions);
             stepLabel.text = step == 0 ? "MODULE 1  /  GETTING READY" : step > 9 ? "MODULE 1  /  COMPLETE" : "MODULE 1  /  STEP " + step + " OF 9";
             wristStep.text = step == 0 ? "GETTING READY" : step > 9 ? "MODULE COMPLETE" : "STEP " + step + "  /  " + caption;
         }
@@ -156,7 +205,7 @@ namespace BitsPilani.Module1.Playground {
                 var c = choices[i]; bool shown = i < VisibleChoiceCount; c.button.gameObject.SetActive(shown); c.button.onClick.RemoveAllListeners(); if (!shown) continue;
                 bool picked = selected != null && i < selected.Length && selected[i];
                 c.label.text = (picked ? "Selected\n" : "") + labels[i];
-                c.button.interactable = enabled && callback != null; PlaygroundUIStyle.Button(c.button, c.label, false, picked);
+                c.button.interactable = enabled && callback != null; StyleButton(c.button, c.label, false, picked);
                 int index = i; if (callback != null) c.button.onClick.AddListener(() => callback(index));
             }
         }
@@ -167,10 +216,13 @@ namespace BitsPilani.Module1.Playground {
         }
         public void ShowRecordingQuestion(string question, int index, UnityAction onRecord, UnityAction onNext) {
             Show("Reflect on what you noticed", question, "Record and save an answer to continue."); Layout(true, false);
-            Place(body.rectTransform, new Vector2(900, 220), new Vector2(0, 232));
-            Place(status.rectTransform, new Vector2(864, 64), new Vector2(0, 68));
-            Place(statusBackground.rectTransform, new Vector2(900, 76), new Vector2(0, 68));
-            recordingGroup.SetActive(true); ((RectTransform)recordingGroup.transform).anchoredPosition = new Vector2(0, -112);
+            if (!useAuthoredCanvas) {
+                Place(body.rectTransform, new Vector2(900, 220), new Vector2(0, 232));
+                Place(status.rectTransform, new Vector2(864, 64), new Vector2(0, 68));
+                Place(statusBackground.rectTransform, new Vector2(900, 76), new Vector2(0, 68));
+                ((RectTransform)recordingGroup.transform).anchoredPosition = new Vector2(0, -112);
+            }
+            recordingGroup.SetActive(true);
             activeQuestion = index + 1;
             recordAnswerLabel = recordingPlaceholder.GetComponentInChildren<TMP_Text>(true);
             nextQuestionLabel = skipQuestion.GetComponentInChildren<TMP_Text>(true);
@@ -185,9 +237,8 @@ namespace BitsPilani.Module1.Playground {
             nextQuestionLabel.text = "Next";
             recordingPlaceholder.interactable = !saving;
             skipQuestion.interactable = savedCount > 0 && !recording && !saving;
-            PlaygroundUIStyle.Button(skipQuestion, nextQuestionLabel, skipQuestion.interactable);
-            PlaygroundUIStyle.Button(recordingPlaceholder, recordAnswerLabel, true);
-            if (recording) { var colors = recordingPlaceholder.colors; colors.normalColor = PlaygroundUIStyle.Gold; recordingPlaceholder.colors = colors; }
+            StyleButton(skipQuestion, nextQuestionLabel, skipQuestion.interactable);
+            StyleButton(recordingPlaceholder, recordAnswerLabel, true);
             questionCount.text = "QUESTION " + activeQuestion + " OF 3   /   " + savedCount + (savedCount == 1 ? " CLIP SAVED" : " CLIPS SAVED");
             int elapsed = Mathf.FloorToInt(seconds);
             status.text = !string.IsNullOrEmpty(error) ? error : saving ? "Saving your microphone recording..." : recording
@@ -200,7 +251,33 @@ namespace BitsPilani.Module1.Playground {
         }
         public void SetTint(bool enabled) { tintCanvas.gameObject.SetActive(enabled); tint.color = new Color(1f, .64f, .18f, enabled ? .055f : 0f); }
         public void SetProgress(float value) { progress.value = Mathf.Clamp01(value); }
+        public void SetWristShortcut(string caption, UnityAction action) {
+            var label = wristHelp.GetComponentInChildren<TMP_Text>(true); if (label) label.text = caption;
+            wristHelp.onClick.RemoveAllListeners(); if (action != null) wristHelp.onClick.AddListener(action);
+        }
+        void ShowFixedInstructions() { mainCanvas.gameObject.SetActive(true); Recenter(); }
+        [ContextMenu("Reposition fixed panel near child")]
+        public void RepositionFixedPanel() { fixedPanelPlaced = false; PlaceFixedPanelOnce(); }
+        void PlaceFixedPanelOnce() {
+            if (fixedPanelPlaced || !mainCanvas || (!fixedPanelAnchor && (!panelReferenceChild || !head))) return;
+            if (fixedPanelAnchor) {
+                fixedPanelPosition = fixedPanelAnchor.position; fixedPanelRotation = fixedPanelAnchor.rotation;
+            } else {
+                Vector3 forward = Vector3.ProjectOnPlane(panelReferenceChild.position - head.position, Vector3.up).normalized;
+                if (forward.sqrMagnitude < .1f) forward = Vector3.ProjectOnPlane(head.forward, Vector3.up).normalized;
+                if (forward.sqrMagnitude < .1f) forward = Vector3.forward;
+                Vector3 right = Vector3.Cross(Vector3.up, forward);
+                fixedPanelPosition = panelReferenceChild.position + right * fixedPanelOffset.x + forward * fixedPanelOffset.z + Vector3.up * fixedPanelOffset.y;
+                Vector3 away = Vector3.ProjectOnPlane(fixedPanelPosition - head.position, Vector3.up);
+                if (away.sqrMagnitude < .001f) away = forward;
+                fixedPanelRotation = Quaternion.LookRotation(away.normalized, Vector3.up);
+            }
+            mainCanvas.transform.localScale = Vector3.one * fixedPanelScale;
+            mainCanvas.transform.SetPositionAndRotation(fixedPanelPosition, fixedPanelRotation);
+            fixedPanelPlaced = true;
+        }
         public void Recenter() {
+            if (!followParent) { if (!useAuthoredCanvas) PlaceFixedPanelOnce(); return; }
             if (!head) return;
             Vector3 forward = Vector3.ProjectOnPlane(head.forward, Vector3.up).normalized;
             if (forward.sqrMagnitude > .1f) panelForward = forward;
@@ -210,7 +287,14 @@ namespace BitsPilani.Module1.Playground {
         }
         // Exposed for the Editor comfort check; frame-rate-independent and never alters the headset.
         public void UpdatePanelPose(float deltaTime) {
-            if (!head || !mainCanvas || !followParent || !mainCanvas.gameObject.activeSelf) return;
+            if (!mainCanvas || !mainCanvas.gameObject.activeSelf) return;
+            if (!followParent) {
+                if (useAuthoredCanvas) return; // Use the saved RectTransform exactly, like a normal world-space canvas.
+                PlaceFixedPanelOnce();
+                if (fixedPanelPlaced) mainCanvas.transform.SetPositionAndRotation(fixedPanelPosition, fixedPanelRotation);
+                return;
+            }
+            if (!head) return;
             Vector3 look = Vector3.ProjectOnPlane(head.forward, Vector3.up).normalized;
             if (look.sqrMagnitude > .1f && (!hover || !hover.IsHovered) && Vector3.Angle(panelForward, look) > turnDeadZone) panelForward = look;
             float desiredYaw = Quaternion.LookRotation(panelForward).eulerAngles.y + side * panelSideAngle;

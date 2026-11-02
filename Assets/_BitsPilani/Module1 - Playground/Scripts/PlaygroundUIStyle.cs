@@ -5,14 +5,18 @@ using UnityEngine.UI;
 namespace BitsPilani.Module1.Playground {
     // Shared visuals for this module only. No prefab or package assets are edited.
     public static class PlaygroundUIStyle {
-        public static readonly Color Ink = new Color(.035f, .095f, .13f);
-        public static readonly Color Panel = new Color(.045f, .105f, .15f, .97f);
-        public static readonly Color Card = new Color(.10f, .21f, .26f);
-        public static readonly Color Mint = new Color(.53f, .94f, .80f);
-        public static readonly Color Gold = new Color(1f, .80f, .40f);
-        public static readonly Color Text = new Color(.94f, .98f, .98f);
-        public static readonly Color Muted = new Color(.69f, .80f, .84f);
+        public static readonly Color Ink = new Color(.055f, .055f, .055f);
+        public static readonly Color Panel = new Color(.955f, .955f, .955f);
+        public static readonly Color Card = Color.white;
+        public static readonly Color Inset = new Color(.90f, .90f, .90f);
+        public static readonly Color Disabled = new Color(.92f, .92f, .92f);
+        // Legacy accent names map to the monochrome palette for existing scene scripts.
+        public static readonly Color Mint = new Color(.28f, .28f, .28f);
+        public static readonly Color Gold = new Color(.055f, .055f, .055f);
+        public static readonly Color Text = new Color(.16f, .16f, .16f);
+        public static readonly Color Muted = new Color(.37f, .37f, .37f);
         static Sprite rounded;
+        public static void UseRoundedAsset(Sprite value) { rounded = value; }
         public static Sprite Rounded {
             get {
                 if (rounded) return rounded;
@@ -36,26 +40,48 @@ namespace BitsPilani.Module1.Playground {
             image.sprite = Rounded; image.type = Image.Type.Sliced; image.color = color;
             if (border) {
                 var edge = image.GetComponent<Outline>(); if (!edge) edge = image.gameObject.AddComponent<Outline>();
-                edge.effectColor = new Color(.40f, .72f, .70f, .24f); edge.effectDistance = new Vector2(1, -1); edge.useGraphicAlpha = true;
+                edge.effectColor = new Color(0, 0, 0, .10f); edge.effectDistance = new Vector2(1, -1); edge.useGraphicAlpha = true;
             }
+        }
+        public static void CardShadow(Image image, float opacity = .11f, float offset = 3f) {
+            if (!image) return;
+            // Outline derives from Shadow, so find an actual drop-shadow component.
+            Shadow shadow = null;
+            foreach (var candidate in image.GetComponents<Shadow>()) if (candidate.GetType() == typeof(Shadow)) { shadow = candidate; break; }
+            if (!shadow) shadow = image.gameObject.AddComponent<Shadow>();
+            shadow.enabled = true; shadow.effectColor = new Color(0, 0, 0, opacity);
+            shadow.effectDistance = new Vector2(0, -offset); shadow.useGraphicAlpha = true;
+        }
+        public static void LightPanel(GameObject panel) {
+            if (!panel) return;
+            foreach (var image in panel.GetComponentsInChildren<Image>(true)) if (image.color.a > .01f) Surface(image, Color.white);
+            foreach (var text in panel.GetComponentsInChildren<TMP_Text>(true)) text.color = Color.black;
+            foreach (var text in panel.GetComponentsInChildren<UnityEngine.UI.Text>(true)) text.color = Color.black;
+            foreach (var field in panel.GetComponentsInChildren<TMP_InputField>(true)) {
+                field.customCaretColor = true; field.caretColor = Color.black;
+                field.selectionColor = new Color(.7f, .7f, .7f, .5f);
+                field.transition = Selectable.Transition.None;
+                if (field.targetGraphic) field.targetGraphic.CrossFadeColor(Color.white, 0, true, true);
+            }
+            foreach (var button in panel.GetComponentsInChildren<Button>(true)) Button(button, button.GetComponentInChildren<TMP_Text>(true));
         }
         public static void Button(Button button, TMP_Text label, bool primary = false, bool selected = false) {
             if (!button) return;
             var image = button.targetGraphic as Image;
-            Surface(image, Color.white);
-            button.transition = Selectable.Transition.ColorTint;
+            Color baseFill = selected ? new Color(.89f, .89f, .89f) : Color.white;
+            Surface(image, baseFill, true);
+            button.transition = Selectable.Transition.None;
             var colors = button.colors;
-            colors.normalColor = selected ? new Color(.13f, .42f, .37f) : primary ? Mint : Card;
-            colors.highlightedColor = Gold;
-            colors.selectedColor = Gold;
-            colors.pressedColor = new Color(.98f, .64f, .23f);
-            colors.disabledColor = selected ? new Color(.13f, .42f, .37f) : new Color(.12f, .19f, .23f);
-            colors.colorMultiplier = 1; colors.fadeDuration = .09f; button.colors = colors;
+            colors.normalColor = colors.highlightedColor = colors.selectedColor = colors.pressedColor = colors.disabledColor = Color.white;
+            colors.colorMultiplier = 1; colors.fadeDuration = 0; button.colors = colors;
+            var edge = image ? image.GetComponent<Outline>() : null;
+            if (edge) { edge.enabled = true; edge.effectColor = selected || primary ? new Color(0, 0, 0, .38f) : new Color(0, 0, 0, .16f); edge.effectDistance = new Vector2(.7f, -.7f); }
+            CardShadow(image, button.IsInteractable() ? .11f : .04f, 3f);
             var navigation = button.navigation; navigation.mode = Navigation.Mode.None; button.navigation = navigation;
             var feedback = button.GetComponent<PlaygroundButtonFeedback>();
             if (!feedback) feedback = button.gameObject.AddComponent<PlaygroundButtonFeedback>();
-            feedback.Configure(button, label, primary ? Ink : Text);
-            if (label) { label.raycastTarget = false; label.enableAutoSizing = true; label.fontSizeMin = 20; label.fontSizeMax = 27; label.margin = new Vector4(7, 3, 7, 3); }
+            feedback.Configure(button, label, Ink, baseFill);
+            if (label) { label.fontStyle = primary || selected ? FontStyles.Bold : FontStyles.Normal; label.raycastTarget = false; label.enableAutoSizing = true; label.fontSizeMin = 20; label.fontSizeMax = 27; label.margin = new Vector4(7, 3, 7, 3); }
         }
         public static TMP_Text Label(string name, Transform parent, TMP_FontAsset font, string value, Vector2 size, Vector2 position, float fontSize) {
             var go = new GameObject(name, typeof(RectTransform)); go.layer = 5; go.transform.SetParent(parent, false);

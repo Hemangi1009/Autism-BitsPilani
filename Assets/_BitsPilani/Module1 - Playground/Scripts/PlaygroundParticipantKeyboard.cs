@@ -33,15 +33,17 @@ namespace BitsPilani.Module1.Playground {
             root.layer = 5;
             KeyboardCanvas = root.AddComponent<Canvas>(); KeyboardCanvas.renderMode = RenderMode.WorldSpace; KeyboardCanvas.sortingOrder = 75;
             var rect = (RectTransform)root.transform; rect.sizeDelta = new Vector2(940, 490); rect.localScale = Vector3.one * .001f;
-            root.AddComponent<GraphicRaycaster>(); var image = root.AddComponent<Image>(); PlaygroundUIStyle.Surface(image, PlaygroundUIStyle.Panel, true);
+            root.AddComponent<GraphicRaycaster>(); var image = root.AddComponent<Image>(); PlaygroundUIStyle.Surface(image, PlaygroundUIStyle.Panel, true); PlaygroundUIStyle.CardShadow(image, .18f, 8f);
             var source = input.GetComponentInParent<Canvas>(); if (source) KeyboardCanvas.worldCamera = source.worldCamera;
             var rig = recording ? recording.GetComponent<PlaygroundFlowController>()?.rig : null;
             if (rig && rig.vrUi && rig.vrUi.enabled) rig.vrUi.AddCanvas(KeyboardCanvas);
             preview = Label(root.transform, "Participant ID", new Vector2(850,48), new Vector2(0,207), 30);
             hoverReadout = Label(root.transform, "Point at a key, then release the trigger to type", new Vector2(860,32), new Vector2(0,162), 22);
             hoverReadout.color = PlaygroundUIStyle.Mint;
-            input.selectionColor = new Color(.98f,.76f,.25f,.65f);
-            input.customCaretColor = true; input.caretColor = PlaygroundUIStyle.Gold;
+            input.selectionColor = new Color(.7f,.7f,.7f,.5f);
+            input.customCaretColor = true; input.caretColor = Color.black;
+            if (input.textComponent) input.textComponent.color = Color.black;
+            if (input.placeholder is TMP_Text placeholder) placeholder.color = Color.black;
             string[] rows = { "1234567890", "QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM" };
             for (int row=0; row<rows.Length; row++) for (int col=0; col<rows[row].Length; col++) {
                 string key = rows[row][col].ToString();
@@ -57,12 +59,12 @@ namespace BitsPilani.Module1.Playground {
             var go=new GameObject("Label",typeof(RectTransform));go.layer=5;go.transform.SetParent(parent,false);
             var rect=(RectTransform)go.transform;rect.sizeDelta=size;rect.anchoredPosition=pos;
             var label=go.AddComponent<TextMeshProUGUI>();label.font=input.textComponent?input.textComponent.font:TMP_Settings.defaultFontAsset;
-            label.text=text;label.fontSize=font;label.color=Color.white;label.alignment=TextAlignmentOptions.Center;label.raycastTarget=false;return label;
+            label.text=text;label.fontSize=font;label.color=Color.black;label.alignment=TextAlignmentOptions.Center;label.raycastTarget=false;return label;
         }
         void Key(Transform parent,string text,Vector2 size,Vector2 pos,UnityEngine.Events.UnityAction callback) {
             var go=new GameObject(text,typeof(RectTransform));go.layer=5;go.transform.SetParent(parent,false);
             var rect=(RectTransform)go.transform;rect.sizeDelta=size;rect.anchoredPosition=pos;
-            var image=go.AddComponent<Image>();image.color=new Color(.12f,.30f,.34f);
+            var image=go.AddComponent<Image>();image.color=Color.white;
             var button=go.AddComponent<Button>();button.targetGraphic=image;button.onClick.AddListener(callback);KeyButtons.Add(button);
             var label = Label(go.transform,text,size - new Vector2(10,4),Vector2.zero,24);
             PlaygroundUIStyle.Button(button, label, text == "Done");
@@ -70,7 +72,7 @@ namespace BitsPilani.Module1.Playground {
             button.GetComponent<PlaygroundButtonFeedback>().HoverChanged = focused => {
                 if (!hoverReadout) return;
                 hoverReadout.text = focused ? "SELECT KEY: " + label.text : "Point at a key, then release the trigger to type";
-                hoverReadout.color = focused ? PlaygroundUIStyle.Gold : PlaygroundUIStyle.Mint;
+                hoverReadout.color = Color.black;
             };
         }
         public void Press(string key) {

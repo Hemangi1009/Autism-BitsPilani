@@ -94,7 +94,7 @@ namespace BitsPilani.Module1.Playground.Editor {
             SetGround(flow.observationPoint); SetGround(flow.approachPoint); SetGround(flow.quietPoint);
             SetGround(flow.observationCircle.transform); SetGround(flow.approachCircle.transform);
             flow.observationCircle.SetActive(false); flow.approachCircle.SetActive(false);
-            ui.Initialize(); ui.SetStep(0, "Loading"); ui.Show("Too loud on the slide", "Module 1 is ready. Press Play. The scene waits six seconds before the first voiceover.\n\nExplore, collect clues, test guesses, reflect, and replay once.", "Use your MySample gaze markers and right-controller UI.");
+            ui.panelReferenceChild = flow.child.transform; ui.Initialize(); ui.SetStep(0, "Loading"); ui.Show("Too loud on the slide", "Module 1 is ready. Press Play. The scene waits six seconds before the first voiceover.\n\nExplore, collect clues, test guesses, reflect, and replay once.", "Use your MySample gaze markers and right-controller UI.");
             EditorUtility.SetDirty(flow); EditorUtility.SetDirty(ui); EditorUtility.SetDirty(flow.rig); EditorUtility.SetDirty(factory);
             AssetDatabase.SaveAssets(); EditorSceneManager.MarkSceneDirty(scene);
             if (!EditorSceneManager.SaveScene(scene, Folder + "/Scenes/Module1_Playground.unity")) throw new InvalidOperationException("Scene save failed.");
