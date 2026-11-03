@@ -7,7 +7,8 @@ namespace BitsPilani.Module1.Playground {
     [Serializable] public sealed class PlaygroundAnswerClip {
         public int question, clip;
         public string fileName, path, startedUtc, endedUtc, stopReason;
-        public float seconds;
+        public float seconds, answerSeconds, questionVoiceoverSeconds;
+        public string questionVoiceover;
         public long frames;
     }
 
@@ -22,7 +23,10 @@ namespace BitsPilani.Module1.Playground {
         public bool IsSaving { get; private set; }
         public string LastError { get; private set; }
         public string LastSavedPath { get; private set; }
-        public float RecordedSeconds => wav == null ? 0 : wav.Seconds;
+        public float RecordedSeconds => activeSampleRate <= 0 ? 0 : (float)CapturedAnswerFrames / activeSampleRate;
+        long CapturedAnswerFrames => wav == null ? 0 : Math.Max(0, wav.Frames - prefixFrames);
+        long prefixFrames;
+        int activeSampleRate;
         public IReadOnlyList<PlaygroundAnswerClip> SavedClips => saved;
         public event Action<PlaygroundAnswerClip> ClipSaved;
         public event Action StateChanged;
@@ -38,7 +42,7 @@ namespace BitsPilani.Module1.Playground {
         public void ClearStatus() { if (!IsRecording && !IsSaving) LastError = null; }
         void NotifyState() { try { StateChanged?.Invoke(); } catch (Exception ex) { Debug.LogWarning("[M1 Audio][UIUpdate] " + ex.Message); } }
 
-        public bool BeginAnswer(int question, string folder) {
+        public bool BeginAnswer(int question, string folder, AudioClip questionVoiceover = null) {
             if (IsRecording || IsSaving) return false;
             try {
                 if (Active && Active != this) throw new InvalidOperationException("Another microphone recording is active.");
@@ -55,7 +59,7 @@ namespace BitsPilani.Module1.Playground {
                 Directory.CreateDirectory(folder);
                 DateTime time = DateTime.Now;
                 int number = SavedCount(question) + 1;
-                string stem = "Audio_" + time.ToString("yyyy-MM-dd_HH-mm-ss") + "_Q" + question + "_Clip" + number.ToString("00");
+                string stem = "Audio_" + time.ToString("yyyy-MM-dd_HH-mm-ss") + "_Ans" + question + "_Clip" + number.ToString("00");
                 finalPath = Path.Combine(folder, stem + ".wav");
                 for (int i = 2; File.Exists(finalPath); i++) finalPath = Path.Combine(folder, stem + "_" + i + ".wav");
                 string staging = Path.Combine(folder, ".inprogress", "audio-" + Guid.NewGuid().ToString("N"));
@@ -63,8 +67,12 @@ namespace BitsPilani.Module1.Playground {
                 microphoneClip = MicrophoneSource.Start(device, Mathf.Clamp(microphoneBufferSeconds, 10, 60), rate);
                 if (!microphoneClip || microphoneClip.channels < 1 || microphoneClip.samples < 1) throw new IOException("The microphone could not start. Check its permission and device settings.");
                 wav = new PlaygroundPcmWavWriter(pendingPath, microphoneClip.frequency, microphoneClip.channels);
+                activeSampleRate = microphoneClip.frequency;
+                prefixFrames = PlaygroundQuestionAudio.AppendPrompt(wav, questionVoiceover, microphoneClip.frequency, microphoneClip.channels);
+                wav.Checkpoint();
                 samples = new float[Mathf.Max(256, microphoneClip.frequency / 10) * microphoneClip.channels];
-                current = new PlaygroundAnswerClip { question = question, clip = number, startedUtc = time.ToUniversalTime().ToString("o") };
+                current = new PlaygroundAnswerClip { question = question, clip = number, startedUtc = time.ToUniversalTime().ToString("o"),
+                    questionVoiceover = questionVoiceover ? questionVoiceover.name : null, questionVoiceoverSeconds = questionVoiceover ? questionVoiceover.length : 0 };
                 lastFrame = 0; startedAt = lastRead = checkpointAt = Time.realtimeSinceStartup;
                 LastError = null; IsRecording = true; Active = this;
                 Debug.Log("[M1 Audio][RecordingStarted] Q" + question + " clip " + number + "; " + finalPath);
@@ -102,8 +110,8 @@ namespace BitsPilani.Module1.Playground {
                 float bufferDuration = (float)microphoneClip.samples / microphoneClip.frequency;
                 if (now - lastRead >= bufferDuration) throw new IOException("Microphone capture was interrupted for longer than its buffer. The recorded portion will be saved; record another clip to continue.");
                 DrainMicrophone();
-                if (wav.Frames == 0 && now - startedAt > 5f) throw new IOException("The microphone started but returned no audio. Check microphone access and try again.");
-                if (!MicrophoneSource.IsRecording(device) && wav.Frames > 0) { StopAndSave("Microphone stopped"); return; }
+                if (CapturedAnswerFrames == 0 && now - startedAt > 5f) throw new IOException("The microphone started but returned no audio. Check microphone access and try again.");
+                if (!MicrophoneSource.IsRecording(device) && CapturedAnswerFrames > 0) { StopAndSave("Microphone stopped"); return; }
                 if (now - checkpointAt >= 1f) { wav.Checkpoint(); checkpointAt = now; }
             } catch (Exception ex) { StopAndSave("Capture interrupted", ex.Message); }
         }
@@ -112,10 +120,10 @@ namespace BitsPilani.Module1.Playground {
             IsRecording = false; IsSaving = true; if (Active == this) Active = null; NotifyState();
             try {
                 try { DrainMicrophone(); }
-                catch (Exception ex) { if (wav == null || wav.Frames == 0) throw; captureError = "Saved the recorded portion; final microphone samples were unavailable. " + ex.Message; }
+                catch (Exception ex) { if (wav == null || CapturedAnswerFrames == 0) throw; captureError = "Saved the recorded portion; final microphone samples were unavailable. " + ex.Message; }
                 finally { ReleaseMicrophone(); }
-                if (wav == null || wav.Frames == 0) throw new IOException("No audio was captured. Select Record answer and speak before stopping.");
-                current.frames = wav.Frames; current.seconds = wav.Seconds; current.endedUtc = DateTime.UtcNow.ToString("o"); current.stopReason = reason + (string.IsNullOrEmpty(captureError) ? "" : "; " + captureError);
+                if (wav == null || CapturedAnswerFrames == 0) throw new IOException("No audio was captured. Select Record answer and speak before stopping.");
+                current.frames = wav.Frames; current.seconds = wav.Seconds; current.answerSeconds = RecordedSeconds; current.endedUtc = DateTime.UtcNow.ToString("o"); current.stopReason = reason + (string.IsNullOrEmpty(captureError) ? "" : "; " + captureError);
                 wav.Dispose(); wav = null;
                 // Never overwrite an older recording, even if multiple clips begin in the same second.
                 string target = finalPath, stem = Path.GetFileNameWithoutExtension(finalPath), folder = Path.GetDirectoryName(finalPath);

@@ -60329,12 +60329,16 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 6543f45671a1c564eb6493a19223d4ff, type: 3}
   - {fileID: 8300000, guid: 737f0c6624546634cb03bd4e2a8c834b, type: 3}
   - {fileID: 8300000, guid: 27096ef342a831744a09704f1c48d52d, type: 3}
-  - {fileID: 8300000, guid: 3a9ebace718107f42bf827ff383a6dd5, type: 3}
+  - {fileID: 8300000, guid: 621cd3538b8246c8b4eb2fe38f8b9fa6, type: 3}
   - {fileID: 8300000, guid: 304530c310250f54186e9cbeb2d33c4d, type: 3}
   changeVoice: {fileID: 8300000, guid: 01e2a7b17d054a747b54686e494671a9, type: 3}
   responseVoice: {fileID: 8300000, guid: 096fc594b0d68f14283d8b9c25c6564f, type: 3}
   replayHintVoice: {fileID: 8300000, guid: a14d9238902bbf946b7de1c231190e6c, type: 3}
   summaryVoice: {fileID: 8300000, guid: 6dd58839450a29240901b7c1e884d7ea, type: 3}
+  reflectionQuestionVoiceovers:
+  - {fileID: 8300000, guid: 7fbcd02a3d18432b8391faccbe0d34fd, type: 3}
+  - {fileID: 8300000, guid: d98a6b59f0c241e0bbdcca6109533d0e, type: 3}
+  - {fileID: 8300000, guid: ec7f1afd3305431f81f300a4f5f3c9b0, type: 3}
   eventBalloon: {fileID: 1032280854}
   balloonString: {fileID: 2116112356}
   popOrigin: {fileID: 1794110089}

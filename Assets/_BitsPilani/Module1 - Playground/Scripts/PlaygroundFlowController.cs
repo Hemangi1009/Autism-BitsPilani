@@ -30,6 +30,12 @@ namespace BitsPilani.Module1.Playground {
         public AudioSource voice, partyMusic, crowd, pop;
         public AudioClip[] stepVoiceovers = new AudioClip[10];
         public AudioClip changeVoice, responseVoice, replayHintVoice, summaryVoice;
+        [Header("Reflection question voiceovers")]
+        [Tooltip("Question 1, 2 and 3: played in the scene and prepended to every saved answer take.")]
+        public AudioClip[] reflectionQuestionVoiceovers = new AudioClip[3];
+        public AudioClip GetReflectionQuestionVoiceover(int question) => reflectionQuestionVoiceovers != null && question > 0 && question <= reflectionQuestionVoiceovers.Length ? reflectionQuestionVoiceovers[question - 1] : null;
+        bool questionNarrating;
+        Coroutine questionVoiceRoutine;
         [Header("Balloon pop - optional future VFX")]
         public GameObject eventBalloon, balloonString;
         public Transform popOrigin;
@@ -433,27 +439,42 @@ namespace BitsPilani.Module1.Playground {
             answerRecorder.ClipSaved += OnAnswerClipSaved; answerRecorder.StateChanged += RefreshAnswerRecordingUI;
         }
         void BeginReflection() {
-            SetStep(PlaygroundStep.Reflect); reflectionIndex = 0; reflectionFeedback = false; SpeakStep(8); ShowReflectionQuestion();
+            SetStep(PlaygroundStep.Reflect); reflectionIndex = 0; reflectionFeedback = false; ShowReflectionQuestion(true);
         }
-        void ShowReflectionQuestion() {
+        void ShowReflectionQuestion(bool playIntroduction = false) {
+            questionNarrating = true;
             answerRecorder.ClearStatus();
             ui.ShowRecordingQuestion(ReflectionQuestions[reflectionIndex], reflectionIndex, ToggleAnswerRecording, NextReflectionQuestion);
             lastAnswerUiSecond = -1; RefreshAnswerRecordingUI();
             session.Record("Reflect", "QuestionShown", ReflectionQuestions[reflectionIndex]);
+            if (questionVoiceRoutine != null) StopCoroutine(questionVoiceRoutine);
+            questionVoiceRoutine = StartCoroutine(NarrateReflectionQuestion(playIntroduction));
+        }
+        IEnumerator NarrateReflectionQuestion(bool introduction) {
+            if (introduction) { SpeakStep(8); while (voice && voice.isPlaying) yield return null; }
+            var clip = GetReflectionQuestionVoiceover(reflectionIndex + 1);
+            if (clip) { Speak(clip); while (voice && voice.isPlaying) yield return null; }
+            else Debug.LogWarning("[M1 Audio][QuestionVO] No voiceover assigned for question " + (reflectionIndex + 1), this);
+            questionNarrating = false; questionVoiceRoutine = null; RefreshAnswerRecordingUI();
         }
         void RefreshAnswerRecordingUI() {
             if (!ui || CurrentStep != PlaygroundStep.Reflect || reflectionFeedback || reflectionIndex > 2 || !answerRecorder) return;
             int count = answerRecorder.SavedCount(reflectionIndex + 1);
             ui.UpdateAnswerRecordingState(answerRecorder.IsRecording, answerRecorder.IsSaving, count, answerRecorder.RecordedSeconds, answerRecorder.LastError);
             ui.wristStatus.text = "Reflection " + (reflectionIndex + 1) + " / 3  /  " + (answerRecorder.IsRecording ? "Recording answer" : count + " clip(s) saved");
+            if (questionNarrating) {
+                ui.recordingPlaceholder.interactable = false; ui.skipQuestion.interactable = false;
+                ui.status.text = "Listen to the question. Then select Record answer.";
+                ui.wristStatus.text = "Listen to question " + (reflectionIndex + 1) + " / 3";
+            }
         }
         public void ToggleAnswerRecording() {
-            if (CurrentStep != PlaygroundStep.Reflect || reflectionFeedback || reflectionIndex > 2 || !answerRecorder || answerRecorder.IsSaving) return;
+            if (CurrentStep != PlaygroundStep.Reflect || reflectionFeedback || reflectionIndex > 2 || questionNarrating || !answerRecorder || answerRecorder.IsSaving) return;
             if (answerRecorder.IsRecording) { answerRecorder.StopAndSave(); return; }
             try {
                 if (!recording || !FolderManager.IsValidId(recording.LockedParticipantId)) throw new InvalidOperationException("Confirm your participant ID and start the session before recording an answer.");
                 string folder = string.IsNullOrEmpty(recording.SessionOutputFolder) ? recording.ResolveOutputFolder() : recording.SessionOutputFolder;
-                if (answerRecorder.BeginAnswer(reflectionIndex + 1, folder)) {
+                if (answerRecorder.BeginAnswer(reflectionIndex + 1, folder, GetReflectionQuestionVoiceover(reflectionIndex + 1))) {
                     session.Record("Reflect", "AnswerRecordingStarted", "Q" + (reflectionIndex + 1) + "; next clip=" + (answerRecorder.SavedCount(reflectionIndex + 1) + 1));
                 }
                 RefreshAnswerRecordingUI();
@@ -471,7 +492,7 @@ namespace BitsPilani.Module1.Playground {
             return "Saved microphone answers: Q1 (" + answerRecorder.SavedCount(1) + "), Q2 (" + answerRecorder.SavedCount(2) + "), Q3 (" + answerRecorder.SavedCount(3) + "). Audio files are in the same participant folder as the video.";
         }
         public void NextReflectionQuestion() {
-            if (CurrentStep != PlaygroundStep.Reflect || reflectionFeedback || reflectionIndex > 2 || !answerRecorder || answerRecorder.IsRecording || answerRecorder.IsSaving) return;
+            if (CurrentStep != PlaygroundStep.Reflect || reflectionFeedback || reflectionIndex > 2 || questionNarrating || !answerRecorder || answerRecorder.IsRecording || answerRecorder.IsSaving) return;
             if (answerRecorder.SavedCount(reflectionIndex + 1) < 1) { RefreshAnswerRecordingUI(); return; }
             session.Record("Reflect", "QuestionAnswered", ReflectionQuestions[reflectionIndex] + "; clips=" + answerRecorder.SavedCount(reflectionIndex + 1)); reflectionIndex++;
             if (reflectionIndex < 3) { ShowReflectionQuestion(); return; }
