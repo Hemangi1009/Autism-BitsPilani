@@ -7,8 +7,53 @@ using UnityEngine.UI;
 namespace BitsPilani.Module1.Playground {
     [Serializable] public class PlaygroundChoiceSlot { public Button button; public TMP_Text label; }
 
+    [Serializable] public class PlaygroundSummaryRow { public TMP_Text firstAttempt, replay; }
+
     public sealed class PlaygroundModuleUI : MonoBehaviour {
         public Canvas mainCanvas, wristCanvas, thoughtCanvas, tintCanvas;
+        [Header("Authored replay alert and summary")]
+        public Canvas replayAttentionCanvas;
+        [Min(1)] public float replayAttentionSeconds = 5;
+        public GameObject summaryTableRoot;
+        [Tooltip("Rows: response, timing, outcome, clues/guesses.")]
+        public PlaygroundSummaryRow[] summaryRows;
+        float replayAttentionUntil;
+        bool questionVoiceoverPlaying, answerUserSaved, answerRecording, answerSaving;
+        int answerSavedCount;
+        public void SetAnswerPrerequisites(bool narrationPlaying, bool userSaved) {
+            questionVoiceoverPlaying = narrationPlaying; answerUserSaved = userSaved; ApplyAnswerButtonGates();
+        }
+        void ApplyAnswerButtonGates() {
+            recordingPlaceholder.interactable = !questionVoiceoverPlaying && !answerSaving;
+            skipQuestion.interactable = !questionVoiceoverPlaying && answerUserSaved && answerSavedCount > 0 && !answerRecording && !answerSaving;
+        }
+        public void ShowReplayAttention() {
+            if (!replayAttentionCanvas) { Debug.LogWarning("[M1 UI] Assign the scene-authored replay attention canvas.", this); return; }
+            replayAttentionCanvas.gameObject.SetActive(true); replayAttentionUntil = Time.unscaledTime + replayAttentionSeconds;
+        }
+        public void HideReplayAttention() { if (replayAttentionCanvas) replayAttentionCanvas.gameObject.SetActive(false); }
+        public void UpdateReplayAttention(float unscaledTime) { if (replayAttentionCanvas && replayAttentionCanvas.gameObject.activeSelf && unscaledTime >= replayAttentionUntil) HideReplayAttention(); }
+        [ContextMenu("Preview layout/Summary comparison table")]
+        public void PreviewSummaryTable() {
+            recordingGroup.SetActive(false);
+            foreach (var choice in choices) choice.button.gameObject.SetActive(false);
+            if (narrativeScroll) narrativeScroll.gameObject.SetActive(false);
+            if (narrativeUp) narrativeUp.gameObject.SetActive(false); if (narrativeDown) narrativeDown.gameObject.SetActive(false);
+            if (summaryTableRoot) summaryTableRoot.SetActive(true);
+        }
+        public void ShowAttemptComparison(PlaygroundSessionData data, string audioSummary) {
+            Show("Module 1 summary", "", "Replay used: 1 of 1. The module is finished; no second replay is available.");
+            if (!summaryTableRoot || summaryRows == null || summaryRows.Length != 4) {
+                body.text = "FIRST ATTEMPT\n" + data.firstResponse + "\n" + data.firstOutcome + "\n\nREPLAY\n" + data.replayResponse + "\n" + data.replayOutcome; RefreshNarrative(); return;
+            }
+            string firstTiming = data.firstResponseSeconds < 0 ? "No response recorded" : data.firstResponseSeconds.ToString("F1") + " seconds after the pop";
+            bool replayResponse = !string.IsNullOrEmpty(data.replayResponse) && data.replayResponse != "No response";
+            string secondTiming = !replayResponse ? "No intervention" : data.replaySecondsBeforePop > 0 ? data.replaySecondsBeforePop.ToString("F1") + " seconds before the pop" : "At or after the pop";
+            string[] first = { data.firstResponse, firstTiming, data.firstOutcome, data.clues.Count + (data.clues.Count == 1 ? " clue / " : " clues / ") + data.guesses.Count + (data.guesses.Count == 1 ? " guess" : " guesses") };
+            string[] second = { data.replayResponse, secondTiming, data.replayOutcome, "Not collected again" };
+            for (int i = 0; i < 4; i++) { summaryRows[i].firstAttempt.text = first[i]; summaryRows[i].replay.text = second[i]; }
+            PreviewSummaryTable(); footer.text = audioSummary; HideReplayAttention();
+        }
         [Header("Scene-authored canvas")]
         [Tooltip("Keep enabled to preserve the canvas transforms, colors, fonts and layout you edit outside Play mode. Step text and button availability still update.")]
         public bool useAuthoredCanvas;
@@ -44,12 +89,14 @@ namespace BitsPilani.Module1.Playground {
         }
         [ContextMenu("Preview layout/Text only (full width)")]
         public void PreviewTextOnlyLayout() {
+            if (summaryTableRoot) summaryTableRoot.SetActive(false); if (narrativeScroll) narrativeScroll.gameObject.SetActive(true);
             recordingGroup.SetActive(false);
             foreach (var choice in choices) choice.button.gameObject.SetActive(false);
             SetNarrativeColumns(false);
         }
         [ContextMenu("Preview layout/Choices (two columns)")]
         public void PreviewChoiceLayout() {
+            if (summaryTableRoot) summaryTableRoot.SetActive(false); if (narrativeScroll) narrativeScroll.gameObject.SetActive(true);
             recordingGroup.SetActive(false);
             foreach (var choice in choices) choice.button.gameObject.SetActive(true);
             SetNarrativeColumns(true);
@@ -125,6 +172,7 @@ namespace BitsPilani.Module1.Playground {
         public void Initialize() {
             if (initialized) return;
             initialized = true;
+            HideReplayAttention(); if (summaryTableRoot) summaryTableRoot.SetActive(false);
             recordingGroup.SetActive(false); thoughtCanvas.gameObject.SetActive(false); tintCanvas.gameObject.SetActive(false);
             foreach (var c in choices) c.button.gameObject.SetActive(false);
             recordingPlaceholder.interactable = false;
@@ -251,6 +299,7 @@ namespace BitsPilani.Module1.Playground {
         }
         public void Show(string heading, string description, string state, bool withChoices = false) {
             Initialize(); mainCanvas.gameObject.SetActive(true);
+            if (summaryTableRoot) summaryTableRoot.SetActive(false); if (narrativeScroll) narrativeScroll.gameObject.SetActive(true);
             title.text = heading; body.text = description; status.text = state; footer.text = ""; RefreshNarrative();
             Layout(withChoices || description.Length > 440, withChoices);
             hint.text = "Point with the right ray and release trigger. Hide clears the view; wrist Instructions reopens it.";
@@ -282,7 +331,7 @@ namespace BitsPilani.Module1.Playground {
             if (onClues != null) clueTool.onClick.AddListener(onClues); if (onGuesses != null) guessTool.onClick.AddListener(onGuesses);
             clueTool.interactable = clues && onClues != null; guessTool.interactable = guesses && onGuesses != null;
         }
-        public void ShowRecordingQuestion(string question, int index, UnityAction onRecord, UnityAction onNext) {
+        public void ShowRecordingQuestion(string question, int index, UnityAction onRecord, UnityAction onNext, bool narrationPlaying = false) {
             Show("Reflect on what you noticed", question, "Record and save an answer to continue."); Layout(true, false);
             if (!useAuthoredCanvas) {
                 Place(body.rectTransform, new Vector2(900, 220), new Vector2(0, 232));
@@ -296,15 +345,15 @@ namespace BitsPilani.Module1.Playground {
             nextQuestionLabel = skipQuestion.GetComponentInChildren<TMP_Text>(true);
             recordingPlaceholder.onClick.RemoveAllListeners(); if (onRecord != null) recordingPlaceholder.onClick.AddListener(onRecord);
             skipQuestion.onClick.RemoveAllListeners(); if (onNext != null) skipQuestion.onClick.AddListener(onNext);
-            UpdateAnswerRecordingState(false, false, 0, 0);
+            SetAnswerPrerequisites(narrationPlaying, false); UpdateAnswerRecordingState(false, false, 0, 0);
         }
         public void UpdateAnswerRecordingState(bool recording, bool saving, int savedCount, float seconds, string error = null) {
             if (!recordAnswerLabel) recordAnswerLabel = recordingPlaceholder.GetComponentInChildren<TMP_Text>(true);
             if (!nextQuestionLabel) nextQuestionLabel = skipQuestion.GetComponentInChildren<TMP_Text>(true);
             recordAnswerLabel.text = saving ? "Saving answer..." : recording ? "Stop and save answer" : savedCount > 0 ? "Record another answer" : "Record answer";
             nextQuestionLabel.text = "Next";
-            recordingPlaceholder.interactable = !saving;
-            skipQuestion.interactable = savedCount > 0 && !recording && !saving;
+            answerRecording = recording; answerSaving = saving; answerSavedCount = savedCount;
+            ApplyAnswerButtonGates();
             StyleButton(skipQuestion, nextQuestionLabel, skipQuestion.interactable);
             StyleButton(recordingPlaceholder, recordAnswerLabel, true);
             questionCount.text = "QUESTION " + activeQuestion + " OF 3   /   " + savedCount + (savedCount == 1 ? " CLIP SAVED" : " CLIPS SAVED");
@@ -313,8 +362,9 @@ namespace BitsPilani.Module1.Playground {
             if (body.text != questionDetails) { body.text = questionDetails; RefreshNarrative(); }
             status.text = !string.IsNullOrEmpty(error) ? "Recording needs attention. Read the details next to your question." : saving ? "Saving your microphone recording..." : recording
                 ? "Recording " + (elapsed / 60).ToString("00") + ":" + (elapsed % 60).ToString("00") + ". Select Stop and save answer when finished."
-                : savedCount > 0 ? "Answer saved. Record another clip, or select Next to continue." : "Select Record answer, speak, then select the same button to stop and save.";
-            footer.text = "Microphone clips are saved beside your session video. Next requires at least one saved clip for this question.";
+                : savedCount > 0 && answerUserSaved ? "Answer saved. Record another clip, or select Next to continue." : savedCount > 0 ? "A clip was saved automatically. Use Record, then Stop and save, to unlock Next." : "Select Record answer, speak, then select the same button to stop and save.";
+            footer.text = "Next unlocks after a successful Stop and save. Audio clips stay beside your video.";
+            if (questionVoiceoverPlaying) { recordAnswerLabel.text = "Listen to question..."; status.text = "Listen to the question. Then select Record answer."; }
         }
         public void ShowThought(string text, UnityAction onClose) {
             thoughtText.text = text; thoughtCanvas.gameObject.SetActive(true); thoughtClose.onClick.RemoveAllListeners(); thoughtClose.onClick.AddListener(onClose);
@@ -381,6 +431,7 @@ namespace BitsPilani.Module1.Playground {
             if (away.sqrMagnitude > .001f) mainCanvas.transform.rotation = Quaternion.Slerp(mainCanvas.transform.rotation, Quaternion.LookRotation(away, Vector3.up), 1 - Mathf.Exp(-deltaTime / Mathf.Max(.1f, followSmoothTime)));
         }
         void LateUpdate() {
+            if (Application.isPlaying) UpdateReplayAttention(Time.unscaledTime);
             if (!Application.isPlaying || !head) return; UpdatePanelPose(Time.unscaledDeltaTime);
             if (wristCanvas) { Vector3 away = wristCanvas.transform.position - head.position; if (away.sqrMagnitude > .001f) wristCanvas.transform.rotation = Quaternion.Slerp(wristCanvas.transform.rotation, Quaternion.LookRotation(away, head.up), 1 - Mathf.Exp(-Time.unscaledDeltaTime * 14)); }
             if (thoughtCanvas && thoughtCanvas.gameObject.activeSelf) { Vector3 away = thoughtCanvas.transform.position - head.position; away.y = 0; if (away.sqrMagnitude > .001f) thoughtCanvas.transform.rotation = Quaternion.Slerp(thoughtCanvas.transform.rotation, Quaternion.LookRotation(away, Vector3.up), 1 - Mathf.Exp(-Time.unscaledDeltaTime * 10)); }

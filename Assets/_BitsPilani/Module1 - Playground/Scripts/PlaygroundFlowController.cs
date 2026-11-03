@@ -35,6 +35,7 @@ namespace BitsPilani.Module1.Playground {
         public AudioClip[] reflectionQuestionVoiceovers = new AudioClip[3];
         public AudioClip GetReflectionQuestionVoiceover(int question) => reflectionQuestionVoiceovers != null && question > 0 && question <= reflectionQuestionVoiceovers.Length ? reflectionQuestionVoiceovers[question - 1] : null;
         bool questionNarrating;
+        readonly bool[] answerSavedByUser = new bool[3];
         Coroutine questionVoiceRoutine;
         [Header("Balloon pop - optional future VFX")]
         public GameObject eventBalloon, balloonString;
@@ -444,7 +445,7 @@ namespace BitsPilani.Module1.Playground {
         void ShowReflectionQuestion(bool playIntroduction = false) {
             questionNarrating = true;
             answerRecorder.ClearStatus();
-            ui.ShowRecordingQuestion(ReflectionQuestions[reflectionIndex], reflectionIndex, ToggleAnswerRecording, NextReflectionQuestion);
+            ui.ShowRecordingQuestion(ReflectionQuestions[reflectionIndex], reflectionIndex, ToggleAnswerRecording, NextReflectionQuestion, questionNarrating);
             lastAnswerUiSecond = -1; RefreshAnswerRecordingUI();
             session.Record("Reflect", "QuestionShown", ReflectionQuestions[reflectionIndex]);
             if (questionVoiceRoutine != null) StopCoroutine(questionVoiceRoutine);
@@ -460,6 +461,7 @@ namespace BitsPilani.Module1.Playground {
         void RefreshAnswerRecordingUI() {
             if (!ui || CurrentStep != PlaygroundStep.Reflect || reflectionFeedback || reflectionIndex > 2 || !answerRecorder) return;
             int count = answerRecorder.SavedCount(reflectionIndex + 1);
+            ui.SetAnswerPrerequisites(questionNarrating, answerSavedByUser[reflectionIndex]);
             ui.UpdateAnswerRecordingState(answerRecorder.IsRecording, answerRecorder.IsSaving, count, answerRecorder.RecordedSeconds, answerRecorder.LastError);
             ui.wristStatus.text = "Reflection " + (reflectionIndex + 1) + " / 3  /  " + (answerRecorder.IsRecording ? "Recording answer" : count + " clip(s) saved");
             if (questionNarrating) {
@@ -482,6 +484,7 @@ namespace BitsPilani.Module1.Playground {
         }
         void OnAnswerClipSaved(PlaygroundAnswerClip clip) {
             if (!session || session.Data == null) return;
+            if (clip.question >= 1 && clip.question <= answerSavedByUser.Length && clip.stopReason != null && clip.stopReason.StartsWith("User stopped recording", StringComparison.Ordinal)) answerSavedByUser[clip.question - 1] = true;
             session.Data.reflectionClips.Add(clip);
             var names = new List<string>(); foreach (var item in session.Data.reflectionClips) if (item.question == clip.question) names.Add(item.fileName);
             session.Data.reflectionAnswers[clip.question - 1] = string.Join("\n", names);
@@ -493,7 +496,7 @@ namespace BitsPilani.Module1.Playground {
         }
         public void NextReflectionQuestion() {
             if (CurrentStep != PlaygroundStep.Reflect || reflectionFeedback || reflectionIndex > 2 || questionNarrating || !answerRecorder || answerRecorder.IsRecording || answerRecorder.IsSaving) return;
-            if (answerRecorder.SavedCount(reflectionIndex + 1) < 1) { RefreshAnswerRecordingUI(); return; }
+            if (!answerSavedByUser[reflectionIndex] || answerRecorder.SavedCount(reflectionIndex + 1) < 1) { RefreshAnswerRecordingUI(); return; }
             session.Record("Reflect", "QuestionAnswered", ReflectionQuestions[reflectionIndex] + "; clips=" + answerRecorder.SavedCount(reflectionIndex + 1)); reflectionIndex++;
             if (reflectionIndex < 3) { ShowReflectionQuestion(); return; }
             reflectionFeedback = true;
@@ -511,6 +514,7 @@ namespace BitsPilani.Module1.Playground {
         public void StartReplay() {
             if (CurrentStep != PlaygroundStep.ReplayAndPrevent || replayStarted || session.Data.replayCount != 0) return;
             replayStarted = true; session.Data.replayCount = 1; replayAreaReached = false; replayPop = false; replayChoiceMade = false; replaySupportChosen = false;
+            ui.ShowReplayAttention();
             child.ResetChild(); SetBalloonVisible(true); partyMusic.volume = .1f; crowd.volume = .04f;
             if (balloonPopVfx) balloonPopVfx.Stop();
             rig.SetMovementLocked(false); observationCircle.SetActive(true); ui.SetPrimary("Replay used", null, false);
@@ -554,8 +558,7 @@ namespace BitsPilani.Module1.Playground {
         void ShowSummary() {
             SetStep(PlaygroundStep.Summary); rig.SetMovementLocked(false); ui.SetTint(false); observationCircle.SetActive(false); approachCircle.SetActive(false);
             var d = session.Data;
-            string comparison = "FIRST ATTEMPT\nClues selected: " + d.clues.Count + "   |   Guesses recorded: " + d.guesses.Count + "\nResponse: " + d.firstResponse + "\nActed " + d.firstResponseSeconds.ToString("F1") + " seconds after the pop.\nResult: " + d.firstOutcome + "\n\nONE REPLAY\nResponse: " + d.replayResponse + "\n" + (d.replayIntervenedEarly ? "Acted " + d.replaySecondsBeforePop.ToString("F1") + " seconds before the pop." : "No support was selected before the pop.") + "\nResult: " + d.replayOutcome + "\n\n" + ReflectionRecordingSummary();
-            ui.Show("Module 1 summary", comparison, "Replay used: 1 of 1. The module is finished; no second replay is available.");
+            ui.ShowAttemptComparison(d, "Saved audio answers: Ans1 (" + answerRecorder.SavedCount(1) + "), Ans2 (" + answerRecorder.SavedCount(2) + "), Ans3 (" + answerRecorder.SavedCount(3) + ").");
             ui.SetPrimary("Finish module", FinishModule); ui.wristStatus.text = "Module finished  /  Replay 1 of 1"; ui.SetProgress(1);
             session.Finish(); Speak(summaryVoice);
             if (!completedEventSent) { completedEventSent = true; onModuleCompleted.Invoke(); }
@@ -603,7 +606,7 @@ namespace BitsPilani.Module1.Playground {
             if (recording) recording.RequestStopAndSave("Module left before Finish");
             if (perspectiveBodies) perspectiveBodies.RestoreParentView();
             if (rig) { rig.ReturnToParentView(); rig.SetMovementLocked(false); }
-            if (ui) ui.SetTint(false);
+            if (ui) { ui.SetTint(false); ui.HideReplayAttention(); }
             RestorePerspectiveProps();
             foreach (var anchor in new[] { gazeChild, gazeOnlooker, gazeParty, gazeThought }) if (anchor) ClearGazeChildren(anchor);
             foreach (var fx in spawnedPopEffects) if (fx) Destroy(fx);
