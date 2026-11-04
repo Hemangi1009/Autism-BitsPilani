@@ -37,7 +37,7 @@ namespace BitsPilani.Module1.Playground {
             Instance = this; DontDestroyOnLoad(gameObject); _ = PrepareModuleFoldersAsync();
         }
         public string PersistentRoot => Path.Combine(Application.persistentDataPath, rootFolderName);
-        public static bool IsValidId(string id) { return !string.IsNullOrEmpty(id) && Regex.IsMatch(id, "\\A(?=.*[A-Za-z])(?=.*[0-9])[A-Za-z0-9]{4,64}\\z"); }
+        public static bool IsValidId(string id) { return !string.IsNullOrEmpty(id) && Regex.IsMatch(id, "\\A[A-Za-z0-9]{3,64}\\z"); }
         public string LocalRoot {
             get {
 #if UNITY_ANDROID && !UNITY_EDITOR
@@ -69,7 +69,7 @@ namespace BitsPilani.Module1.Playground {
             catch(Exception ex) { LastStorageError=ex.Message; Debug.LogError("[FolderManager] " + ex); return Task.FromResult(false); }
         }
         public Task<string> PrepareParticipantAsync(int module, string id) {
-            if (module < 1 || module > 4 || !IsValidId(id)) throw new ArgumentException("ID must have 4-64 letters/numbers, include a letter and a number, and contain no spaces.");
+            if (module < 1 || module > 4 || !IsValidId(id)) throw new ArgumentException("ID must have 3-64 letters or numbers, with no spaces or symbols.");
             SelectedModule=module; ParticipantId=id; CreateLocalModuleFolders();
             string folder=Path.Combine(LocalRoot,"Module"+module,id);
             Directory.CreateDirectory(folder); LastStorageError=null;

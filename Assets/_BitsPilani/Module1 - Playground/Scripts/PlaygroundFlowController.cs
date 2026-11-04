@@ -66,7 +66,7 @@ namespace BitsPilani.Module1.Playground {
         public int SelectedClueCount => session.Data == null ? 0 : session.Data.clues.Count;
         public int GuessCount => session.Data == null ? 0 : session.Data.guesses.Count;
 
-        static readonly string[] Clues = {
+        public string[] Clues = {
             "Hands covering his ears", "His attention stays on the birthday cake",
             "His body has become tense", "He is pointing toward the slide entrance",
             "He is pulling at his clothes", "Nearby crowd and voices",
@@ -75,7 +75,7 @@ namespace BitsPilani.Module1.Playground {
             "Balloons near the slide", "He is looking at another child's toy"
         };
         static readonly bool[] ClueObserved = { true, false, true, false, false, true, false, true, true, false, true, false };
-        static readonly string[] GuessCards = {
+        public string[] GuessCards = {
             "He finds the sound too loud", "He is frustrated about waiting for a turn",
             "He is scared of the balloons", "He is hungry and wants some cake",
             "The nearby crowd feels too close", "He is tired and needs a rest",
@@ -85,7 +85,7 @@ namespace BitsPilani.Module1.Playground {
         };
         // Scenario evidence for facilitator logs only. Do not reveal an answer key on the cards.
         // A plausible hypothesis is not a diagnosis or an established fact about the child.
-        static readonly string[] GuessEvidence = {
+        public string[] GuessEvidence = {
             "Supported by sound-linked cues", "Not supported by the shown cues",
             "Plausible; needs checking", "Not supported by the shown cues",
             "Plausible; needs checking", "Not supported by the shown cues",
@@ -93,9 +93,9 @@ namespace BitsPilani.Module1.Playground {
             "Not supported by the shown cues", "Not supported by the shown cues",
             "Not supported by the shown cues", "Not supported by the shown cues"
         };
-        static readonly string[] Confidence = { "Not sure", "Somewhat sure", "Very sure" };
-        static readonly string[] ResponseCards = { "Speak softly and ask gently", "Offer ear defenders", "Move him away from the speaker", "Wait quietly and watch", "Use a loud voice or sudden touch" };
-        static readonly string[] ReplayCards = {
+        public string[] Confidence = { "Not sure", "Somewhat sure", "Very sure" };
+        public string[] ResponseCards = { "Speak softly and ask gently", "Offer ear defenders", "Move him away from the speaker", "Wait quietly and watch", "Use a loud voice or sudden touch" };
+        public string[] ReplayCards = {
             "Offer ear defenders before the sound builds",
             "Invite him closer to the cake to distract him",
             "Move together to a quieter spot",
@@ -104,8 +104,8 @@ namespace BitsPilani.Module1.Playground {
             "Offer a balloon to hold while the party continues"
         };
         public static bool ReplayChoiceReducesSound(int index) { return index == 0 || index == 2; }
-        static readonly string[] ReflectionQuestions = { "What did you first think was happening?", "What changed your mind?", "Is something wrong with him?" };
-        static readonly string[] StepCaptions = { "Getting ready", "Explore", "Watch what changes", "Collect clues", "Note guesses", "Test guesses", "Child view", "Onlooker thought", "Reflect", "Replay and prevent", "Summary", "Complete" };
+        public string[] ReflectionQuestions = { "What did you first think was happening?", "What changed your mind?", "Is something wrong with him?" };
+        public string[] StepCaptions = { "Getting ready", "Explore", "Watch what changes", "Collect clues", "Note guesses", "Test guesses", "Child view", "Onlooker thought", "Reflect", "Replay and prevent", "Summary", "Complete" };
         readonly List<GameObject> spawnedPopEffects = new List<GameObject>();
         Vector3[] propPositions, propScales;
         Quaternion[] propRotations;
@@ -159,34 +159,34 @@ namespace BitsPilani.Module1.Playground {
             if (recording && recording.recordModule) {
                 if (recording.participantIdPanel) recording.participantIdPanel.SetActive(true);
                 if (!recording.IsParticipantIdReady) {
-                    ui.Show("Enter participant ID", "Enter at least four characters, including letters and numbers. Spaces and symbols are not allowed.", "Confirm your ID to create this module's session folder.");
-                    ui.SetPrimary("Confirm ID", recording.SubmitParticipantId);
+                    ui.mainCanvas.gameObject.SetActive(false);
                     while (!recording.IsParticipantIdReady) yield return null;
                 }
+                if (recording.participantIdPanel && recording.IsParticipantIdReady) recording.participantIdPanel.SetActive(false);
             }
 #if UNITY_ANDROID && !UNITY_EDITOR
-            ui.Show("Microphone access", "Allow microphone access in the Quest permission prompt. Microphone recording is used for the three reflection answers later in the module.", "Waiting for your microphone permission choice...");
+            ui.Show(ui.Copy("flow_485d452835"), ui.Copy("flow_6c7b24d240"), ui.Copy("flow_db3f30c616"));
 #endif
             // Request before capture: an Android permission dialog can pause the app.
             yield return PlaygroundMicrophonePermission.RequestAtModuleStart();
             if (recording && recording.recordModule) {
                 bool ready = false;
                 while (!ready) {
-                    ui.Show("Preparing session recording", "The player camera and game audio are being prepared for recording.", "Starting video...");
+                    ui.Show(ui.Copy("flow_e552659151"), ui.Copy("flow_943bef98ea"), ui.Copy("flow_60ae10ee3a"));
                     var startRecording = recording.StartSessionAsync();
                     while (!startRecording.IsCompleted) yield return null;
                     ready = startRecording.Status == System.Threading.Tasks.TaskStatus.RanToCompletion && startRecording.Result;
                     if (startRecording.IsFaulted) Debug.LogError("[ModuleStart] Recording task failed: " + startRecording.Exception);
                     if (ready || recording.allowModuleWithoutRecording) break;
                     retryRecordingRequested = false;
-                    ui.Show("Recording needs attention", recording.LastError, "Check the ID, output folder and recording setup, then retry.");
-                    ui.SetPrimary("Retry recording", () => retryRecordingRequested = true);
-                    ui.SetSecondary("Return to entry", ReturnToEntryAfterRecordingError);
+                    ui.Show(ui.Copy("flow_8128f9719f"), recording.LastError, ui.Copy("flow_232904a09e"));
+                    ui.SetPrimary(ui.Copy("flow_6897fbf60f"), () => retryRecordingRequested = true);
+                    ui.SetSecondary(ui.Copy("flow_7ab65d262f"), ReturnToEntryAfterRecordingError);
                     while (!retryRecordingRequested) yield return null;
                 }
             }
-            ui.Show("Welcome to the playground", "The scene is getting ready. Narration will begin after the loading pause.", "Please wait at least six seconds.");
-            ui.wristStatus.text = "Scene loading...";
+            ui.Show(ui.Copy("flow_4778be5184"), ui.Copy("flow_a15eafdaa0"), ui.Copy("flow_5ca8ed5a24"));
+            ui.wristStatus.text = ui.Copy("flow_e3a0b78a91");
             float elapsed = 0; float wait = Mathf.Max(6f, initialLoadSeconds);
             while (elapsed < wait) { elapsed += Time.deltaTime; ui.SetProgress(elapsed / wait); yield return null; }
             rig.SetMovementLocked(false); BeginIntro();
@@ -200,21 +200,21 @@ namespace BitsPilani.Module1.Playground {
         void BeginIntro() {
             SetStep(PlaygroundStep.EnterPlayground); introCount = 0; IntroGazesComplete = false;
             child.ResetChild(); SetBalloonVisible(true);
-            ui.Show("Enter the playground", "Move around and look at three places in order: your child, the aunty on the bench, and the small birthday party.\n\nLook at each blue gaze marker until it completes. Then go to the highlighted circle near the slide.", "Look at your child's gaze marker first.");
-            ui.hint.text = "VR: use the right trigger for UI. Desktop preview: WASD, Q/E, hold right mouse to look.";
-            ui.wristStatus.text = "Look at child  /  0 of 3"; SpeakStep(1);
+            ui.Show(ui.Copy("flow_290a8917dd"), ui.Copy("flow_a572da7039"), ui.Copy("flow_2b5ca12371"));
+            ui.hint.text = ui.Copy("flow_61d459f377");
+            ui.wristStatus.text = ui.Copy("flow_c4ca270d10"); SpeakStep(1);
             int token = ++gazeToken;
             // Same FactoryManager Action callback chain as MySample; the package removes completed gaze prefabs.
             FactoryManager.CreateGaze(gazeChild, () => {
                 if (token != gazeToken || CurrentStep != PlaygroundStep.EnterPlayground || introCount != 0) return;
-                introCount = 1; session.Record("EnterPlayground", "GazeCompleted", "Child"); ui.wristStatus.text = "Look at aunty  /  1 of 3"; ui.status.text = "Now look at the aunty's gaze marker.";
+                introCount = 1; session.Record("EnterPlayground", "GazeCompleted", "Child"); ui.wristStatus.text = ui.Copy("flow_2f7c8a4edd"); ui.status.text = ui.Copy("flow_4c4c8adfc2");
                 FactoryManager.CreateGaze(gazeOnlooker, () => {
                     if (token != gazeToken || CurrentStep != PlaygroundStep.EnterPlayground || introCount != 1) return;
-                    introCount = 2; session.Record("EnterPlayground", "GazeCompleted", "Onlooker"); ui.wristStatus.text = "Look at party  /  2 of 3"; ui.status.text = "Now look at the birthday party's gaze marker.";
+                    introCount = 2; session.Record("EnterPlayground", "GazeCompleted", "Onlooker"); ui.wristStatus.text = ui.Copy("flow_86215505d5"); ui.status.text = ui.Copy("flow_13cfe8c471");
                     FactoryManager.CreateGaze(gazeParty, () => {
                         if (token != gazeToken || CurrentStep != PlaygroundStep.EnterPlayground || introCount != 2) return;
                         introCount = 3; IntroGazesComplete = true; observationCircle.SetActive(true);
-                        ui.status.text = "All three noticed. Go to the highlighted circle near the slide."; ui.wristStatus.text = "3 of 3  /  Go to the circle";
+                        ui.status.text = ui.Copy("flow_0d50ac8938"); ui.wristStatus.text = ui.Copy("flow_6b3a74d07a");
                         session.Record("EnterPlayground", "GazeCompleted", "Party; observation circle enabled");
                     });
                 });
@@ -245,15 +245,15 @@ namespace BitsPilani.Module1.Playground {
 
         IEnumerator WatchChanges() {
             SetStep(PlaygroundStep.WatchChanges); rig.Face(child.transform); rig.SetMovementLocked(true);
-            ui.Show("Watch what changes", "Watch your child's body and the sounds around him. Controller movement and interaction are paused during this short scene. You can still look around.", "The crowd gets louder first. Watch for the early signs.");
-            ui.wristStatus.text = "Watch your child"; SpeakStep(2);
+            ui.Show(ui.Copy("flow_5a2efe1a31"), ui.Copy("flow_9b6a5e1503"), ui.Copy("flow_08e7fd60ed"));
+            ui.wristStatus.text = ui.Copy("flow_32fadcf968"); SpeakStep(2);
             float start = Time.time; bool warned = false; firstPop = false;
             while (Time.time - start < watchSeconds) {
                 float elapsed = Time.time - start;
                 if (!warned && elapsed >= 4f) { warned = true; crowd.volume = .12f; child.SetState(PlaygroundChildState.EarlyWarning); session.Record("WatchChanges", "EarlyCue", "Hand to ear; crowd louder; still pose"); }
                 if (!firstPop && elapsed >= 10f) { firstPop = true; firstPopAt = Time.time; PopBalloon(); child.SetState(PlaygroundChildState.Distressed); Speak(changeVoice); }
-                ui.status.text = (firstPop ? "Balloon popped. Hands cover ears; the child's body is tense." : "Notice the early changes before the pop.") + "\nWatch time remaining: " + Mathf.CeilToInt(Mathf.Max(0, watchSeconds - elapsed)) + "s";
-                ui.wristStatus.text = "Observe: " + Mathf.CeilToInt(Mathf.Max(0, watchSeconds - elapsed)) + "s";
+                ui.status.text = (firstPop ? ui.Copy("flow_02924b240f") : ui.Copy("flow_5db9e6901b")) + ui.Copy("flow_e8741f0d80") + Mathf.CeilToInt(Mathf.Max(0, watchSeconds - elapsed)) + ui.Copy("flow_a0f1490a20");
+                ui.wristStatus.text = ui.Copy("flow_69063bd02f") + Mathf.CeilToInt(Mathf.Max(0, watchSeconds - elapsed)) + ui.Copy("flow_a0f1490a20");
                 ui.SetProgress(elapsed / watchSeconds); yield return null;
             }
             rig.SetMovementLocked(false); BeginClues();
@@ -262,18 +262,18 @@ namespace BitsPilani.Module1.Playground {
         void BeginClues() {
             cluePage = 0; guessPage = 0;
             SetStep(PlaygroundStep.CollectClues); SpeakStep(3);
-            ui.Show("Collect the clues", "The scene is holding at the foot of the slide. Open the clue tool on your left hand, then choose at least three different clues from the cards.", "Three unique clues are required.");
-            ui.SetPrimary("Open clue tool", OpenClueTool); ui.SetWristTools(true, false, OpenClueTool, null); ui.wristStatus.text = "Clues: 0 / 3 required";
+            ui.Show(ui.Copy("flow_327c8ebefd"), ui.Copy("flow_bdf41ee18e"), ui.Copy("flow_98ffc9fce7"));
+            ui.SetPrimary(ui.Copy("flow_3e0e86c629"), OpenClueTool); ui.SetWristTools(true, false, OpenClueTool, null); ui.wristStatus.text = ui.Copy("flow_c9ec67c27f");
         }
         public void OpenClueTool() {
             if (CurrentStep != PlaygroundStep.CollectClues) return;
-            ui.Show("Clue tool", "Choose the observations that match what you saw. Browse both pages, then select at least three different cards.", session.Data.clues.Count + " unique clues selected.", true);
+            ui.Show(ui.Copy("flow_0b35eec322"), ui.Copy("flow_09ecbced61"), session.Data.clues.Count + ui.Copy("flow_854c6545ac"), true);
             bool[] selected = new bool[Clues.Length]; for (int i = 0; i < Clues.Length; i++) selected[i] = session.Data.clues.Contains(Clues[i]);
             DrawChoicePage(Clues, selected, cluePage, SelectClue);
-            ui.footer.text = "Page " + (cluePage + 1) + " of " + ChoicePageCount(Clues.Length) + "  |  Selections stay saved across pages.";
-            ui.SetSecondary(cluePage == 0 ? "More clues" : "Previous clues", NextCluePage);
-            ui.SetPrimary("Done - collect clues", CompleteClues, session.Data.clues.Count >= 3);
-            ui.SetWristTools(true, false, OpenClueTool, null); ui.wristStatus.text = "Clues: " + session.Data.clues.Count + " / 3 required";
+            ui.footer.text = ui.Copy("flow_108d9ea56d") + (cluePage + 1) + ui.Copy("flow_607f2de6ce") + ChoicePageCount(Clues.Length) + ui.Copy("flow_d9da7e5bd7");
+            ui.SetSecondary(cluePage == 0 ? ui.Copy("flow_d36a6f5bb3") : ui.Copy("flow_88bdafb8b0"), NextCluePage);
+            ui.SetPrimary(ui.Copy("flow_7300f7a436"), CompleteClues, session.Data.clues.Count >= 3, session.Data.clues.Count >= 3);
+            ui.SetWristTools(true, false, OpenClueTool, null); ui.wristStatus.text = ui.Copy("flow_dc42fd7a4f") + session.Data.clues.Count + ui.Copy("flow_3dc1a09625");
         }
         public void SelectClue(int index) {
             if (CurrentStep != PlaygroundStep.CollectClues || index < 0 || index >= Clues.Length) return;
@@ -303,28 +303,28 @@ namespace BitsPilani.Module1.Playground {
         public void CompleteClues() {
             if (CurrentStep != PlaygroundStep.CollectClues || session.Data.clues.Count < 3) { session.Record(CurrentStep.ToString(), "AdvanceBlocked", "At least three unique clues required"); return; }
             SetStep(PlaygroundStep.NoteGuesses); SpeakStep(4); pendingGuess = -1;
-            ui.Show("Note your guesses", "Open the guess tool. Choose at least one possible reason, then choose a confidence card.\n\nYou can add more than one idea.", "At least one guess with a confidence choice is required.");
-            ui.SetPrimary("Open guess tool", OpenGuessTool); ui.SetWristTools(false, true, null, OpenGuessTool); ui.wristStatus.text = "Choose a guess and confidence";
+            ui.Show(ui.Copy("flow_38e8f250a9"), ui.Copy("flow_6525d37bb2"), ui.Copy("flow_bbe21527ee"));
+            ui.SetPrimary(ui.Copy("flow_8ddc58bc4e"), OpenGuessTool); ui.SetWristTools(false, true, null, OpenGuessTool); ui.wristStatus.text = ui.Copy("flow_c8330392e8");
         }
         public void OpenGuessTool() {
             if (CurrentStep != PlaygroundStep.NoteGuesses && !(CurrentStep == PlaygroundStep.TestGuesses && reviewingGuesses)) return;
             pendingGuess = -1;
-            ui.Show(reviewingGuesses ? "Review your guesses" : "Guess tool", reviewingGuesses ? "What changed after your response? Choose an idea to update its confidence, or add another idea." : "What might be going on? Choose a card, then choose how sure you are.", "Guesses recorded: " + session.Data.guesses.Count, true);
+            ui.Show(reviewingGuesses ? ui.Copy("flow_258f62f5d8") : ui.Copy("flow_b905aea83e"), reviewingGuesses ? ui.Copy("flow_4cc641b191") : ui.Copy("flow_7660bd5ad4"), ui.Copy("flow_2bf54b6d4f") + session.Data.guesses.Count, true);
             bool[] selected = new bool[GuessCards.Length]; for (int i = 0; i < GuessCards.Length; i++) selected[i] = FindGuess(GuessCards[i]) != null;
             DrawChoicePage(GuessCards, selected, guessPage, SelectGuess);
-            ui.footer.text = "Page " + (guessPage + 1) + " of " + ChoicePageCount(GuessCards.Length) + "  |  " + session.Data.guesses.Count + " guesses saved. Select a saved card to review confidence.";
-            ui.SetSecondary(guessPage == 0 ? "More guesses" : "Previous guesses", NextGuessPage);
-            ui.SetPrimary(reviewingGuesses ? "Continue to child view" : "Done - test guesses", reviewingGuesses ? (UnityAction)CompleteGuessReview : CompleteGuesses, session.Data.guesses.Count >= 1);
+            ui.footer.text = ui.Copy("flow_108d9ea56d") + (guessPage + 1) + ui.Copy("flow_607f2de6ce") + ChoicePageCount(GuessCards.Length) + "  |  " + session.Data.guesses.Count + ui.Copy("flow_5b4d15ab4d");
+            ui.SetSecondary(guessPage == 0 ? ui.Copy("flow_97ac18780d") : ui.Copy("flow_6265dba28d"), NextGuessPage);
+            ui.SetPrimary(reviewingGuesses ? ui.Copy("flow_da2611211c") : ui.Copy("flow_bde171e0c3"), reviewingGuesses ? (UnityAction)CompleteGuessReview : CompleteGuesses, session.Data.guesses.Count >= 1);
             ui.SetWristTools(false, true, null, OpenGuessTool);
-            ui.wristStatus.text = reviewingGuesses ? "Review guess confidence" : "Guesses recorded: " + session.Data.guesses.Count;
+            ui.wristStatus.text = reviewingGuesses ? ui.Copy("flow_2389f2838e") : ui.Copy("flow_2bf54b6d4f") + session.Data.guesses.Count;
         }
         public void SelectGuess(int index) {
             if ((CurrentStep != PlaygroundStep.NoteGuesses && !reviewingGuesses) || index < 0 || index >= GuessCards.Length) return;
             guessPage = index / ui.choices.Length;
             pendingGuess = index; var existing = FindGuess(GuessCards[index]);
-            ui.Show("How sure are you?", GuessCards[index], "Choose a confidence level. You can revise it after observing your child.", true);
+            ui.Show(ui.Copy("flow_e6e08e3c25"), GuessCards[index], ui.Copy("flow_3596a62021"), true);
             bool[] selected = { existing != null && existing.confidence == 0, existing != null && existing.confidence == 1, existing != null && existing.confidence == 2 };
-            ui.DrawChoices(Confidence, selected, SetGuessConfidence); ui.SetSecondary("Back to guesses", OpenGuessTool);
+            ui.DrawChoices(Confidence, selected, SetGuessConfidence); ui.SetSecondary(ui.Copy("flow_9f5bd4b5f1"), OpenGuessTool);
         }
         public void SetGuessConfidence(int confidence) {
             if (pendingGuess < 0 || confidence < 0 || confidence > 2) return;
@@ -334,18 +334,18 @@ namespace BitsPilani.Module1.Playground {
             session.Record(CurrentStep.ToString(), "GuessEvidence", card + " / " + GuessEvidence[pendingGuess]); OpenGuessTool();
         }
         PlaygroundGuess FindGuess(string idea) { return session.Data.guesses.Find(g => g.idea == idea); }
-        string GuessSummary() { var b = new StringBuilder(); int count = Mathf.Min(3, session.Data.guesses.Count); for (int i = 0; i < count; i++) { var g = session.Data.guesses[i]; b.AppendLine(g.idea + " - " + g.ConfidenceLabel); } if (session.Data.guesses.Count > count) b.AppendLine("+ " + (session.Data.guesses.Count - count) + " more guesses saved in the session log."); return b.ToString().Trim(); }
-        string ClueSummary() { int count = Mathf.Min(3, session.Data.clues.Count); var shown = session.Data.clues.GetRange(0, count); return string.Join(", ", shown) + (session.Data.clues.Count > count ? " (+ " + (session.Data.clues.Count - count) + " more saved)" : ""); }
+        string GuessSummary() { var b = new StringBuilder(); int count = Mathf.Min(3, session.Data.guesses.Count); for (int i = 0; i < count; i++) { var g = session.Data.guesses[i]; b.AppendLine(g.idea + " - " + g.ConfidenceLabel); } if (session.Data.guesses.Count > count) b.AppendLine("+ " + (session.Data.guesses.Count - count) + ui.Copy("flow_e0e9e74383")); return b.ToString().Trim(); }
+        string ClueSummary() { int count = Mathf.Min(3, session.Data.clues.Count); var shown = session.Data.clues.GetRange(0, count); return string.Join(", ", shown) + (session.Data.clues.Count > count ? " (+ " + (session.Data.clues.Count - count) + ui.Copy("flow_e846f804c3") : ""); }
         public void CompleteGuesses() {
             if (CurrentStep != PlaygroundStep.NoteGuesses || session.Data.guesses.Count < 1 || pendingGuess >= 0) return;
             SetStep(PlaygroundStep.TestGuesses); responseReady = false; responding = false; reviewingGuesses = false; approachCircle.SetActive(true); SpeakStep(5);
-            ui.Show("Go to your child", "Go to the highlighted circle beside your child, about one metre away. Then choose how to respond using the cards.\n\nThere is no speaking or recording input in this step.", "Move to the child's approach circle.");
-            ui.wristStatus.text = "Go to your child";
+            ui.Show(ui.Copy("flow_a30abe1450"), ui.Copy("flow_b1b3445216"), ui.Copy("flow_196b483580"));
+            ui.wristStatus.text = ui.Copy("flow_a30abe1450");
         }
 
         void ShowResponses() {
-            ui.Show("Choose how to respond", "Choose one response, then watch for twenty seconds. Look at the child's hands and posture.", "You are near your child. Choose one response card.", true);
-            ui.DrawChoices(ResponseCards, null, i => ChooseResponse((PlaygroundResponse)i)); ui.wristStatus.text = "Choose a response card";
+            ui.Show(ui.Copy("flow_d78401ce12"), ui.Copy("flow_2c0c8d4e26"), ui.Copy("flow_6b29078d58"), true);
+            ui.DrawChoices(ResponseCards, null, i => ChooseResponse((PlaygroundResponse)i)); ui.wristStatus.text = ui.Copy("flow_aaedda1222");
         }
         public void ChooseResponse(PlaygroundResponse response) {
             if (CurrentStep != PlaygroundStep.TestGuesses || !responseReady || responding || reviewingGuesses) return;
@@ -357,7 +357,7 @@ namespace BitsPilani.Module1.Playground {
             routine = StartCoroutine(ObserveResponse(response));
         }
         IEnumerator ObserveResponse(PlaygroundResponse response) {
-            ui.Show("Watch how your child reacts", "Response: " + session.Data.firstResponse + "\n\nWatch for a change in his hands and body.", "Observing the response...");
+            ui.Show(ui.Copy("flow_e8837a189e"), ui.Copy("flow_168e66b480") + session.Data.firstResponse + ui.Copy("flow_61a4cac9b5"), ui.Copy("flow_d828559e10"));
             rig.SetMovementLocked(false); Speak(responseVoice);
             float start = Time.time; bool midpoint = false; bool positive = (int)response <= 2;
             while (Time.time - start < responseSeconds) {
@@ -365,19 +365,19 @@ namespace BitsPilani.Module1.Playground {
                 if (!midpoint && elapsed >= responseSeconds * .5f) {
                     midpoint = true; child.SetState(positive ? PlaygroundChildState.Calming : response == PlaygroundResponse.LoudVoiceOrSuddenTouch ? PlaygroundChildState.Escalated : PlaygroundChildState.Distressed);
                 }
-                ui.SetProgress(elapsed / responseSeconds); ui.status.text = "Watch time remaining: " + Mathf.CeilToInt(Mathf.Max(0, responseSeconds - elapsed)) + "s";
-                ui.wristStatus.text = "Response observation: " + Mathf.CeilToInt(Mathf.Max(0, responseSeconds - elapsed)) + "s"; yield return null;
+                ui.SetProgress(elapsed / responseSeconds); ui.status.text = ui.Copy("flow_8dfaeb8653") + Mathf.CeilToInt(Mathf.Max(0, responseSeconds - elapsed)) + ui.Copy("flow_a0f1490a20");
+                ui.wristStatus.text = ui.Copy("flow_abff0e4557") + Mathf.CeilToInt(Mathf.Max(0, responseSeconds - elapsed)) + ui.Copy("flow_a0f1490a20"); yield return null;
             }
             child.SetState(positive ? PlaygroundChildState.Calm : response == PlaygroundResponse.LoudVoiceOrSuddenTouch ? PlaygroundChildState.Escalated : PlaygroundChildState.Distressed);
-            session.Data.firstOutcome = positive ? "Hands lowered; child appeared calmer" : response == PlaygroundResponse.WaitAndWatch ? "Distress remained" : "Distress increased";
+            session.Data.firstOutcome = positive ? ui.Copy("flow_c4e5b6ff05") : response == PlaygroundResponse.WaitAndWatch ? ui.Copy("flow_4e39d6d292") : ui.Copy("flow_71b2b30b68");
             session.Record("TestGuesses", "ResponseObserved", session.Data.firstOutcome); rig.SetMovementLocked(false);
             responding = false; reviewingGuesses = true; OpenGuessTool();
         }
         public void CompleteGuessReview() {
             if (CurrentStep != PlaygroundStep.TestGuesses || !reviewingGuesses || pendingGuess >= 0) return;
             reviewingGuesses = false; SetStep(PlaygroundStep.ChildPerspective);
-            ui.Show("Look beyond the scene", "See the playground from your child's position. The speaker and balloons will appear larger and closer, with louder, sharper sound.\n\nThis is an illustration of a possible experience. A soft amber tint marks the child's viewpoint.", "Select the button to enter the child-perspective view.");
-            ui.SetPrimary("Look beyond the scene", StartChildPerspective); ui.wristStatus.text = "Child-perspective view ready";
+            ui.Show(ui.Copy("flow_fe91f3b2bb"), ui.Copy("flow_8d54d516af"), ui.Copy("flow_6a7ca301eb"));
+            ui.SetPrimary(ui.Copy("flow_fe91f3b2bb"), StartChildPerspective); ui.wristStatus.text = ui.Copy("flow_9157bbced8");
         }
         public void StartChildPerspective() {
             if (CurrentStep != PlaygroundStep.ChildPerspective || rig.InChildView) return;
@@ -392,14 +392,14 @@ namespace BitsPilani.Module1.Playground {
             }
             partyMusic.volume = .32f; partyMusic.pitch = 1.12f; crowd.volume = .18f; ui.SetTint(true); SpeakStep(6);
             returnReady = false;
-            ui.Show("From the child's position", "Look toward the speaker and the balloons. Notice how their size and the sharper sound change the scene.\n\nYou can look around. The Return to my view button on your left hand will unlock after the observation time.", "Static amber tint active; no flashes.");
+            ui.Show(ui.Copy("flow_c186ab9cbf"), ui.Copy("flow_0f2b97e17e"), ui.Copy("flow_7435b92a71"));
             ui.SetChildViewReturn(true, false, ReturnToMyView);
             routine = StartCoroutine(PerspectiveTimer()); session.Record("ChildPerspective", "ChildViewEntered", "Static view/tint; tracked headset remains active");
         }
         IEnumerator PerspectiveTimer() {
             float start = Time.time;
-            while (Time.time - start < perspectiveSeconds) { float elapsed = Time.time - start; ui.SetProgress(elapsed / perspectiveSeconds); ui.status.text = "Listen and look: " + Mathf.CeilToInt(Mathf.Max(0, perspectiveSeconds - elapsed)) + "s remaining"; ui.wristStatus.text = "Child view: " + Mathf.CeilToInt(Mathf.Max(0, perspectiveSeconds - elapsed)) + "s"; yield return null; }
-            returnReady = true; ui.status.text = "You can return to your own view now."; ui.wristStatus.text = "Return to my view is ready"; ui.SetPrimary("Return to my view", ReturnToMyView); ui.SetChildViewReturn(true, true, ReturnToMyView);
+            while (Time.time - start < perspectiveSeconds) { float elapsed = Time.time - start; ui.SetProgress(elapsed / perspectiveSeconds); ui.status.text = ui.Copy("flow_9ab01a8f0f") + Mathf.CeilToInt(Mathf.Max(0, perspectiveSeconds - elapsed)) + ui.Copy("flow_0f7854229f"); ui.wristStatus.text = ui.Copy("flow_fb6e10faee") + Mathf.CeilToInt(Mathf.Max(0, perspectiveSeconds - elapsed)) + ui.Copy("flow_a0f1490a20"); yield return null; }
+            returnReady = true; ui.status.text = ui.Copy("flow_1ced32bd56"); ui.wristStatus.text = ui.Copy("flow_19afbe5880"); ui.SetPrimary(ui.Copy("flow_3c347c3e65"), ReturnToMyView); ui.SetChildViewReturn(true, true, ReturnToMyView);
         }
         public void ReturnToMyView() {
             if (CurrentStep != PlaygroundStep.ChildPerspective || !returnReady) return;
@@ -411,8 +411,8 @@ namespace BitsPilani.Module1.Playground {
 
         void BeginOnlooker() {
             SetStep(PlaygroundStep.OnlookerThought); thoughtClosedAt = -1; thoughtOpen = false; SpeakStep(7);
-            ui.Show("Hear what the onlooker thinks", "Look at the aunty on the bench. Open the blue gaze marker over her thought bubble. Read her assumption, then close the bubble. You can reopen it before reflection starts.", "Look at the thought-bubble gaze marker.");
-            ui.wristStatus.text = "Look at aunty's thought bubble"; CreateThoughtGaze();
+            ui.Show(ui.Copy("flow_0028ce8de4"), ui.Copy("flow_af7049bec8"), ui.Copy("flow_40dbc88ab2"));
+            ui.wristStatus.text = ui.Copy("flow_f2ce014375"); CreateThoughtGaze();
         }
         void CreateThoughtGaze() {
             int token = ++gazeToken;
@@ -421,16 +421,16 @@ namespace BitsPilani.Module1.Playground {
         public void OpenThoughtBubble() {
             if (CurrentStep != PlaygroundStep.OnlookerThought || thoughtOpen) return;
             thoughtOpen = true; thoughtClosedAt = -1;
-            ui.wristStatus.text = "Onlooker's thought is open";
-            ui.ShowThought("An onlooker's assumption\n\n\"Why is he covering his ears? Children should enjoy parties. Is something wrong with him?\"", CloseThoughtBubble);
+            ui.wristStatus.text = ui.Copy("flow_b328ed4417");
+            ui.ShowThought(ui.Copy("flow_1996f4d889"), CloseThoughtBubble);
             session.Record("OnlookerThought", "ThoughtBubbleOpened");
         }
         public void CloseThoughtBubble() {
             if (CurrentStep != PlaygroundStep.OnlookerThought || !thoughtOpen) return;
             thoughtOpen = false; ui.thoughtCanvas.gameObject.SetActive(false); thoughtClosedAt = Time.time;
             session.Record("OnlookerThought", "ThoughtBubbleClosed", "Reflection begins after four seconds unless reopened");
-            ui.status.text = "You can reopen the bubble. Reflection will begin shortly."; CreateThoughtGaze();
-            ui.wristStatus.text = "Reflection starts shortly";
+            ui.status.text = ui.Copy("flow_39c0b49b68"); CreateThoughtGaze();
+            ui.wristStatus.text = ui.Copy("flow_8691ecaa43");
         }
 
         void InitializeAnswerRecording() {
@@ -463,11 +463,11 @@ namespace BitsPilani.Module1.Playground {
             int count = answerRecorder.SavedCount(reflectionIndex + 1);
             ui.SetAnswerPrerequisites(questionNarrating, answerSavedByUser[reflectionIndex]);
             ui.UpdateAnswerRecordingState(answerRecorder.IsRecording, answerRecorder.IsSaving, count, answerRecorder.RecordedSeconds, answerRecorder.LastError);
-            ui.wristStatus.text = "Reflection " + (reflectionIndex + 1) + " / 3  /  " + (answerRecorder.IsRecording ? "Recording answer" : count + " clip(s) saved");
+            ui.wristStatus.text = ui.Copy("flow_4027cd489f") + (reflectionIndex + 1) + " / 3  /  " + (answerRecorder.IsRecording ? ui.Copy("flow_b299b63d6b") : count + ui.Copy("flow_2f4c2ff0b7"));
             if (questionNarrating) {
                 ui.recordingPlaceholder.interactable = false; ui.skipQuestion.interactable = false;
-                ui.status.text = "Listen to the question. Then select Record answer.";
-                ui.wristStatus.text = "Listen to question " + (reflectionIndex + 1) + " / 3";
+                ui.status.text = ui.Copy("flow_f0a78f739a");
+                ui.wristStatus.text = ui.Copy("flow_c383d7bbec") + (reflectionIndex + 1) + " / 3";
             }
         }
         public void ToggleAnswerRecording() {
@@ -492,7 +492,7 @@ namespace BitsPilani.Module1.Playground {
             RefreshAnswerRecordingUI();
         }
         string ReflectionRecordingSummary() {
-            return "Saved microphone answers: Q1 (" + answerRecorder.SavedCount(1) + "), Q2 (" + answerRecorder.SavedCount(2) + "), Q3 (" + answerRecorder.SavedCount(3) + "). Audio files are in the same participant folder as the video.";
+            return ui.Copy("flow_8d3a6f2075") + answerRecorder.SavedCount(1) + ui.Copy("flow_08f13c76e8") + answerRecorder.SavedCount(2) + ui.Copy("flow_61de1bb8f7") + answerRecorder.SavedCount(3) + ui.Copy("flow_753cfa97f5");
         }
         public void NextReflectionQuestion() {
             if (CurrentStep != PlaygroundStep.Reflect || reflectionFeedback || reflectionIndex > 2 || questionNarrating || !answerRecorder || answerRecorder.IsRecording || answerRecorder.IsSaving) return;
@@ -500,16 +500,16 @@ namespace BitsPilani.Module1.Playground {
             session.Record("Reflect", "QuestionAnswered", ReflectionQuestions[reflectionIndex] + "; clips=" + answerRecorder.SavedCount(reflectionIndex + 1)); reflectionIndex++;
             if (reflectionIndex < 3) { ShowReflectionQuestion(); return; }
             reflectionFeedback = true;
-            string feedback = "You selected: " + ClueSummary() + ".\n\nYour guesses:\n" + GuessSummary() + "\n\nHands over his ears, a tense body and the change after the pop support a sound-related explanation. Cake, clothing, a toy or waiting for a turn were not shown as causes. A guess still needs checking with the child.\n\nYour response: " + session.Data.firstResponse + ".\n\n" + ReflectionRecordingSummary();
-            ui.Show("Reflection feedback", feedback, "Next, replay once and try to act before the balloon pops.");
-            ui.SetPrimary("Replay and prevent", PrepareReplay); ui.wristStatus.text = "Reflection finished  /  Replay next";
+            string feedback = ui.Copy("flow_88b1db6b71") + ClueSummary() + ui.Copy("flow_493975531f") + GuessSummary() + ui.Copy("flow_c625360168") + session.Data.firstResponse + ".\n\n" + ReflectionRecordingSummary();
+            ui.Show(ui.Copy("flow_39fddabbbc"), feedback, ui.Copy("flow_c2e04525b9"));
+            ui.SetPrimary(ui.Copy("flow_3e57f1badc"), PrepareReplay); ui.wristStatus.text = ui.Copy("flow_dcf585e53f");
         }
 
         public void PrepareReplay() {
             if (CurrentStep != PlaygroundStep.Reflect || !reflectionFeedback || session.Data.replayCount > 0) return;
             SetStep(PlaygroundStep.ReplayAndPrevent); SpeakStep(9);
-            ui.Show("Replay and prevent", "You will replay the scene once. The three introductory gazes will not repeat.\n\nGo to the observation circle, watch the early cues, and choose how to respond before the pop. Consider what each action changes for your child. You can move throughout this attempt.", "One replay is available. After it, the module ends at the summary.");
-            ui.SetPrimary("Replay once", StartReplay); ui.wristStatus.text = "Replay 0 / 1";
+            ui.Show(ui.Copy("flow_3e57f1badc"), ui.Copy("flow_fc1b7fbb14"), ui.Copy("flow_1ad766bac6"));
+            ui.SetPrimary(ui.Copy("flow_64cf2b2d79"), StartReplay); ui.wristStatus.text = ui.Copy("flow_bbf0841817");
         }
         public void StartReplay() {
             if (CurrentStep != PlaygroundStep.ReplayAndPrevent || replayStarted || session.Data.replayCount != 0) return;
@@ -517,13 +517,13 @@ namespace BitsPilani.Module1.Playground {
             ui.ShowReplayAttention();
             child.ResetChild(); SetBalloonVisible(true); partyMusic.volume = .1f; crowd.volume = .04f;
             if (balloonPopVfx) balloonPopVfx.Stop();
-            rig.SetMovementLocked(false); observationCircle.SetActive(true); ui.SetPrimary("Replay used", null, false);
-            ui.status.text = "Go to the highlighted observation circle. You remain free to move."; ui.wristStatus.text = "Replay 1 / 1  /  Go to circle";
+            rig.SetMovementLocked(false); observationCircle.SetActive(true); ui.SetPrimary(ui.Copy("flow_b47ca6bd00"), null, false);
+            ui.status.text = ui.Copy("flow_c371a55aa5"); ui.wristStatus.text = ui.Copy("flow_980dac031b");
             session.Record("ReplayAndPrevent", "ReplayStarted", "No introductory gazes; movement remains enabled");
         }
         IEnumerator RunReplay() {
             replayStartedAt = Time.time;
-            ui.Show("Act on the early signs", "Look for an early hand-to-ear cue and a change in posture. You can move freely. Choose a preventive response before the pop.", "Replay warning period has begun.", true);
+            ui.Show(ui.Copy("flow_7d62fe823e"), ui.Copy("flow_c910a2a15a"), ui.Copy("flow_940f79e6b6"), true);
             ui.DrawChoices(ReplayCards, null, ChooseReplayPrevention); Speak(replayHintVoice);
             float total = replayWarningSeconds + replayAfterPopSeconds; bool warned = false;
             while (Time.time - replayStartedAt < total) {
@@ -534,11 +534,11 @@ namespace BitsPilani.Module1.Playground {
                     session.Record("ReplayAndPrevent", "PopOutcome", replaySupportChosen ? "Sound-reducing support in place" : "Sound exposure unchanged");
                 }
                 ui.SetProgress(elapsed / total);
-                ui.status.text = !replayPop ? "Time before the pop: " + Mathf.CeilToInt(Mathf.Max(0, replayWarningSeconds - elapsed)) + "s. Movement is enabled." : "Observe the result. Summary in " + Mathf.CeilToInt(Mathf.Max(0, total - elapsed)) + "s.";
-                ui.wristStatus.text = !replayPop ? "Pop in " + Mathf.CeilToInt(Mathf.Max(0, replayWarningSeconds - elapsed)) + "s" : "Replay 1 / 1 - observe result";
+                ui.status.text = !replayPop ? ui.Copy("flow_28ffbf4f0f") + Mathf.CeilToInt(Mathf.Max(0, replayWarningSeconds - elapsed)) + ui.Copy("flow_1225b060ae") : ui.Copy("flow_3a4f86cb07") + Mathf.CeilToInt(Mathf.Max(0, total - elapsed)) + ui.Copy("flow_55d7456070");
+                ui.wristStatus.text = !replayPop ? ui.Copy("flow_3f79c2fdcd") + Mathf.CeilToInt(Mathf.Max(0, replayWarningSeconds - elapsed)) + ui.Copy("flow_a0f1490a20") : ui.Copy("flow_cabe34992a");
                 yield return null;
             }
-            session.Data.replayOutcome = replaySupportChosen ? (session.Data.replayIntervenedEarly ? "Early sound-reducing support; child remained calmer" : "Sound-reducing support offered after the pop") : replayChoiceMade ? "The chosen action did not reduce sound exposure; distress remained" : "No intervention; distress remained";
+            session.Data.replayOutcome = replaySupportChosen ? (session.Data.replayIntervenedEarly ? ui.Copy("flow_a6ed360fae") : ui.Copy("flow_07eae3df24")) : replayChoiceMade ? ui.Copy("flow_84a3fc23b1") : ui.Copy("flow_adfa76a63b");
             ShowSummary();
         }
         public void ChooseReplayPrevention(int index) {
@@ -552,14 +552,14 @@ namespace BitsPilani.Module1.Playground {
             child.SetState(replaySupportChosen ? PlaygroundChildState.Calm : replayPop ? PlaygroundChildState.Distressed : PlaygroundChildState.EarlyWarning);
             bool[] selected = new bool[ReplayCards.Length]; selected[index] = true;
             ui.DrawChoices(ReplayCards, selected, null, false);
-            ui.footer.text = "Response selected. Watch your child's hands and posture as the scene continues.";
+            ui.footer.text = ui.Copy("flow_15b56517e9");
             session.Record("ReplayAndPrevent", "PreventionSelected", session.Data.replayResponse + "; before pop=" + !replayPop + "; reduces sound exposure=" + replaySupportChosen);
         }
         void ShowSummary() {
             SetStep(PlaygroundStep.Summary); rig.SetMovementLocked(false); ui.SetTint(false); observationCircle.SetActive(false); approachCircle.SetActive(false);
             var d = session.Data;
-            ui.ShowAttemptComparison(d, "Saved audio answers: Ans1 (" + answerRecorder.SavedCount(1) + "), Ans2 (" + answerRecorder.SavedCount(2) + "), Ans3 (" + answerRecorder.SavedCount(3) + ").");
-            ui.SetPrimary("Finish module", FinishModule); ui.wristStatus.text = "Module finished  /  Replay 1 of 1"; ui.SetProgress(1);
+            ui.ShowAttemptComparison(d, ui.Copy("flow_562273b653") + answerRecorder.SavedCount(1) + ui.Copy("flow_a097e25b64") + answerRecorder.SavedCount(2) + ui.Copy("flow_1c6d56015d") + answerRecorder.SavedCount(3) + ").");
+            ui.SetPrimary(ui.Copy("flow_b222a722b9"), FinishModule); ui.wristStatus.text = ui.Copy("flow_407a3e5927"); ui.SetProgress(1);
             session.Finish(); Speak(summaryVoice);
             if (!completedEventSent) { completedEventSent = true; onModuleCompleted.Invoke(); }
         }
@@ -567,14 +567,14 @@ namespace BitsPilani.Module1.Playground {
             if (CurrentStep != PlaygroundStep.Summary || finishingModule) return;
             finishingModule = true;
             if (recording && recording.recordModule) {
-                ui.SetPrimary("Saving video...", null, false);
-                ui.status.text = "Saving your session video and game audio. Please wait.";
+                ui.SetPrimary(ui.Copy("flow_8b341b28ba"), null, false);
+                ui.status.text = ui.Copy("flow_4920fb5c54");
                 await recording.StopAndSaveAsync("Finish module clicked");
                 if (!this || !isActiveAndEnabled) return;
                 if (recording.IsSaving) { finishingModule = false; return; }
             }
-            CurrentStep = PlaygroundStep.Complete; ui.SetStep(11, "Complete"); ui.SetPrimary("Module complete", null, false);
-            ui.status.text = "Thank you. Module 1 is complete." + (recording && !string.IsNullOrEmpty(recording.LastSavedPath) && (!recording.saveToQuest || !string.IsNullOrEmpty(recording.LastQuestSavedPath)) ? "\nVideo saved for " + recording.LockedParticipantId + "." : "");
+            CurrentStep = PlaygroundStep.Complete; ui.SetStep(11, "Complete"); ui.SetPrimary(ui.Copy("flow_e70e42b449"), null, false);
+            ui.status.text = ui.Copy("flow_aa9a63e4e3") + (recording && !string.IsNullOrEmpty(recording.LastSavedPath) && (!recording.saveToQuest || !string.IsNullOrEmpty(recording.LastQuestSavedPath)) ? ui.Copy("flow_7fe14d460b") + recording.LockedParticipantId + "." : "");
             if (recording && recording.recordModule && string.IsNullOrEmpty(recording.LastSavedPath)) ui.status.text += "\nNo session video was saved. See recording status and Console.";
             if (recording && recording.QuestTransferPending) ui.status.text += "\nQuest transfer is pending. The temporary recording is retained safely.";
             if (recording && recording.returnToEntryOnCompletion) {

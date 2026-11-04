@@ -4,6 +4,8 @@ using UnityEngine.UI;
 
 namespace BitsPilani.Module1.Playground {
     public sealed class ModuleEntryController : MonoBehaviour {
+        public PlaygroundUITextCatalog textCatalog;
+        public string Copy(string id) => textCatalog ? textCatalog.Get(id) : id;
         public FolderManager folderManager;
         public Button[] moduleButtons;
         public TMP_Text status;
@@ -49,7 +51,7 @@ namespace BitsPilani.Module1.Playground {
         public void ApplyVisualStyle() {
             if (styled || !menuCanvas || moduleButtons == null || moduleButtons.Length != 4) return;
             styled = true;
-            if (useAuthoredCanvas) { BindMenuPose(); return; }
+            if (useAuthoredCanvas || Application.isPlaying) { BindMenuPose(); return; }
             var root = (RectTransform)menuCanvas.transform;
             root.sizeDelta = new Vector2(1280, 1040); root.localScale = Vector3.one * .00165f;
             PlaygroundUIStyle.Surface(menuCanvas.GetComponent<Image>(), PlaygroundUIStyle.Panel, true);
@@ -57,15 +59,15 @@ namespace BitsPilani.Module1.Playground {
             var heading = root.Find("Title")?.GetComponent<TMP_Text>();
             var subtitle = root.Find("Subtitle")?.GetComponent<TMP_Text>();
             var font = heading ? heading.font : TMP_Settings.defaultFontAsset;
-            if (heading) { heading.text = "Explore a different perspective"; Place(heading.rectTransform, new Vector2(1160, 92), new Vector2(0, 350)); heading.fontSize = 48; heading.fontStyle = FontStyles.Bold; heading.color = PlaygroundUIStyle.Text; heading.enableAutoSizing = true; heading.fontSizeMin = 36; heading.fontSizeMax = 48; }
-            if (subtitle) { subtitle.text = "Choose a module to begin your session"; Place(subtitle.rectTransform, new Vector2(1120, 52), new Vector2(0, 272)); subtitle.fontSize = 27; subtitle.color = PlaygroundUIStyle.Muted; }
+            if (heading) { heading.text = Copy("entry_4442e4e8d6"); Place(heading.rectTransform, new Vector2(1160, 92), new Vector2(0, 350)); heading.fontSize = 48; heading.fontStyle = FontStyles.Bold; heading.color = PlaygroundUIStyle.Text; heading.enableAutoSizing = true; heading.fontSizeMin = 36; heading.fontSizeMax = 48; }
+            if (subtitle) { subtitle.text = Copy("entry_96e68cabbf"); Place(subtitle.rectTransform, new Vector2(1120, 52), new Vector2(0, 272)); subtitle.fontSize = 27; subtitle.color = PlaygroundUIStyle.Muted; }
             var brand = PlaygroundUIStyle.Label("Module hub brand", root, font, "BITS PILANI   /   VR TRAINING", new Vector2(1050, 44), new Vector2(0, 442), 23);
             brand.color = PlaygroundUIStyle.Mint; brand.characterSpacing = 3;
             for (int i = 0; i < moduleButtons.Length; i++) {
                 var button = moduleButtons[i]; if (!button) continue;
                 Place((RectTransform)button.transform, new Vector2(548, 232), new Vector2(i % 2 == 0 ? -292 : 292, i < 2 ? 92 : -176));
                 var label = button.GetComponentInChildren<TMP_Text>(true);
-                if (label) { label.text = i == 0 ? "Playground" : "Coming soon"; Place(label.rectTransform, new Vector2(482, 64), new Vector2(0, 7)); label.fontStyle = FontStyles.Bold; }
+                if (label) { label.text = i == 0 ? Copy("entry_a68eb23082") : Copy("entry_e4115be258"); Place(label.rectTransform, new Vector2(482, 64), new Vector2(0, 7)); label.fontStyle = FontStyles.Bold; }
                 PlaygroundUIStyle.Button(button, label, i == 0);
                 if (label) { label.fontSizeMin = 30; label.fontSizeMax = 38; }
                 var number = PlaygroundUIStyle.Label("Module number", button.transform, font, "MODULE " + (i + 1).ToString("00"), new Vector2(482, 36), new Vector2(0, 76), 22);
@@ -118,14 +120,14 @@ namespace BitsPilani.Module1.Playground {
             storageReady=true;
             if(administratorSetupButton) administratorSetupButton.gameObject.SetActive(false);
             ApplyModuleAvailability();
-            if(storageReady && status) status.text="Choose Module 1 to begin. Modules 2, 3 and 4 are coming soon." + (string.IsNullOrEmpty(folderManager.LastSessionMessage)?"":"\n"+folderManager.LastSessionMessage);
+            if(storageReady && status) status.text=Copy("entry_1496b242d5") + (string.IsNullOrEmpty(folderManager.LastSessionMessage)?"":"\n"+folderManager.LastSessionMessage);
         }
         void ApplyModuleAvailability() { for(int i=0;i<moduleButtons.Length;i++)moduleButtons[i].interactable=!opening&&storageReady&&!folderManager.IsLoading&&folderManager.IsAvailable(i+1); }
         public void OpenAdministratorSetup() { /* Kept for existing scene references. No setup or permission UI. */ }
         public void ChooseModule(int module) {
             if (!folderManager || !storageReady || opening || folderManager.IsLoading || !folderManager.IsAvailable(module)) return;
             opening=true;ApplyModuleAvailability();
-            if(status)status.text="Opening Module " + module + "...";
+            if(status)status.text=Copy("entry_df7ff434e4") + module + "...";
             folderManager.OpenModule(module);
         }
     }

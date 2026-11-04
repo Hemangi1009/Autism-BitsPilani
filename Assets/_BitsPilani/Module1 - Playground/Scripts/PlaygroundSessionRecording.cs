@@ -86,7 +86,7 @@ namespace BitsPilani.Module1.Playground {
                 saveToQuest = false;
                 folderManager = FolderManager.Instance ? FolderManager.Instance : folderManager;
                 if (folderManager) questFolderName = folderManager.rootFolderName;
-                if (participantIdPanel) { participantIdPanel.SetActive(true); if (!useAuthoredIdPanel) PlaygroundUIStyle.LightPanel(participantIdPanel); }
+                if (participantIdPanel) participantIdPanel.SetActive(true);
                 if (participantIdInput) { participantIdInput.SetTextWithoutNotify(""); participantIdInput.interactable = true; }
             }
 
@@ -99,8 +99,8 @@ namespace BitsPilani.Module1.Playground {
                 participantIdInput.onEndEdit.AddListener(IdEnded);
                 if (Application.isPlaying && showVirtualKeyboard) {
                     keyboard = participantIdInput.GetComponent<PlaygroundParticipantKeyboard>();
-                    if (!keyboard) keyboard = participantIdInput.gameObject.AddComponent<PlaygroundParticipantKeyboard>();
-                    keyboard.input = participantIdInput; keyboard.recording = this; keyboard.head = recordingCamera ? recordingCamera.transform : null;
+                    if (!keyboard) Debug.LogError("Assign the scene-authored participant keyboard component.", this);
+                    if (keyboard) { keyboard.input = participantIdInput; keyboard.recording = this; keyboard.head = recordingCamera ? recordingCamera.transform : null; }
                     participantIdInput.shouldHideSoftKeyboard = true;
                 }
             }
@@ -125,7 +125,7 @@ namespace BitsPilani.Module1.Playground {
         public void SetParticipantId(string value) {
             if (keyboard && keyboard.IsOpen) return;
             if (IsRecording || IsSaving || startTask != null && !startTask.IsCompleted) { SetStatus("ID is locked for the current recording."); return; }
-            if (!IsValidParticipantId(value)) { SetStatus("Use 4-64 characters, including a letter and a number. No spaces or symbols."); return; }
+            if (!IsValidParticipantId(value)) { SetStatus("Use 3-64 characters, letters or numbers. No spaces or symbols."); return; }
             participantId = value;
             idSubmitted = true;
             if (participantIdInput) participantIdInput.SetTextWithoutNotify(value);
@@ -138,7 +138,7 @@ namespace BitsPilani.Module1.Playground {
 
 
             string id = participantIdInput ? participantIdInput.text : participantId;
-            if (!IsValidParticipantId(id)) { LastError = "Enter 4-64 letters/numbers including a letter and a number; no spaces."; SetStatus(LastError); return false; }
+            if (!IsValidParticipantId(id)) { LastError = "Enter 3-64 letters/numbers letters or numbers; no spaces."; SetStatus(LastError); return false; }
             if (!recordingCamera || !gameAudioListener || !gameAudioListener.enabled) { LastError = "Assign the player camera and its enabled AudioListener."; SetStatus(LastError); return false; }
             try {
                 LastError = null; LockedParticipantId = id;

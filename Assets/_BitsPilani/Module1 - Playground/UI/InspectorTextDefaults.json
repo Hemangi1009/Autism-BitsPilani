@@ -1,0 +1,1044 @@
+{
+  "entries": [
+    {
+      "id": "ui_dc59cb9d06",
+      "context": "PlaygroundModuleUI.cs: Module 1 summary",
+      "text": "Module 1 summary"
+    },
+    {
+      "id": "ui_c5747a2648",
+      "context": "PlaygroundModuleUI.cs: Replay used: 1 of 1. The module is finished; no second replay is available.",
+      "text": "Replay used: 1 of 1. The module is finished; no second replay is available."
+    },
+    {
+      "id": "ui_0a356fd6ac",
+      "context": "PlaygroundModuleUI.cs: FIRST ATTEMPT ",
+      "text": "FIRST ATTEMPT\n"
+    },
+    {
+      "id": "ui_ff6e6a9ba5",
+      "context": "PlaygroundModuleUI.cs:   REPLAY ",
+      "text": "\n\nREPLAY\n"
+    },
+    {
+      "id": "ui_3c347c3e65",
+      "context": "PlaygroundModuleUI.cs: Return to my view",
+      "text": "Return to my view"
+    },
+    {
+      "id": "ui_67b6f9c3fd",
+      "context": "PlaygroundModuleUI.cs: Return after observation",
+      "text": "Return after observation"
+    },
+    {
+      "id": "ui_548442ddeb",
+      "context": "PlaygroundModuleUI.cs: Show instructions",
+      "text": "Show instructions"
+    },
+    {
+      "id": "ui_4530b7b026",
+      "context": "PlaygroundModuleUI.cs: MODULE 1  /  GETTING READY",
+      "text": "MODULE 1  /  GETTING READY"
+    },
+    {
+      "id": "ui_7b431b9c6c",
+      "context": "PlaygroundModuleUI.cs: MODULE 1  /  COMPLETE",
+      "text": "MODULE 1  /  COMPLETE"
+    },
+    {
+      "id": "ui_6223752081",
+      "context": "PlaygroundModuleUI.cs: MODULE 1  /  STEP ",
+      "text": "MODULE 1  /  STEP "
+    },
+    {
+      "id": "ui_38c0c8830d",
+      "context": "PlaygroundModuleUI.cs:  OF 9",
+      "text": " OF 9"
+    },
+    {
+      "id": "ui_419d0202db",
+      "context": "PlaygroundModuleUI.cs: GETTING READY",
+      "text": "GETTING READY"
+    },
+    {
+      "id": "ui_139325a34f",
+      "context": "PlaygroundModuleUI.cs: MODULE COMPLETE",
+      "text": "MODULE COMPLETE"
+    },
+    {
+      "id": "ui_c5964dcff2",
+      "context": "PlaygroundModuleUI.cs: STEP ",
+      "text": "STEP "
+    },
+    {
+      "id": "ui_1fd2add495",
+      "context": "PlaygroundModuleUI.cs: Point with the right ray and release trigger. Hide clears the view; wrist Instru",
+      "text": "Point with the right ray and release trigger. Hide clears the view; wrist Instructions reopens it."
+    },
+    {
+      "id": "ui_40746e3394",
+      "context": "PlaygroundModuleUI.cs: Reflect on what you noticed",
+      "text": "Reflect on what you noticed"
+    },
+    {
+      "id": "ui_08066747df",
+      "context": "PlaygroundModuleUI.cs: Record and save an answer to continue.",
+      "text": "Record and save an answer to continue."
+    },
+    {
+      "id": "ui_dbfd6f2663",
+      "context": "PlaygroundModuleUI.cs: Saving answer...",
+      "text": "Saving answer..."
+    },
+    {
+      "id": "ui_e5c295ae8f",
+      "context": "PlaygroundModuleUI.cs: Stop and save answer",
+      "text": "Stop and save answer"
+    },
+    {
+      "id": "ui_5ea1972f3b",
+      "context": "PlaygroundModuleUI.cs: Record another answer",
+      "text": "Record another answer"
+    },
+    {
+      "id": "ui_0afad95194",
+      "context": "PlaygroundModuleUI.cs: Record answer",
+      "text": "Record answer"
+    },
+    {
+      "id": "ui_bc981983e7",
+      "context": "PlaygroundModuleUI.cs: Next",
+      "text": "Next"
+    },
+    {
+      "id": "ui_1e7962141e",
+      "context": "PlaygroundModuleUI.cs: QUESTION ",
+      "text": "QUESTION "
+    },
+    {
+      "id": "ui_2a831953c3",
+      "context": "PlaygroundModuleUI.cs:  OF 3   /   ",
+      "text": " OF 3   /   "
+    },
+    {
+      "id": "ui_0d3f865256",
+      "context": "PlaygroundModuleUI.cs:  CLIP SAVED",
+      "text": " CLIP SAVED"
+    },
+    {
+      "id": "ui_9cd6a3a01e",
+      "context": "PlaygroundModuleUI.cs:  CLIPS SAVED",
+      "text": " CLIPS SAVED"
+    },
+    {
+      "id": "ui_f7ac755b89",
+      "context": "PlaygroundModuleUI.cs: Next unlocks after a successful Stop and save. Audio clips stay beside your vide",
+      "text": "Next unlocks after a successful Stop and save. Audio clips stay beside your video."
+    },
+    {
+      "id": "ui_dc69cff444",
+      "context": "PlaygroundModuleUI.cs: Listen to question...",
+      "text": "Listen to question..."
+    },
+    {
+      "id": "ui_f0a78f739a",
+      "context": "PlaygroundModuleUI.cs: Listen to the question. Then select Record answer.",
+      "text": "Listen to the question. Then select Record answer."
+    },
+    {
+      "id": "flow_485d452835",
+      "context": "PlaygroundFlowController.cs: Microphone access",
+      "text": "Microphone access"
+    },
+    {
+      "id": "flow_6c7b24d240",
+      "context": "PlaygroundFlowController.cs: Allow microphone access in the Quest permission prompt. Microphone recording is ",
+      "text": "Allow microphone access in the Quest permission prompt. Microphone recording is used for the three reflection answers later in the module."
+    },
+    {
+      "id": "flow_db3f30c616",
+      "context": "PlaygroundFlowController.cs: Waiting for your microphone permission choice...",
+      "text": "Waiting for your microphone permission choice..."
+    },
+    {
+      "id": "flow_e552659151",
+      "context": "PlaygroundFlowController.cs: Preparing session recording",
+      "text": "Preparing session recording"
+    },
+    {
+      "id": "flow_943bef98ea",
+      "context": "PlaygroundFlowController.cs: The player camera and game audio are being prepared for recording.",
+      "text": "The player camera and game audio are being prepared for recording."
+    },
+    {
+      "id": "flow_60ae10ee3a",
+      "context": "PlaygroundFlowController.cs: Starting video...",
+      "text": "Starting video..."
+    },
+    {
+      "id": "flow_8128f9719f",
+      "context": "PlaygroundFlowController.cs: Recording needs attention",
+      "text": "Recording needs attention"
+    },
+    {
+      "id": "flow_232904a09e",
+      "context": "PlaygroundFlowController.cs: Check the ID, output folder and recording setup, then retry.",
+      "text": "Check the ID, output folder and recording setup, then retry."
+    },
+    {
+      "id": "flow_6897fbf60f",
+      "context": "PlaygroundFlowController.cs: Retry recording",
+      "text": "Retry recording"
+    },
+    {
+      "id": "flow_7ab65d262f",
+      "context": "PlaygroundFlowController.cs: Return to entry",
+      "text": "Return to entry"
+    },
+    {
+      "id": "flow_4778be5184",
+      "context": "PlaygroundFlowController.cs: Welcome to the playground",
+      "text": "Welcome to the playground"
+    },
+    {
+      "id": "flow_a15eafdaa0",
+      "context": "PlaygroundFlowController.cs: The scene is getting ready. Narration will begin after the loading pause.",
+      "text": "The scene is getting ready. Narration will begin after the loading pause."
+    },
+    {
+      "id": "flow_5ca8ed5a24",
+      "context": "PlaygroundFlowController.cs: Please wait at least six seconds.",
+      "text": "Please wait at least six seconds."
+    },
+    {
+      "id": "flow_e3a0b78a91",
+      "context": "PlaygroundFlowController.cs: Scene loading...",
+      "text": "Scene loading..."
+    },
+    {
+      "id": "flow_290a8917dd",
+      "context": "PlaygroundFlowController.cs: Enter the playground",
+      "text": "Enter the playground"
+    },
+    {
+      "id": "flow_a572da7039",
+      "context": "PlaygroundFlowController.cs: Move around and look at three places in order: your child, the aunty on the benc",
+      "text": "Move around and look at three places in order: your child, the aunty on the bench, and the small birthday party.\n\nLook at each blue gaze marker until it completes. Then go to the highlighted circle near the slide."
+    },
+    {
+      "id": "flow_2b5ca12371",
+      "context": "PlaygroundFlowController.cs: Look at your child's gaze marker first.",
+      "text": "Look at your child's gaze marker first."
+    },
+    {
+      "id": "flow_61d459f377",
+      "context": "PlaygroundFlowController.cs: VR: use the right trigger for UI. Desktop preview: WASD, Q/E, hold right mouse t",
+      "text": "VR: use the right trigger for UI. Desktop preview: WASD, Q/E, hold right mouse to look."
+    },
+    {
+      "id": "flow_c4ca270d10",
+      "context": "PlaygroundFlowController.cs: Look at child  /  0 of 3",
+      "text": "Look at child  /  0 of 3"
+    },
+    {
+      "id": "flow_2f7c8a4edd",
+      "context": "PlaygroundFlowController.cs: Look at aunty  /  1 of 3",
+      "text": "Look at aunty  /  1 of 3"
+    },
+    {
+      "id": "flow_4c4c8adfc2",
+      "context": "PlaygroundFlowController.cs: Now look at the aunty's gaze marker.",
+      "text": "Now look at the aunty's gaze marker."
+    },
+    {
+      "id": "flow_86215505d5",
+      "context": "PlaygroundFlowController.cs: Look at party  /  2 of 3",
+      "text": "Look at party  /  2 of 3"
+    },
+    {
+      "id": "flow_13cfe8c471",
+      "context": "PlaygroundFlowController.cs: Now look at the birthday party's gaze marker.",
+      "text": "Now look at the birthday party's gaze marker."
+    },
+    {
+      "id": "flow_0d50ac8938",
+      "context": "PlaygroundFlowController.cs: All three noticed. Go to the highlighted circle near the slide.",
+      "text": "All three noticed. Go to the highlighted circle near the slide."
+    },
+    {
+      "id": "flow_6b3a74d07a",
+      "context": "PlaygroundFlowController.cs: 3 of 3  /  Go to the circle",
+      "text": "3 of 3  /  Go to the circle"
+    },
+    {
+      "id": "flow_5a2efe1a31",
+      "context": "PlaygroundFlowController.cs: Watch what changes",
+      "text": "Watch what changes"
+    },
+    {
+      "id": "flow_9b6a5e1503",
+      "context": "PlaygroundFlowController.cs: Watch your child's body and the sounds around him. Controller movement and inter",
+      "text": "Watch your child's body and the sounds around him. Controller movement and interaction are paused during this short scene. You can still look around."
+    },
+    {
+      "id": "flow_08e7fd60ed",
+      "context": "PlaygroundFlowController.cs: The crowd gets louder first. Watch for the early signs.",
+      "text": "The crowd gets louder first. Watch for the early signs."
+    },
+    {
+      "id": "flow_32fadcf968",
+      "context": "PlaygroundFlowController.cs: Watch your child",
+      "text": "Watch your child"
+    },
+    {
+      "id": "flow_02924b240f",
+      "context": "PlaygroundFlowController.cs: Balloon popped. Hands cover ears; the child's body is tense.",
+      "text": "Balloon popped. Hands cover ears; the child's body is tense."
+    },
+    {
+      "id": "flow_69063bd02f",
+      "context": "PlaygroundFlowController.cs: Observe: ",
+      "text": "Observe: "
+    },
+    {
+      "id": "flow_a0f1490a20",
+      "context": "PlaygroundFlowController.cs: s",
+      "text": "s"
+    },
+    {
+      "id": "flow_327c8ebefd",
+      "context": "PlaygroundFlowController.cs: Collect the clues",
+      "text": "Collect the clues"
+    },
+    {
+      "id": "flow_bdf41ee18e",
+      "context": "PlaygroundFlowController.cs: The scene is holding at the foot of the slide. Open the clue tool on your left h",
+      "text": "The scene is holding at the foot of the slide. Open the clue tool on your left hand, then choose at least three different clues from the cards."
+    },
+    {
+      "id": "flow_98ffc9fce7",
+      "context": "PlaygroundFlowController.cs: Three unique clues are required.",
+      "text": "Three unique clues are required."
+    },
+    {
+      "id": "flow_3e0e86c629",
+      "context": "PlaygroundFlowController.cs: Open clue tool",
+      "text": "Open clue tool"
+    },
+    {
+      "id": "flow_c9ec67c27f",
+      "context": "PlaygroundFlowController.cs: Clues: 0 / 3 required",
+      "text": "Clues: 0 / 3 required"
+    },
+    {
+      "id": "flow_0b35eec322",
+      "context": "PlaygroundFlowController.cs: Clue tool",
+      "text": "Clue tool"
+    },
+    {
+      "id": "flow_09ecbced61",
+      "context": "PlaygroundFlowController.cs: Select any clues that match what you noticed. Select at least three different cl",
+      "text": "Select any clues that match what you noticed. Select at least three different clues across either page. Done appears when three or more clues are selected."
+    },
+    {
+      "id": "flow_854c6545ac",
+      "context": "PlaygroundFlowController.cs:  unique clues selected.",
+      "text": " unique clues selected."
+    },
+    {
+      "id": "flow_108d9ea56d",
+      "context": "PlaygroundFlowController.cs: Page ",
+      "text": "Page "
+    },
+    {
+      "id": "flow_607f2de6ce",
+      "context": "PlaygroundFlowController.cs:  of ",
+      "text": " of "
+    },
+    {
+      "id": "flow_d9da7e5bd7",
+      "context": "PlaygroundFlowController.cs:   |  Selections stay saved across pages.",
+      "text": "  |  Selections stay saved across pages."
+    },
+    {
+      "id": "flow_d36a6f5bb3",
+      "context": "PlaygroundFlowController.cs: More clues",
+      "text": "More clues"
+    },
+    {
+      "id": "flow_88bdafb8b0",
+      "context": "PlaygroundFlowController.cs: Previous clues",
+      "text": "Previous clues"
+    },
+    {
+      "id": "flow_7300f7a436",
+      "context": "PlaygroundFlowController.cs: Done - collect clues",
+      "text": "Done - collect clues"
+    },
+    {
+      "id": "flow_dc42fd7a4f",
+      "context": "PlaygroundFlowController.cs: Clues: ",
+      "text": "Clues: "
+    },
+    {
+      "id": "flow_3dc1a09625",
+      "context": "PlaygroundFlowController.cs:  / 3 required",
+      "text": " / 3 required"
+    },
+    {
+      "id": "flow_38e8f250a9",
+      "context": "PlaygroundFlowController.cs: Note your guesses",
+      "text": "Note your guesses"
+    },
+    {
+      "id": "flow_6525d37bb2",
+      "context": "PlaygroundFlowController.cs: Open the guess tool. Choose at least one possible reason, then choose a confiden",
+      "text": "Open the guess tool. Choose at least one possible reason, then choose a confidence card.\n\nYou can add more than one idea."
+    },
+    {
+      "id": "flow_bbe21527ee",
+      "context": "PlaygroundFlowController.cs: At least one guess with a confidence choice is required.",
+      "text": "At least one guess with a confidence choice is required."
+    },
+    {
+      "id": "flow_8ddc58bc4e",
+      "context": "PlaygroundFlowController.cs: Open guess tool",
+      "text": "Open guess tool"
+    },
+    {
+      "id": "flow_c8330392e8",
+      "context": "PlaygroundFlowController.cs: Choose a guess and confidence",
+      "text": "Choose a guess and confidence"
+    },
+    {
+      "id": "flow_258f62f5d8",
+      "context": "PlaygroundFlowController.cs: Review your guesses",
+      "text": "Review your guesses"
+    },
+    {
+      "id": "flow_b905aea83e",
+      "context": "PlaygroundFlowController.cs: Guess tool",
+      "text": "Guess tool"
+    },
+    {
+      "id": "flow_4cc641b191",
+      "context": "PlaygroundFlowController.cs: What changed after your response? Choose an idea to update its confidence, or ad",
+      "text": "What changed after your response? Choose an idea to update its confidence, or add another idea."
+    },
+    {
+      "id": "flow_7660bd5ad4",
+      "context": "PlaygroundFlowController.cs: What might be going on? Choose a card, then choose how sure you are.",
+      "text": "What might be going on? Choose a card, then choose how sure you are."
+    },
+    {
+      "id": "flow_2bf54b6d4f",
+      "context": "PlaygroundFlowController.cs: Guesses recorded: ",
+      "text": "Guesses recorded: "
+    },
+    {
+      "id": "flow_5b4d15ab4d",
+      "context": "PlaygroundFlowController.cs:  guesses saved. Select a saved card to review confidence.",
+      "text": " guesses saved. Select a saved card to review confidence."
+    },
+    {
+      "id": "flow_97ac18780d",
+      "context": "PlaygroundFlowController.cs: More guesses",
+      "text": "More guesses"
+    },
+    {
+      "id": "flow_6265dba28d",
+      "context": "PlaygroundFlowController.cs: Previous guesses",
+      "text": "Previous guesses"
+    },
+    {
+      "id": "flow_da2611211c",
+      "context": "PlaygroundFlowController.cs: Continue to child view",
+      "text": "Continue to child view"
+    },
+    {
+      "id": "flow_bde171e0c3",
+      "context": "PlaygroundFlowController.cs: Done - test guesses",
+      "text": "Done - test guesses"
+    },
+    {
+      "id": "flow_2389f2838e",
+      "context": "PlaygroundFlowController.cs: Review guess confidence",
+      "text": "Review guess confidence"
+    },
+    {
+      "id": "flow_e6e08e3c25",
+      "context": "PlaygroundFlowController.cs: How sure are you?",
+      "text": "How sure are you?"
+    },
+    {
+      "id": "flow_3596a62021",
+      "context": "PlaygroundFlowController.cs: Choose a confidence level. You can revise it after observing your child.",
+      "text": "Choose a confidence level. You can revise it after observing your child."
+    },
+    {
+      "id": "flow_9f5bd4b5f1",
+      "context": "PlaygroundFlowController.cs: Back to guesses",
+      "text": "Back to guesses"
+    },
+    {
+      "id": "flow_a30abe1450",
+      "context": "PlaygroundFlowController.cs: Go to your child",
+      "text": "Go to your child"
+    },
+    {
+      "id": "flow_b1b3445216",
+      "context": "PlaygroundFlowController.cs: Go to the highlighted circle beside your child, about one metre away. Then choos",
+      "text": "Go to the highlighted circle beside your child, about one metre away. Then choose how to respond using the cards.\n\nThere is no speaking or recording input in this step."
+    },
+    {
+      "id": "flow_196b483580",
+      "context": "PlaygroundFlowController.cs: Move to the child's approach circle.",
+      "text": "Move to the child's approach circle."
+    },
+    {
+      "id": "flow_d78401ce12",
+      "context": "PlaygroundFlowController.cs: Choose how to respond",
+      "text": "Choose how to respond"
+    },
+    {
+      "id": "flow_2c0c8d4e26",
+      "context": "PlaygroundFlowController.cs: Choose one response, then watch for twenty seconds. Look at the child's hands an",
+      "text": "Choose one response, then watch for twenty seconds. Look at the child's hands and posture."
+    },
+    {
+      "id": "flow_6b29078d58",
+      "context": "PlaygroundFlowController.cs: You are near your child. Choose one response card.",
+      "text": "You are near your child. Choose one response card."
+    },
+    {
+      "id": "flow_aaedda1222",
+      "context": "PlaygroundFlowController.cs: Choose a response card",
+      "text": "Choose a response card"
+    },
+    {
+      "id": "flow_e8837a189e",
+      "context": "PlaygroundFlowController.cs: Watch how your child reacts",
+      "text": "Watch how your child reacts"
+    },
+    {
+      "id": "flow_168e66b480",
+      "context": "PlaygroundFlowController.cs: Response: ",
+      "text": "Response: "
+    },
+    {
+      "id": "flow_61a4cac9b5",
+      "context": "PlaygroundFlowController.cs:   Watch for a change in his hands and body.",
+      "text": "\n\nWatch for a change in his hands and body."
+    },
+    {
+      "id": "flow_d828559e10",
+      "context": "PlaygroundFlowController.cs: Observing the response...",
+      "text": "Observing the response..."
+    },
+    {
+      "id": "flow_8dfaeb8653",
+      "context": "PlaygroundFlowController.cs: Watch time remaining: ",
+      "text": "Watch time remaining: "
+    },
+    {
+      "id": "flow_abff0e4557",
+      "context": "PlaygroundFlowController.cs: Response observation: ",
+      "text": "Response observation: "
+    },
+    {
+      "id": "flow_fe91f3b2bb",
+      "context": "PlaygroundFlowController.cs: Look beyond the scene",
+      "text": "Look beyond the scene"
+    },
+    {
+      "id": "flow_8d54d516af",
+      "context": "PlaygroundFlowController.cs: See the playground from your child's position. The speaker and balloons will app",
+      "text": "See the playground from your child's position. The speaker and balloons will appear larger and closer, with louder, sharper sound.\n\nThis is an illustration of a possible experience. A soft amber tint marks the child's viewpoint."
+    },
+    {
+      "id": "flow_6a7ca301eb",
+      "context": "PlaygroundFlowController.cs: Select the button to enter the child-perspective view.",
+      "text": "Select the button to enter the child-perspective view."
+    },
+    {
+      "id": "flow_9157bbced8",
+      "context": "PlaygroundFlowController.cs: Child-perspective view ready",
+      "text": "Child-perspective view ready"
+    },
+    {
+      "id": "flow_c186ab9cbf",
+      "context": "PlaygroundFlowController.cs: From the child's position",
+      "text": "From the child's position"
+    },
+    {
+      "id": "flow_0f2b97e17e",
+      "context": "PlaygroundFlowController.cs: Look toward the speaker and the balloons. Notice how their size and the sharper ",
+      "text": "Look toward the speaker and the balloons. Notice how their size and the sharper sound change the scene.\n\nYou can look around. The Return to my view button on your left hand will unlock after the observation time."
+    },
+    {
+      "id": "flow_7435b92a71",
+      "context": "PlaygroundFlowController.cs: Static amber tint active; no flashes.",
+      "text": "Static amber tint active; no flashes."
+    },
+    {
+      "id": "flow_9ab01a8f0f",
+      "context": "PlaygroundFlowController.cs: Listen and look: ",
+      "text": "Listen and look: "
+    },
+    {
+      "id": "flow_0f7854229f",
+      "context": "PlaygroundFlowController.cs: s remaining",
+      "text": "s remaining"
+    },
+    {
+      "id": "flow_fb6e10faee",
+      "context": "PlaygroundFlowController.cs: Child view: ",
+      "text": "Child view: "
+    },
+    {
+      "id": "flow_1ced32bd56",
+      "context": "PlaygroundFlowController.cs: You can return to your own view now.",
+      "text": "You can return to your own view now."
+    },
+    {
+      "id": "flow_19afbe5880",
+      "context": "PlaygroundFlowController.cs: Return to my view is ready",
+      "text": "Return to my view is ready"
+    },
+    {
+      "id": "flow_3c347c3e65",
+      "context": "PlaygroundFlowController.cs: Return to my view",
+      "text": "Return to my view"
+    },
+    {
+      "id": "flow_0028ce8de4",
+      "context": "PlaygroundFlowController.cs: Hear what the onlooker thinks",
+      "text": "Hear what the onlooker thinks"
+    },
+    {
+      "id": "flow_af7049bec8",
+      "context": "PlaygroundFlowController.cs: Look at the aunty on the bench. Open the blue gaze marker over her thought bubbl",
+      "text": "Look at the aunty on the bench. Open the blue gaze marker over her thought bubble. Read her assumption, then close the bubble. You can reopen it before reflection starts."
+    },
+    {
+      "id": "flow_40dbc88ab2",
+      "context": "PlaygroundFlowController.cs: Look at the thought-bubble gaze marker.",
+      "text": "Look at the thought-bubble gaze marker."
+    },
+    {
+      "id": "flow_f2ce014375",
+      "context": "PlaygroundFlowController.cs: Look at aunty's thought bubble",
+      "text": "Look at aunty's thought bubble"
+    },
+    {
+      "id": "flow_b328ed4417",
+      "context": "PlaygroundFlowController.cs: Onlooker's thought is open",
+      "text": "Onlooker's thought is open"
+    },
+    {
+      "id": "flow_1996f4d889",
+      "context": "PlaygroundFlowController.cs: An onlooker's assumption  \"Why is he covering his ears? Children should enjoy pa",
+      "text": "An onlooker's assumption\n\n\"Why is he covering his ears? Children should enjoy parties. Is something wrong with him?\""
+    },
+    {
+      "id": "flow_39c0b49b68",
+      "context": "PlaygroundFlowController.cs: You can reopen the bubble. Reflection will begin shortly.",
+      "text": "You can reopen the bubble. Reflection will begin shortly."
+    },
+    {
+      "id": "flow_8691ecaa43",
+      "context": "PlaygroundFlowController.cs: Reflection starts shortly",
+      "text": "Reflection starts shortly"
+    },
+    {
+      "id": "flow_4027cd489f",
+      "context": "PlaygroundFlowController.cs: Reflection ",
+      "text": "Reflection "
+    },
+    {
+      "id": "flow_b299b63d6b",
+      "context": "PlaygroundFlowController.cs: Recording answer",
+      "text": "Recording answer"
+    },
+    {
+      "id": "flow_2f4c2ff0b7",
+      "context": "PlaygroundFlowController.cs:  clip(s) saved",
+      "text": " clip(s) saved"
+    },
+    {
+      "id": "flow_f0a78f739a",
+      "context": "PlaygroundFlowController.cs: Listen to the question. Then select Record answer.",
+      "text": "Listen to the question. Then select Record answer."
+    },
+    {
+      "id": "flow_c383d7bbec",
+      "context": "PlaygroundFlowController.cs: Listen to question ",
+      "text": "Listen to question "
+    },
+    {
+      "id": "flow_39fddabbbc",
+      "context": "PlaygroundFlowController.cs: Reflection feedback",
+      "text": "Reflection feedback"
+    },
+    {
+      "id": "flow_c2e04525b9",
+      "context": "PlaygroundFlowController.cs: Next, replay once and try to act before the balloon pops.",
+      "text": "Next, replay once and try to act before the balloon pops."
+    },
+    {
+      "id": "flow_3e57f1badc",
+      "context": "PlaygroundFlowController.cs: Replay and prevent",
+      "text": "Replay and prevent"
+    },
+    {
+      "id": "flow_dcf585e53f",
+      "context": "PlaygroundFlowController.cs: Reflection finished  /  Replay next",
+      "text": "Reflection finished  /  Replay next"
+    },
+    {
+      "id": "flow_fc1b7fbb14",
+      "context": "PlaygroundFlowController.cs: You will replay the scene once. The three introductory gazes will not repeat.  G",
+      "text": "You will replay the scene once. The three introductory gazes will not repeat.\n\nGo to the observation circle, watch the early cues, and choose how to respond before the pop. Consider what each action changes for your child. You can move throughout this attempt."
+    },
+    {
+      "id": "flow_1ad766bac6",
+      "context": "PlaygroundFlowController.cs: One replay is available. After it, the module ends at the summary.",
+      "text": "One replay is available. After it, the module ends at the summary."
+    },
+    {
+      "id": "flow_64cf2b2d79",
+      "context": "PlaygroundFlowController.cs: Replay once",
+      "text": "Replay once"
+    },
+    {
+      "id": "flow_bbf0841817",
+      "context": "PlaygroundFlowController.cs: Replay 0 / 1",
+      "text": "Replay 0 / 1"
+    },
+    {
+      "id": "flow_b47ca6bd00",
+      "context": "PlaygroundFlowController.cs: Replay used",
+      "text": "Replay used"
+    },
+    {
+      "id": "flow_c371a55aa5",
+      "context": "PlaygroundFlowController.cs: Go to the highlighted observation circle. You remain free to move.",
+      "text": "Go to the highlighted observation circle. You remain free to move."
+    },
+    {
+      "id": "flow_980dac031b",
+      "context": "PlaygroundFlowController.cs: Replay 1 / 1  /  Go to circle",
+      "text": "Replay 1 / 1  /  Go to circle"
+    },
+    {
+      "id": "flow_7d62fe823e",
+      "context": "PlaygroundFlowController.cs: Act on the early signs",
+      "text": "Act on the early signs"
+    },
+    {
+      "id": "flow_c910a2a15a",
+      "context": "PlaygroundFlowController.cs: Look for an early hand-to-ear cue and a change in posture. You can move freely. ",
+      "text": "Look for an early hand-to-ear cue and a change in posture. You can move freely. Choose a preventive response before the pop."
+    },
+    {
+      "id": "flow_940f79e6b6",
+      "context": "PlaygroundFlowController.cs: Replay warning period has begun.",
+      "text": "Replay warning period has begun."
+    },
+    {
+      "id": "flow_28ffbf4f0f",
+      "context": "PlaygroundFlowController.cs: Time before the pop: ",
+      "text": "Time before the pop: "
+    },
+    {
+      "id": "flow_1225b060ae",
+      "context": "PlaygroundFlowController.cs: s. Movement is enabled.",
+      "text": "s. Movement is enabled."
+    },
+    {
+      "id": "flow_3a4f86cb07",
+      "context": "PlaygroundFlowController.cs: Observe the result. Summary in ",
+      "text": "Observe the result. Summary in "
+    },
+    {
+      "id": "flow_55d7456070",
+      "context": "PlaygroundFlowController.cs: s.",
+      "text": "s."
+    },
+    {
+      "id": "flow_3f79c2fdcd",
+      "context": "PlaygroundFlowController.cs: Pop in ",
+      "text": "Pop in "
+    },
+    {
+      "id": "flow_cabe34992a",
+      "context": "PlaygroundFlowController.cs: Replay 1 / 1 - observe result",
+      "text": "Replay 1 / 1 - observe result"
+    },
+    {
+      "id": "flow_15b56517e9",
+      "context": "PlaygroundFlowController.cs: Response selected. Watch your child's hands and posture as the scene continues.",
+      "text": "Response selected. Watch your child's hands and posture as the scene continues."
+    },
+    {
+      "id": "flow_562273b653",
+      "context": "PlaygroundFlowController.cs: Saved audio answers: Ans1 (",
+      "text": "Saved audio answers: Ans1 ("
+    },
+    {
+      "id": "flow_a097e25b64",
+      "context": "PlaygroundFlowController.cs: ), Ans2 (",
+      "text": "), Ans2 ("
+    },
+    {
+      "id": "flow_1c6d56015d",
+      "context": "PlaygroundFlowController.cs: ), Ans3 (",
+      "text": "), Ans3 ("
+    },
+    {
+      "id": "flow_b222a722b9",
+      "context": "PlaygroundFlowController.cs: Finish module",
+      "text": "Finish module"
+    },
+    {
+      "id": "flow_407a3e5927",
+      "context": "PlaygroundFlowController.cs: Module finished  /  Replay 1 of 1",
+      "text": "Module finished  /  Replay 1 of 1"
+    },
+    {
+      "id": "flow_8b341b28ba",
+      "context": "PlaygroundFlowController.cs: Saving video...",
+      "text": "Saving video..."
+    },
+    {
+      "id": "flow_4920fb5c54",
+      "context": "PlaygroundFlowController.cs: Saving your session video and game audio. Please wait.",
+      "text": "Saving your session video and game audio. Please wait."
+    },
+    {
+      "id": "flow_e70e42b449",
+      "context": "PlaygroundFlowController.cs: Module complete",
+      "text": "Module complete"
+    },
+    {
+      "id": "flow_aa9a63e4e3",
+      "context": "PlaygroundFlowController.cs: Thank you. Module 1 is complete.",
+      "text": "Thank you. Module 1 is complete."
+    },
+    {
+      "id": "flow_7fe14d460b",
+      "context": "PlaygroundFlowController.cs:  Video saved for ",
+      "text": "\nVideo saved for "
+    },
+    {
+      "id": "entry_4442e4e8d6",
+      "context": "ModuleEntryController.cs: Explore a different perspective",
+      "text": "Explore a different perspective"
+    },
+    {
+      "id": "entry_96e68cabbf",
+      "context": "ModuleEntryController.cs: Choose a module to begin your session",
+      "text": "Choose a module to begin your session"
+    },
+    {
+      "id": "entry_a68eb23082",
+      "context": "ModuleEntryController.cs: Playground",
+      "text": "Playground"
+    },
+    {
+      "id": "entry_e4115be258",
+      "context": "ModuleEntryController.cs: Coming soon",
+      "text": "Coming soon"
+    },
+    {
+      "id": "entry_1496b242d5",
+      "context": "ModuleEntryController.cs: Choose Module 1 to begin. Modules 2, 3 and 4 are coming soon.",
+      "text": "Choose Module 1 to begin. Modules 2, 3 and 4 are coming soon."
+    },
+    {
+      "id": "entry_df7ff434e4",
+      "context": "ModuleEntryController.cs: Opening Module ",
+      "text": "Opening Module "
+    },
+    {
+      "id": "ui_f2292b7b38",
+      "context": "PlaygroundModuleUI.cs: No response recorded",
+      "text": "No response recorded"
+    },
+    {
+      "id": "ui_508613acea",
+      "context": "PlaygroundModuleUI.cs:  seconds after the pop",
+      "text": " seconds after the pop"
+    },
+    {
+      "id": "ui_81a9e3ba15",
+      "context": "PlaygroundModuleUI.cs: No intervention",
+      "text": "No intervention"
+    },
+    {
+      "id": "ui_b537a6b181",
+      "context": "PlaygroundModuleUI.cs:  seconds before the pop",
+      "text": " seconds before the pop"
+    },
+    {
+      "id": "ui_f05a7a3556",
+      "context": "PlaygroundModuleUI.cs: At or after the pop",
+      "text": "At or after the pop"
+    },
+    {
+      "id": "ui_d2e0c3762f",
+      "context": "PlaygroundModuleUI.cs:  clue / ",
+      "text": " clue / "
+    },
+    {
+      "id": "ui_d05260aeaa",
+      "context": "PlaygroundModuleUI.cs:  clues / ",
+      "text": " clues / "
+    },
+    {
+      "id": "ui_9eecdf20a0",
+      "context": "PlaygroundModuleUI.cs:  guess",
+      "text": " guess"
+    },
+    {
+      "id": "ui_5f8a84dbe9",
+      "context": "PlaygroundModuleUI.cs:  guesses",
+      "text": " guesses"
+    },
+    {
+      "id": "ui_f48147d4c7",
+      "context": "PlaygroundModuleUI.cs: Not collected again",
+      "text": "Not collected again"
+    },
+    {
+      "id": "ui_8936210f4c",
+      "context": "PlaygroundModuleUI.cs: Observe first",
+      "text": "Observe first"
+    },
+    {
+      "id": "ui_6b3906d082",
+      "context": "PlaygroundModuleUI.cs: Recording needs attention. Read the details next to your question.",
+      "text": "Recording needs attention. Read the details next to your question."
+    },
+    {
+      "id": "ui_3310475cd4",
+      "context": "PlaygroundModuleUI.cs: Saving your microphone recording...",
+      "text": "Saving your microphone recording..."
+    },
+    {
+      "id": "ui_7ac240a840",
+      "context": "PlaygroundModuleUI.cs: Recording ",
+      "text": "Recording "
+    },
+    {
+      "id": "ui_8efd1fe1ba",
+      "context": "PlaygroundModuleUI.cs: . Select Stop and save answer when finished.",
+      "text": ". Select Stop and save answer when finished."
+    },
+    {
+      "id": "ui_368c428ad0",
+      "context": "PlaygroundModuleUI.cs: Answer saved. Record another clip, or select Next to continue.",
+      "text": "Answer saved. Record another clip, or select Next to continue."
+    },
+    {
+      "id": "ui_0998163f82",
+      "context": "PlaygroundModuleUI.cs: A clip was saved automatically. Use Record, then Stop and save, to unlock Next.",
+      "text": "A clip was saved automatically. Use Record, then Stop and save, to unlock Next."
+    },
+    {
+      "id": "ui_556ad3b5ba",
+      "context": "PlaygroundModuleUI.cs: Select Record answer, speak, then select the same button to stop and save.",
+      "text": "Select Record answer, speak, then select the same button to stop and save."
+    },
+    {
+      "id": "flow_5db9e6901b",
+      "context": "PlaygroundFlowController.cs: Notice the early changes before the pop.",
+      "text": "Notice the early changes before the pop."
+    },
+    {
+      "id": "flow_e8741f0d80",
+      "context": "PlaygroundFlowController.cs:  Watch time remaining: ",
+      "text": "\nWatch time remaining: "
+    },
+    {
+      "id": "flow_e0e9e74383",
+      "context": "PlaygroundFlowController.cs:  more guesses saved in the session log.",
+      "text": " more guesses saved in the session log."
+    },
+    {
+      "id": "flow_e846f804c3",
+      "context": "PlaygroundFlowController.cs:  more saved)",
+      "text": " more saved)"
+    },
+    {
+      "id": "flow_c4e5b6ff05",
+      "context": "PlaygroundFlowController.cs: Hands lowered; child appeared calmer",
+      "text": "Hands lowered; child appeared calmer"
+    },
+    {
+      "id": "flow_4e39d6d292",
+      "context": "PlaygroundFlowController.cs: Distress remained",
+      "text": "Distress remained"
+    },
+    {
+      "id": "flow_71b2b30b68",
+      "context": "PlaygroundFlowController.cs: Distress increased",
+      "text": "Distress increased"
+    },
+    {
+      "id": "flow_88b1db6b71",
+      "context": "PlaygroundFlowController.cs: You selected: ",
+      "text": "You selected: "
+    },
+    {
+      "id": "flow_493975531f",
+      "context": "PlaygroundFlowController.cs: .  Your guesses: ",
+      "text": ".\n\nYour guesses:\n"
+    },
+    {
+      "id": "flow_c625360168",
+      "context": "PlaygroundFlowController.cs:   Hands over his ears, a tense body and the change after the pop support a sound",
+      "text": "\n\nHands over his ears, a tense body and the change after the pop support a sound-related explanation. Cake, clothing, a toy or waiting for a turn were not shown as causes. A guess still needs checking with the child.\n\nYour response: "
+    },
+    {
+      "id": "flow_a6ed360fae",
+      "context": "PlaygroundFlowController.cs: Early sound-reducing support; child remained calmer",
+      "text": "Early sound-reducing support; child remained calmer"
+    },
+    {
+      "id": "flow_07eae3df24",
+      "context": "PlaygroundFlowController.cs: Sound-reducing support offered after the pop",
+      "text": "Sound-reducing support offered after the pop"
+    },
+    {
+      "id": "flow_84a3fc23b1",
+      "context": "PlaygroundFlowController.cs: The chosen action did not reduce sound exposure; distress remained",
+      "text": "The chosen action did not reduce sound exposure; distress remained"
+    },
+    {
+      "id": "flow_adfa76a63b",
+      "context": "PlaygroundFlowController.cs: No intervention; distress remained",
+      "text": "No intervention; distress remained"
+    },
+    {
+      "id": "flow_8d3a6f2075",
+      "context": "PlaygroundFlowController.cs: Saved microphone answers: Q1 (",
+      "text": "Saved microphone answers: Q1 ("
+    },
+    {
+      "id": "flow_08f13c76e8",
+      "context": "PlaygroundFlowController.cs: ), Q2 (",
+      "text": "), Q2 ("
+    },
+    {
+      "id": "flow_61de1bb8f7",
+      "context": "PlaygroundFlowController.cs: ), Q3 (",
+      "text": "), Q3 ("
+    },
+    {
+      "id": "flow_753cfa97f5",
+      "context": "PlaygroundFlowController.cs: ). Audio files are in the same participant folder as the video.",
+      "text": "). Audio files are in the same participant folder as the video."
+    }
+  ]
+}

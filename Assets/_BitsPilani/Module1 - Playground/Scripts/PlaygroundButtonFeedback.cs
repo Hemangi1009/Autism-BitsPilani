@@ -10,6 +10,14 @@ namespace BitsPilani.Module1.Playground {
     public sealed class PlaygroundButtonFeedback : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler, ISelectHandler, IDeselectHandler {
         [Range(1f, 1.12f)] public float hoverScale = 1.025f;
         [Range(.04f, .4f)] public float hoverSmoothTime = .10f;
+        [Header("Inspector-authored interaction colors")]
+        public Color hoverBackground = Color.black;
+        public Color hoverText = Color.white;
+        public Color disabledBackground = new Color(.92f,.92f,.92f);
+        public Color disabledText = new Color(.37f,.37f,.37f);
+        public Color selectedBackground = new Color(.88f,.88f,.88f);
+        public Color hoverBorder = Color.black;
+        public Color selectedBorder = Color.black;
         Button button;
         TMP_Text label;
         readonly Dictionary<TMP_Text, Color> idleLabels = new Dictionary<TMP_Text, Color>();
@@ -61,11 +69,11 @@ namespace BitsPilani.Module1.Playground {
             // then restore each label's own gray/black shade when the pointer leaves.
             foreach (var text in GetComponentsInChildren<TMP_Text>(true)) {
                 if (!idleLabels.ContainsKey(text)) idleLabels[text] = text.color;
-                text.color = focused ? Color.white : !interactive ? PlaygroundUIStyle.Muted : idleLabels[text];
+                text.color = focused ? hoverText : !interactive ? disabledText : idleLabels[text];
             }
-            if (border) border.effectColor = focused || choiceSelected ? Color.black : idleBorder;
+            if (border) border.effectColor = focused ? hoverBorder : choiceSelected ? selectedBorder : idleBorder;
             if (button && button.targetGraphic) {
-                button.targetGraphic.color = focused ? Color.black : !interactive ? PlaygroundUIStyle.Disabled : choiceSelected ? Color.Lerp(idleFill, Color.black, .12f) : idleFill;
+                button.targetGraphic.color = focused ? hoverBackground : !interactive ? disabledBackground : choiceSelected ? selectedBackground : idleFill;
                 button.targetGraphic.CrossFadeColor(Color.white, 0, true, true);
             }
             lastCanInteract = interactive;

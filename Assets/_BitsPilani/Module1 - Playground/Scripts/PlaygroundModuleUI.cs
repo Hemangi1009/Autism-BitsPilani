@@ -10,6 +10,8 @@ namespace BitsPilani.Module1.Playground {
     [Serializable] public class PlaygroundSummaryRow { public TMP_Text firstAttempt, replay; }
 
     public sealed class PlaygroundModuleUI : MonoBehaviour {
+        public PlaygroundUITextCatalog textCatalog;
+        public string Copy(string id) => textCatalog ? textCatalog.Get(id) : id;
         public Canvas mainCanvas, wristCanvas, thoughtCanvas, tintCanvas;
         [Header("Authored replay alert and summary")]
         public Canvas replayAttentionCanvas;
@@ -42,15 +44,15 @@ namespace BitsPilani.Module1.Playground {
             if (summaryTableRoot) summaryTableRoot.SetActive(true);
         }
         public void ShowAttemptComparison(PlaygroundSessionData data, string audioSummary) {
-            Show("Module 1 summary", "", "Replay used: 1 of 1. The module is finished; no second replay is available.");
+            Show(Copy("ui_dc59cb9d06"), "", Copy("ui_c5747a2648"));
             if (!summaryTableRoot || summaryRows == null || summaryRows.Length != 4) {
-                body.text = "FIRST ATTEMPT\n" + data.firstResponse + "\n" + data.firstOutcome + "\n\nREPLAY\n" + data.replayResponse + "\n" + data.replayOutcome; RefreshNarrative(); return;
+                body.text = Copy("ui_0a356fd6ac") + data.firstResponse + "\n" + data.firstOutcome + Copy("ui_ff6e6a9ba5") + data.replayResponse + "\n" + data.replayOutcome; RefreshNarrative(); return;
             }
-            string firstTiming = data.firstResponseSeconds < 0 ? "No response recorded" : data.firstResponseSeconds.ToString("F1") + " seconds after the pop";
+            string firstTiming = data.firstResponseSeconds < 0 ? Copy("ui_f2292b7b38") : data.firstResponseSeconds.ToString("F1") + Copy("ui_508613acea");
             bool replayResponse = !string.IsNullOrEmpty(data.replayResponse) && data.replayResponse != "No response";
-            string secondTiming = !replayResponse ? "No intervention" : data.replaySecondsBeforePop > 0 ? data.replaySecondsBeforePop.ToString("F1") + " seconds before the pop" : "At or after the pop";
-            string[] first = { data.firstResponse, firstTiming, data.firstOutcome, data.clues.Count + (data.clues.Count == 1 ? " clue / " : " clues / ") + data.guesses.Count + (data.guesses.Count == 1 ? " guess" : " guesses") };
-            string[] second = { data.replayResponse, secondTiming, data.replayOutcome, "Not collected again" };
+            string secondTiming = !replayResponse ? Copy("ui_81a9e3ba15") : data.replaySecondsBeforePop > 0 ? data.replaySecondsBeforePop.ToString("F1") + Copy("ui_b537a6b181") : Copy("ui_f05a7a3556");
+            string[] first = { data.firstResponse, firstTiming, data.firstOutcome, data.clues.Count + (data.clues.Count == 1 ? Copy("ui_d2e0c3762f") : Copy("ui_d05260aeaa")) + data.guesses.Count + (data.guesses.Count == 1 ? Copy("ui_9eecdf20a0") : Copy("ui_5f8a84dbe9")) };
+            string[] second = { data.replayResponse, secondTiming, data.replayOutcome, Copy("ui_f48147d4c7") };
             for (int i = 0; i < 4; i++) { summaryRows[i].firstAttempt.text = first[i]; summaryRows[i].replay.text = second[i]; }
             PreviewSummaryTable(); footer.text = audioSummary; HideReplayAttention();
         }
@@ -73,6 +75,7 @@ namespace BitsPilani.Module1.Playground {
         [Header("Landscape narrative and child-view return")]
         public ScrollRect narrativeScroll;
         public Button narrativeUp, narrativeDown, wristReturn;
+        public Scrollbar narrativeScrollbar;
         [Header("Narrative layout variants (canvas pixels)")]
         public Vector2 textOnlyNarrativeSize = new Vector2(1740, 500);
         public Vector2 textOnlyNarrativePosition = new Vector2(0, 80);
@@ -83,8 +86,7 @@ namespace BitsPilani.Module1.Playground {
             var rect = (RectTransform)narrativeScroll.transform;
             rect.sizeDelta = split ? selectionNarrativeSize : textOnlyNarrativeSize;
             rect.anchoredPosition = split ? selectionNarrativePosition : textOnlyNarrativePosition;
-            if (narrativeUp) ((RectTransform)narrativeUp.transform).anchoredPosition = new Vector2(split ? -280 : 625, -200);
-            if (narrativeDown) ((RectTransform)narrativeDown.transform).anchoredPosition = new Vector2(split ? -125 : 780, -200);
+
             RefreshNarrative();
         }
         [ContextMenu("Preview layout/Text only (full width)")]
@@ -117,8 +119,9 @@ namespace BitsPilani.Module1.Playground {
             bool overflow = narrativeScroll.content.rect.height > narrativeScroll.viewport.rect.height + 1;
             narrativeScroll.vertical = overflow;
             float position = narrativeScroll.verticalNormalizedPosition;
-            if (narrativeUp) { narrativeUp.gameObject.SetActive(overflow); narrativeUp.interactable = overflow && position < .999f; }
-            if (narrativeDown) { narrativeDown.gameObject.SetActive(overflow); narrativeDown.interactable = overflow && position > .001f; }
+            if (narrativeUp) narrativeUp.gameObject.SetActive(false);
+            if (narrativeDown) narrativeDown.gameObject.SetActive(false);
+            if (narrativeScrollbar) { narrativeScrollbar.size = Mathf.Clamp01(narrativeScroll.viewport.rect.height / Mathf.Max(1, narrativeScroll.content.rect.height)); narrativeScrollbar.gameObject.SetActive(overflow); narrativeScrollbar.interactable = overflow; }
         }
         void ScrollNarrative(float amount) {
             if (!narrativeScroll) return;
@@ -127,12 +130,13 @@ namespace BitsPilani.Module1.Playground {
         }
         public void SetChildViewReturn(bool visible, bool ready, UnityAction callback) {
             if (wristCanvas && visible) wristCanvas.gameObject.SetActive(true);
-            if (!wristReturn) { if (visible) { SetWristShortcut(ready ? "Return to my view" : "Observe first", callback); wristHelp.interactable = ready; } return; }
+            if (!wristReturn) { if (visible) { SetWristShortcut(ready ? Copy("ui_3c347c3e65") : Copy("ui_8936210f4c"), callback); wristHelp.interactable = ready; } return; }
             wristReturn.gameObject.SetActive(visible); wristHelp.gameObject.SetActive(!visible);
+            if (visible) wristHelp.interactable = false;
             wristReturn.onClick.RemoveAllListeners(); if (callback != null) wristReturn.onClick.AddListener(callback);
             wristReturn.interactable = visible && ready && callback != null;
             var label = wristReturn.GetComponentInChildren<TMP_Text>(true);
-            if (label) label.text = ready ? "Return to my view" : "Return after observation";
+            if (label) label.text = ready ? Copy("ui_3c347c3e65") : Copy("ui_67b6f9c3fd");
         }
         public GameObject recordingGroup;
         public Image tint;
@@ -158,6 +162,7 @@ namespace BitsPilani.Module1.Playground {
         public int VisibleChoiceCount { get; private set; }
         public string CurrentTitle => title ? title.text : "";
         bool initialized, followInitialized, expanded;
+        bool instructionStepActive;
         TMP_Text recordAnswerLabel, nextQuestionLabel;
         int activeQuestion;
         string recordingQuestion;
@@ -180,8 +185,8 @@ namespace BitsPilani.Module1.Playground {
             skipQuestion.gameObject.name = "Next reflection question";
             recordingGroup.name = "Step 8 microphone answers";
             if (!useAuthoredCanvas && progress && progress.fillRect) { progress.fillRect.sizeDelta = Vector2.zero; progress.fillRect.anchoredPosition = Vector2.zero; }
-            if (useAuthoredCanvas) BindAuthoredCanvas(); else ApplyStyle();
-            SetWristTools(false, false, null, null);
+            if (useAuthoredCanvas || Application.isPlaying) BindAuthoredCanvas(); else ApplyStyle();
+            SetWristTools(false, false, null, null); wristHelp.interactable = false;
         }
         void BindAuthoredCanvas() {
             background = authoredBackground; accent = authoredAccent;
@@ -191,8 +196,10 @@ namespace BitsPilani.Module1.Playground {
             if (narrativeUp) narrativeUp.onClick.AddListener(() => ScrollNarrative(.5f));
             if (narrativeDown) narrativeDown.onClick.AddListener(() => ScrollNarrative(-.5f));
             if (narrativeScroll) narrativeScroll.onValueChanged.AddListener(_ => UpdateNarrativeButtons());
+            if (narrativeScrollbar) narrativeScrollbar.onValueChanged.AddListener(value => { if (narrativeScroll) narrativeScroll.verticalNormalizedPosition = value; });
         }
-        void HideInstructions() { mainCanvas.gameObject.SetActive(false); }
+        public void HideInstructions() { mainCanvas.gameObject.SetActive(false); UpdateInstructionButton(); }
+        void UpdateInstructionButton() { if (wristHelp) wristHelp.interactable = initialized && instructionStepActive && (!wristReturn || !wristReturn.gameObject.activeSelf) && !mainCanvas.gameObject.activeSelf; }
         // Called explicitly once by the Editor authoring tool, never on entering Play mode.
         public void BakeCanvasForEditing() {
             if (useAuthoredCanvas) return;
@@ -212,7 +219,7 @@ namespace BitsPilani.Module1.Playground {
             useAuthoredCanvas = true;
         }
         void StyleButton(Button button, TMP_Text label, bool primary = false, bool selected = false) {
-            if (!useAuthoredCanvas) PlaygroundUIStyle.Button(button, label, primary, selected);
+            if (!useAuthoredCanvas && !Application.isPlaying) PlaygroundUIStyle.Button(button, label, primary, selected);
         }
         void ApplyStyle() {
             background = title.transform.parent as RectTransform;
@@ -293,16 +300,16 @@ namespace BitsPilani.Module1.Playground {
             }
         }
         public void SetStep(int step, string caption) {
-            Initialize(); Recenter(); SetChildViewReturn(false, false, null); SetWristShortcut("Show instructions", ShowFixedInstructions);
-            stepLabel.text = step == 0 ? "MODULE 1  /  GETTING READY" : step > 9 ? "MODULE 1  /  COMPLETE" : "MODULE 1  /  STEP " + step + " OF 9";
-            wristStep.text = step == 0 ? "GETTING READY" : step > 9 ? "MODULE COMPLETE" : "STEP " + step + "  /  " + caption;
+            Initialize(); instructionStepActive = step > 0; Recenter(); SetChildViewReturn(false, false, null); SetWristShortcut(Copy("ui_548442ddeb"), ShowFixedInstructions);
+            stepLabel.text = step == 0 ? Copy("ui_4530b7b026") : step > 9 ? Copy("ui_7b431b9c6c") : Copy("ui_6223752081") + step + Copy("ui_38c0c8830d");
+            wristStep.text = step == 0 ? Copy("ui_419d0202db") : step > 9 ? Copy("ui_139325a34f") : Copy("ui_c5964dcff2") + step + "  /  " + caption;
         }
         public void Show(string heading, string description, string state, bool withChoices = false) {
-            Initialize(); mainCanvas.gameObject.SetActive(true);
+            Initialize(); mainCanvas.gameObject.SetActive(true); UpdateInstructionButton();
             if (summaryTableRoot) summaryTableRoot.SetActive(false); if (narrativeScroll) narrativeScroll.gameObject.SetActive(true);
             title.text = heading; body.text = description; status.text = state; footer.text = ""; RefreshNarrative();
             Layout(withChoices || description.Length > 440, withChoices);
-            hint.text = "Point with the right ray and release trigger. Hide clears the view; wrist Instructions reopens it.";
+            hint.text = Copy("ui_1fd2add495");
             recordingGroup.SetActive(false); DrawChoices(Array.Empty<string>(), null, null);
             SetPrimary("", null, false, false); SetSecondary("", null, false, false);
         }
@@ -332,7 +339,7 @@ namespace BitsPilani.Module1.Playground {
             clueTool.interactable = clues && onClues != null; guessTool.interactable = guesses && onGuesses != null;
         }
         public void ShowRecordingQuestion(string question, int index, UnityAction onRecord, UnityAction onNext, bool narrationPlaying = false) {
-            Show("Reflect on what you noticed", question, "Record and save an answer to continue."); Layout(true, false);
+            Show(Copy("ui_40746e3394"), question, Copy("ui_08066747df")); Layout(true, false);
             if (!useAuthoredCanvas) {
                 Place(body.rectTransform, new Vector2(900, 220), new Vector2(0, 232));
                 Place(status.rectTransform, new Vector2(864, 64), new Vector2(0, 68));
@@ -350,33 +357,33 @@ namespace BitsPilani.Module1.Playground {
         public void UpdateAnswerRecordingState(bool recording, bool saving, int savedCount, float seconds, string error = null) {
             if (!recordAnswerLabel) recordAnswerLabel = recordingPlaceholder.GetComponentInChildren<TMP_Text>(true);
             if (!nextQuestionLabel) nextQuestionLabel = skipQuestion.GetComponentInChildren<TMP_Text>(true);
-            recordAnswerLabel.text = saving ? "Saving answer..." : recording ? "Stop and save answer" : savedCount > 0 ? "Record another answer" : "Record answer";
-            nextQuestionLabel.text = "Next";
+            recordAnswerLabel.text = saving ? Copy("ui_dbfd6f2663") : recording ? Copy("ui_e5c295ae8f") : savedCount > 0 ? Copy("ui_5ea1972f3b") : Copy("ui_0afad95194");
+            nextQuestionLabel.text = Copy("ui_bc981983e7");
             answerRecording = recording; answerSaving = saving; answerSavedCount = savedCount;
             ApplyAnswerButtonGates();
             StyleButton(skipQuestion, nextQuestionLabel, skipQuestion.interactable);
             StyleButton(recordingPlaceholder, recordAnswerLabel, true);
-            questionCount.text = "QUESTION " + activeQuestion + " OF 3   /   " + savedCount + (savedCount == 1 ? " CLIP SAVED" : " CLIPS SAVED");
+            questionCount.text = Copy("ui_1e7962141e") + activeQuestion + Copy("ui_2a831953c3") + savedCount + (savedCount == 1 ? Copy("ui_0d3f865256") : Copy("ui_9cd6a3a01e"));
             int elapsed = Mathf.FloorToInt(seconds);
             string questionDetails = recordingQuestion + (string.IsNullOrEmpty(error) ? "" : "\n\nRecording details:\n" + error);
             if (body.text != questionDetails) { body.text = questionDetails; RefreshNarrative(); }
-            status.text = !string.IsNullOrEmpty(error) ? "Recording needs attention. Read the details next to your question." : saving ? "Saving your microphone recording..." : recording
-                ? "Recording " + (elapsed / 60).ToString("00") + ":" + (elapsed % 60).ToString("00") + ". Select Stop and save answer when finished."
-                : savedCount > 0 && answerUserSaved ? "Answer saved. Record another clip, or select Next to continue." : savedCount > 0 ? "A clip was saved automatically. Use Record, then Stop and save, to unlock Next." : "Select Record answer, speak, then select the same button to stop and save.";
-            footer.text = "Next unlocks after a successful Stop and save. Audio clips stay beside your video.";
-            if (questionVoiceoverPlaying) { recordAnswerLabel.text = "Listen to question..."; status.text = "Listen to the question. Then select Record answer."; }
+            status.text = !string.IsNullOrEmpty(error) ? Copy("ui_6b3906d082") : saving ? Copy("ui_3310475cd4") : recording
+                ? Copy("ui_7ac240a840") + (elapsed / 60).ToString("00") + ":" + (elapsed % 60).ToString("00") + Copy("ui_8efd1fe1ba")
+                : savedCount > 0 && answerUserSaved ? Copy("ui_368c428ad0") : savedCount > 0 ? Copy("ui_0998163f82") : Copy("ui_556ad3b5ba");
+            footer.text = Copy("ui_f7ac755b89");
+            if (questionVoiceoverPlaying) { recordAnswerLabel.text = Copy("ui_dc69cff444"); status.text = Copy("ui_f0a78f739a"); }
         }
         public void ShowThought(string text, UnityAction onClose) {
             thoughtText.text = text; thoughtCanvas.gameObject.SetActive(true); thoughtClose.onClick.RemoveAllListeners(); thoughtClose.onClick.AddListener(onClose);
         }
-        public void SetTint(bool enabled) { tintCanvas.gameObject.SetActive(enabled); tint.color = new Color(1f, .64f, .18f, enabled ? .055f : 0f); }
+        public void SetTint(bool enabled) { tintCanvas.gameObject.SetActive(enabled); }
         public void SetProgress(float value) { progress.value = Mathf.Clamp01(value); }
         public void SetWristShortcut(string caption, UnityAction action) {
             var label = wristHelp.GetComponentInChildren<TMP_Text>(true); if (label) label.text = caption;
-            wristHelp.interactable = action != null;
+            UpdateInstructionButton();
             wristHelp.onClick.RemoveAllListeners(); if (action != null) wristHelp.onClick.AddListener(action);
         }
-        void ShowFixedInstructions() { mainCanvas.gameObject.SetActive(true); Recenter(); }
+        void ShowFixedInstructions() { mainCanvas.gameObject.SetActive(true); UpdateInstructionButton(); Recenter(); }
         [ContextMenu("Reposition fixed panel near child")]
         public void RepositionFixedPanel() { fixedPanelPlaced = false; PlaceFixedPanelOnce(); }
         void PlaceFixedPanelOnce() {
@@ -431,7 +438,7 @@ namespace BitsPilani.Module1.Playground {
             if (away.sqrMagnitude > .001f) mainCanvas.transform.rotation = Quaternion.Slerp(mainCanvas.transform.rotation, Quaternion.LookRotation(away, Vector3.up), 1 - Mathf.Exp(-deltaTime / Mathf.Max(.1f, followSmoothTime)));
         }
         void LateUpdate() {
-            if (Application.isPlaying) UpdateReplayAttention(Time.unscaledTime);
+            if (Application.isPlaying) { UpdateReplayAttention(Time.unscaledTime); UpdateInstructionButton(); }
             if (!Application.isPlaying || !head) return; UpdatePanelPose(Time.unscaledDeltaTime);
             if (wristCanvas) { Vector3 away = wristCanvas.transform.position - head.position; if (away.sqrMagnitude > .001f) wristCanvas.transform.rotation = Quaternion.Slerp(wristCanvas.transform.rotation, Quaternion.LookRotation(away, head.up), 1 - Mathf.Exp(-Time.unscaledDeltaTime * 14)); }
             if (thoughtCanvas && thoughtCanvas.gameObject.activeSelf) { Vector3 away = thoughtCanvas.transform.position - head.position; away.y = 0; if (away.sqrMagnitude > .001f) thoughtCanvas.transform.rotation = Quaternion.Slerp(thoughtCanvas.transform.rotation, Quaternion.LookRotation(away, Vector3.up), 1 - Mathf.Exp(-Time.unscaledDeltaTime * 10)); }

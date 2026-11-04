@@ -185,7 +185,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4291609266
+    rgba: 4279111182
   m_fontColor: {r: 0.055, g: 0.055, b: 0.055, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -266,11 +266,12 @@ GameObject:
   m_Component:
   - component: {fileID: 61741066}
   - component: {fileID: 61741065}
-  - component: {fileID: 61741064}
   - component: {fileID: 61741063}
   - component: {fileID: 61741069}
   - component: {fileID: 61741068}
   - component: {fileID: 61741067}
+  - component: {fileID: 61741070}
+  - component: {fileID: 61741071}
   m_Layer: 5
   m_Name: Module 1 button
   m_TagString: Untagged
@@ -318,41 +319,10 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 61741064}
+  m_TargetGraphic: {fileID: 61741070}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &61741064
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 61741062}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 1410081675264506268, guid: 68620afd098bb02479e17cee9b10e30e,
-    type: 2}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
 --- !u!222 &61741065
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -397,6 +367,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BitsPilani.Module1.Playground.PlaygroundButtonFeedback
   hoverScale: 1.025
   hoverSmoothTime: 0.1
+  hoverBackground: {r: 0, g: 0, b: 0, a: 1}
+  hoverText: {r: 1, g: 1, b: 1, a: 1}
+  disabledBackground: {r: 0.92, g: 0.92, b: 0.92, a: 1}
+  disabledText: {r: 0.37, g: 0.37, b: 0.37, a: 1}
+  selectedBackground: {r: 0.88, g: 0.88, b: 0.88, a: 1}
+  hoverBorder: {r: 0, g: 0, b: 0, a: 1}
+  selectedBorder: {r: 0, g: 0, b: 0, a: 1}
 --- !u!114 &61741068
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -427,6 +404,51 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0, b: 0, a: 0.38}
   m_EffectDistance: {x: 0.7, y: -0.7}
   m_UseGraphicAlpha: 1
+--- !u!114 &61741070
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 61741062}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41f1c5417c9d7ab4b84e531f83f60a4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnityEngine.UI.ProceduralImage.ProceduralImage
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 3f91331724a9da84197e9b6d94f0483c, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+  borderWidth: 0
+  falloffDistance: 1
+--- !u!114 &61741071
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 61741062}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8714c362c0c8a6449a9559a31cdab9a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UniformModifier
+  radius: 24
 --- !u!1 &236874275
 GameObject:
   m_ObjectHideFlags: 0
@@ -493,7 +515,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4284374622
   m_fontColor: {r: 0.37, g: 0.37, b: 0.37, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -574,11 +596,12 @@ GameObject:
   m_Component:
   - component: {fileID: 345364346}
   - component: {fileID: 345364345}
-  - component: {fileID: 345364344}
   - component: {fileID: 345364343}
   - component: {fileID: 345364349}
   - component: {fileID: 345364348}
   - component: {fileID: 345364347}
+  - component: {fileID: 345364350}
+  - component: {fileID: 345364351}
   m_Layer: 5
   m_Name: Module 3 button
   m_TagString: Untagged
@@ -626,41 +649,10 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 0
-  m_TargetGraphic: {fileID: 345364344}
+  m_TargetGraphic: {fileID: 345364350}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &345364344
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 345364342}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 1410081675264506268, guid: 68620afd098bb02479e17cee9b10e30e,
-    type: 2}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
 --- !u!222 &345364345
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -705,6 +697,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BitsPilani.Module1.Playground.PlaygroundButtonFeedback
   hoverScale: 1.025
   hoverSmoothTime: 0.1
+  hoverBackground: {r: 0, g: 0, b: 0, a: 1}
+  hoverText: {r: 1, g: 1, b: 1, a: 1}
+  disabledBackground: {r: 0.92, g: 0.92, b: 0.92, a: 1}
+  disabledText: {r: 0.37, g: 0.37, b: 0.37, a: 1}
+  selectedBackground: {r: 0.88, g: 0.88, b: 0.88, a: 1}
+  hoverBorder: {r: 0, g: 0, b: 0, a: 1}
+  selectedBorder: {r: 0, g: 0, b: 0, a: 1}
 --- !u!114 &345364348
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -735,6 +734,51 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0, b: 0, a: 0.16}
   m_EffectDistance: {x: 0.7, y: -0.7}
   m_UseGraphicAlpha: 1
+--- !u!114 &345364350
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 345364342}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41f1c5417c9d7ab4b84e531f83f60a4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnityEngine.UI.ProceduralImage.ProceduralImage
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 3f91331724a9da84197e9b6d94f0483c, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+  borderWidth: 0
+  falloffDistance: 1
+--- !u!114 &345364351
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 345364342}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8714c362c0c8a6449a9559a31cdab9a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UniformModifier
+  radius: 24
 --- !u!1 &371722765
 GameObject:
   m_ObjectHideFlags: 0
@@ -745,11 +789,12 @@ GameObject:
   m_Component:
   - component: {fileID: 371722769}
   - component: {fileID: 371722768}
-  - component: {fileID: 371722767}
   - component: {fileID: 371722766}
   - component: {fileID: 371722772}
   - component: {fileID: 371722771}
   - component: {fileID: 371722770}
+  - component: {fileID: 371722773}
+  - component: {fileID: 371722774}
   m_Layer: 5
   m_Name: Module 2 button
   m_TagString: Untagged
@@ -797,41 +842,10 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 0
-  m_TargetGraphic: {fileID: 371722767}
+  m_TargetGraphic: {fileID: 371722773}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &371722767
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 371722765}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 1410081675264506268, guid: 68620afd098bb02479e17cee9b10e30e,
-    type: 2}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
 --- !u!222 &371722768
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -876,6 +890,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BitsPilani.Module1.Playground.PlaygroundButtonFeedback
   hoverScale: 1.025
   hoverSmoothTime: 0.1
+  hoverBackground: {r: 0, g: 0, b: 0, a: 1}
+  hoverText: {r: 1, g: 1, b: 1, a: 1}
+  disabledBackground: {r: 0.92, g: 0.92, b: 0.92, a: 1}
+  disabledText: {r: 0.37, g: 0.37, b: 0.37, a: 1}
+  selectedBackground: {r: 0.88, g: 0.88, b: 0.88, a: 1}
+  hoverBorder: {r: 0, g: 0, b: 0, a: 1}
+  selectedBorder: {r: 0, g: 0, b: 0, a: 1}
 --- !u!114 &371722771
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -906,6 +927,51 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0, b: 0, a: 0.16}
   m_EffectDistance: {x: 0.7, y: -0.7}
   m_UseGraphicAlpha: 1
+--- !u!114 &371722773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 371722765}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41f1c5417c9d7ab4b84e531f83f60a4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnityEngine.UI.ProceduralImage.ProceduralImage
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 3f91331724a9da84197e9b6d94f0483c, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+  borderWidth: 0
+  falloffDistance: 1
+--- !u!114 &371722774
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 371722765}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8714c362c0c8a6449a9559a31cdab9a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UniformModifier
+  radius: 24
 --- !u!1 &375647255
 GameObject:
   m_ObjectHideFlags: 0
@@ -1089,7 +1155,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4284374622
   m_fontColor: {r: 0.37, g: 0.37, b: 0.37, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -1102,7 +1168,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -1226,7 +1292,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4282861383
   m_fontColor: {r: 0.28, g: 0.28, b: 0.28, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -1239,7 +1305,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -1307,11 +1373,12 @@ GameObject:
   m_Component:
   - component: {fileID: 450605240}
   - component: {fileID: 450605239}
-  - component: {fileID: 450605238}
   - component: {fileID: 450605237}
   - component: {fileID: 450605243}
   - component: {fileID: 450605242}
   - component: {fileID: 450605241}
+  - component: {fileID: 450605244}
+  - component: {fileID: 450605245}
   m_Layer: 5
   m_Name: Module 4 button
   m_TagString: Untagged
@@ -1359,41 +1426,10 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 0
-  m_TargetGraphic: {fileID: 450605238}
+  m_TargetGraphic: {fileID: 450605244}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &450605238
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 450605236}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 1410081675264506268, guid: 68620afd098bb02479e17cee9b10e30e,
-    type: 2}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
 --- !u!222 &450605239
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1438,6 +1474,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BitsPilani.Module1.Playground.PlaygroundButtonFeedback
   hoverScale: 1.025
   hoverSmoothTime: 0.1
+  hoverBackground: {r: 0, g: 0, b: 0, a: 1}
+  hoverText: {r: 1, g: 1, b: 1, a: 1}
+  disabledBackground: {r: 0.92, g: 0.92, b: 0.92, a: 1}
+  disabledText: {r: 0.37, g: 0.37, b: 0.37, a: 1}
+  selectedBackground: {r: 0.88, g: 0.88, b: 0.88, a: 1}
+  hoverBorder: {r: 0, g: 0, b: 0, a: 1}
+  selectedBorder: {r: 0, g: 0, b: 0, a: 1}
 --- !u!114 &450605242
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1468,6 +1511,51 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0, b: 0, a: 0.16}
   m_EffectDistance: {x: 0.7, y: -0.7}
   m_UseGraphicAlpha: 1
+--- !u!114 &450605244
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 450605236}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41f1c5417c9d7ab4b84e531f83f60a4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnityEngine.UI.ProceduralImage.ProceduralImage
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 3f91331724a9da84197e9b6d94f0483c, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+  borderWidth: 0
+  falloffDistance: 1
+--- !u!114 &450605245
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 450605236}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8714c362c0c8a6449a9559a31cdab9a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UniformModifier
+  radius: 24
 --- !u!1 &469426767
 GameObject:
   m_ObjectHideFlags: 0
@@ -1534,7 +1622,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4284374622
   m_fontColor: {r: 0.37, g: 0.37, b: 0.37, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -1547,7 +1635,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -1783,7 +1871,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4284374622
   m_fontColor: {r: 0.37, g: 0.37, b: 0.37, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -1796,7 +1884,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -1920,7 +2008,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4284374622
   m_fontColor: {r: 0.37, g: 0.37, b: 0.37, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -1933,7 +2021,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -2003,12 +2091,15 @@ GameObject:
   - component: {fileID: 687329857}
   - component: {fileID: 687329856}
   - component: {fileID: 687329855}
-  - component: {fileID: 687329854}
   - component: {fileID: 687329853}
   - component: {fileID: 687329852}
   - component: {fileID: 687329861}
   - component: {fileID: 687329860}
   - component: {fileID: 687329859}
+  - component: {fileID: 687329865}
+  - component: {fileID: 687329864}
+  - component: {fileID: 687329863}
+  - component: {fileID: 687329862}
   m_Layer: 5
   m_Name: Module selection canvas
   m_TagString: Untagged
@@ -2041,6 +2132,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 110f8036f03441d4ea806cc2fbd44e31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BitsPilani.Module1.Playground.ModuleEntryController
+  textCatalog: {fileID: 687329863}
   folderManager: {fileID: 1305620267}
   moduleButtons:
   - {fileID: 61741063}
@@ -2056,37 +2148,6 @@ MonoBehaviour:
   followPlayer: 0
   menuDistance: 2.1
   menuFollowSmoothTime: 0.4
---- !u!114 &687329854
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 687329851}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 0}
-  m_Color: {r: 0.955, g: 0.955, b: 0.955, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 1410081675264506268, guid: 68620afd098bb02479e17cee9b10e30e,
-    type: 2}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
 --- !u!222 &687329855
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2130,7 +2191,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
-  m_AdditionalShaderChannelsFlag: 25
+  m_AdditionalShaderChannelsFlag: 31
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
@@ -2206,6 +2267,99 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0, b: 0, a: 0.1}
   m_EffectDistance: {x: 1, y: -1}
   m_UseGraphicAlpha: 1
+--- !u!114 &687329862
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 687329851}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0f9f365b378d294a90e23e92ccf823d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BitsPilani.Module1.Playground.PlaygroundUIRayTurnLock
+  vrUi: {fileID: 375647257}
+  rotationDrivers:
+  - {fileID: 1062534735}
+  desktopMousePreview: 0
+--- !u!114 &687329863
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 687329851}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3effb84610d54b488f012838204ed25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BitsPilani.Module1.Playground.PlaygroundUITextCatalog
+  entries:
+  - id: entry_4442e4e8d6
+    context: 'ModuleEntryController.cs: Explore a different perspective'
+    text: Explore a different perspective
+  - id: entry_96e68cabbf
+    context: 'ModuleEntryController.cs: Choose a module to begin your session'
+    text: Choose a module to begin your session
+  - id: entry_a68eb23082
+    context: 'ModuleEntryController.cs: Playground'
+    text: Playground
+  - id: entry_e4115be258
+    context: 'ModuleEntryController.cs: Coming soon'
+    text: Coming soon
+  - id: entry_1496b242d5
+    context: 'ModuleEntryController.cs: Choose Module 1 to begin. Modules 2, 3 and
+      4 are coming soon.'
+    text: Choose Module 1 to begin. Modules 2, 3 and 4 are coming soon.
+  - id: entry_df7ff434e4
+    context: 'ModuleEntryController.cs: Opening Module '
+    text: 'Opening Module '
+--- !u!114 &687329864
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 687329851}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8714c362c0c8a6449a9559a31cdab9a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UniformModifier
+  radius: 24
+--- !u!114 &687329865
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 687329851}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41f1c5417c9d7ab4b84e531f83f60a4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnityEngine.UI.ProceduralImage.ProceduralImage
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.955, g: 0.955, b: 0.955, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 3f91331724a9da84197e9b6d94f0483c, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+  borderWidth: 0
+  falloffDistance: 1
 --- !u!1 &699437705
 GameObject:
   m_ObjectHideFlags: 0
@@ -2623,7 +2777,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4284374622
   m_fontColor: {r: 0.37, g: 0.37, b: 0.37, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -2636,7 +2790,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -2760,7 +2914,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4291609266
+    rgba: 4279111182
   m_fontColor: {r: 0.055, g: 0.055, b: 0.055, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -3101,6 +3255,7 @@ MonoBehaviour:
   - {fileID: 1062534731}
   moduleCanvases:
   - {fileID: 687329857}
+  uiTurnLock: {fileID: 0}
   desktopPreview: 1
   desktopMoveSpeed: 2
 --- !u!1 &1150967324
@@ -3169,7 +3324,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4284374622
   m_fontColor: {r: 0.37, g: 0.37, b: 0.37, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -3182,7 +3337,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -3399,7 +3554,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4292925887
+    rgba: 4282861383
   m_fontColor: {r: 0.28, g: 0.28, b: 0.28, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -3555,7 +3710,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4284374622
   m_fontColor: {r: 0.37, g: 0.37, b: 0.37, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -3568,7 +3723,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -3748,7 +3903,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4284374622
   m_fontColor: {r: 0.37, g: 0.37, b: 0.37, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -3761,7 +3916,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -3885,7 +4040,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4291609266
+    rgba: 4279111182
   m_fontColor: {r: 0.055, g: 0.055, b: 0.055, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -4022,7 +4177,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4279111182
   m_fontColor: {r: 0.055, g: 0.055, b: 0.055, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -4159,7 +4314,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4285911026
+    rgba: 4280887593
   m_fontColor: {r: 0.16, g: 0.16, b: 0.16, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -4298,7 +4453,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4280887593
   m_fontColor: {r: 0.16, g: 0.16, b: 0.16, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -4311,7 +4466,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -4491,8 +4646,9 @@ GameObject:
   m_Component:
   - component: {fileID: 2060810588}
   - component: {fileID: 2060810591}
-  - component: {fileID: 2060810590}
   - component: {fileID: 2060810589}
+  - component: {fileID: 2060810593}
+  - component: {fileID: 2060810592}
   m_Layer: 5
   m_Name: Session message inset
   m_TagString: Untagged
@@ -4534,37 +4690,6 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0, b: 0, a: 0.08}
   m_EffectDistance: {x: 0, y: -3}
   m_UseGraphicAlpha: 1
---- !u!114 &2060810590
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2060810587}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 0}
-  m_Color: {r: 0.9, g: 0.9, b: 0.9, a: 1}
-  m_RaycastTarget: 0
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 1410081675264506268, guid: 68620afd098bb02479e17cee9b10e30e,
-    type: 2}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
 --- !u!222 &2060810591
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4573,6 +4698,51 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2060810587}
   m_CullTransparentMesh: 1
+--- !u!114 &2060810592
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2060810587}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8714c362c0c8a6449a9559a31cdab9a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UniformModifier
+  radius: 24
+--- !u!114 &2060810593
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2060810587}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41f1c5417c9d7ab4b84e531f83f60a4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnityEngine.UI.ProceduralImage.ProceduralImage
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.9, g: 0.9, b: 0.9, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 3f91331724a9da84197e9b6d94f0483c, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+  borderWidth: 0
+  falloffDistance: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

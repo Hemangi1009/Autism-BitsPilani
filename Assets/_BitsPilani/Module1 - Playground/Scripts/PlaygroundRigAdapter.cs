@@ -17,6 +17,7 @@ namespace BitsPilani.Module1.Playground {
         public InputSystemUIInputModule desktopUi;
         public BNG.UIPointer[] controllerPointers;
         public Canvas[] moduleCanvases;
+        public PlaygroundUIRayTurnLock uiTurnLock;
         [Tooltip("Enable only for mouse/keyboard preview. Leave off for controller-ray interaction, including XR simulators.")]
         public bool desktopPreview = false;
         public float desktopMoveSpeed = 2f;
@@ -51,6 +52,7 @@ namespace BitsPilani.Module1.Playground {
 
         public void ConfigureUIInput() {
             bool desktop = UseDesktopInput();
+            if (uiTurnLock) uiTurnLock.desktopMousePreview = desktop;
             desktopActive = desktop; inputConfigured = true;
             if (vrUi) {
                 foreach (var p in controllerPointers) if (p) {
@@ -140,12 +142,14 @@ namespace BitsPilani.Module1.Playground {
             if (keys.aKey.isPressed) motion += Vector3.left; if (keys.dKey.isPressed) motion += Vector3.right;
             motion = Quaternion.Euler(0, head.eulerAngles.y, 0) * motion.normalized * desktopMoveSpeed * Time.deltaTime;
             if (body && body.enabled) body.Move(motion);
-            if (keys.qKey.isPressed) playerRoot.RotateAround(head.position, Vector3.up, -60f * Time.deltaTime);
-            if (keys.eKey.isPressed) playerRoot.RotateAround(head.position, Vector3.up, 60f * Time.deltaTime);
+            if (!uiTurnLock || !uiTurnLock.IsBlockingTurn) {
+                if (keys.qKey.isPressed) playerRoot.RotateAround(head.position, Vector3.up, -60f * Time.deltaTime);
+                if (keys.eKey.isPressed) playerRoot.RotateAround(head.position, Vector3.up, 60f * Time.deltaTime);
+            }
         }
 
         void LateUpdate() {
-            if (!desktopActive || !head || Mouse.current == null) return;
+            if (!desktopActive || !head || Mouse.current == null || uiTurnLock && uiTurnLock.IsBlockingTurn) return;
             if (Mouse.current.rightButton.isPressed) {
                 Vector2 delta = Mouse.current.delta.ReadValue();
                 playerRoot.RotateAround(head.position, Vector3.up, delta.x * .08f);
