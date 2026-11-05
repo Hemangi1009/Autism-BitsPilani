@@ -128,7 +128,7 @@ namespace BitsPilani.Module1.Playground {
             initialized = true; session.BeginSession(); ui.sessionVideoStatus = recording ? recording.recordingStatusText : null; ui.panelReferenceChild = child.transform; ui.Initialize(); ui.sceneFocus = child.transform; child.CaptureRestPose();
             propPositions = new Vector3[perspectiveProps.Length]; propScales = new Vector3[perspectiveProps.Length]; propRotations = new Quaternion[perspectiveProps.Length];
             for (int i = 0; i < perspectiveProps.Length; i++) { propPositions[i] = perspectiveProps[i].localPosition; propScales[i] = perspectiveProps[i].localScale; propRotations[i] = perspectiveProps[i].localRotation; }
-            observationCircle.SetActive(false); approachCircle.SetActive(false);
+            SetStandAreaVisible(observationCircle, false); SetStandAreaVisible(approachCircle, false);
             partyMusic.volume = .10f; crowd.volume = .04f;
             if (balloonPopVfx) balloonPopVfx.Stop();
             partyMusic.Play(); crowd.Play();
@@ -213,7 +213,7 @@ namespace BitsPilani.Module1.Playground {
                     introCount = 2; session.Record("EnterPlayground", "GazeCompleted", "Onlooker"); ui.wristStatus.text = ui.Copy("flow_86215505d5"); ui.status.text = ui.Copy("flow_13cfe8c471");
                     FactoryManager.CreateGaze(gazeParty, () => {
                         if (token != gazeToken || CurrentStep != PlaygroundStep.EnterPlayground || introCount != 2) return;
-                        introCount = 3; IntroGazesComplete = true; observationCircle.SetActive(true);
+                        introCount = 3; IntroGazesComplete = true; SetStandAreaVisible(observationCircle, true);
                         ui.status.text = ui.Copy("flow_0d50ac8938"); ui.wristStatus.text = ui.Copy("flow_6b3a74d07a");
                         session.Record("EnterPlayground", "GazeCompleted", "Party; observation circle enabled");
                     });
@@ -227,20 +227,33 @@ namespace BitsPilani.Module1.Playground {
                 int second = Mathf.FloorToInt(answerRecorder.RecordedSeconds);
                 if (second != lastAnswerUiSecond) { lastAnswerUiSecond = second; RefreshAnswerRecordingUI(); }
             }
-            // The visible circles define the destinations. They may be repositioned independently
+            // The scene-authored VFX define the destinations. They may be repositioned independently
             // of the legacy marker transforms when the scene layout is edited.
-            if (CurrentStep == PlaygroundStep.EnterPlayground && IntroGazesComplete && !voice.isPlaying && rig.IsAt(observationCircle.transform, arrivalRadius)) {
-                session.Record("EnterPlayground", "ObservationCircleReached"); observationCircle.SetActive(false); routine = StartCoroutine(WatchChanges());
+            if (CurrentStep == PlaygroundStep.EnterPlayground && IntroGazesComplete && StandAreaReached(observationCircle) && !voice.isPlaying) {
+                session.Record("EnterPlayground", "ObservationCircleReached"); SetStandAreaVisible(observationCircle, false); routine = StartCoroutine(WatchChanges());
             }
-            if (CurrentStep == PlaygroundStep.TestGuesses && !responseReady && !responding && !reviewingGuesses && rig.IsAt(approachCircle.transform, arrivalRadius)) {
-                responseReady = true; approachCircle.SetActive(false); session.Record("TestGuesses", "ChildApproached"); ShowResponses();
+            if (CurrentStep == PlaygroundStep.TestGuesses && !responseReady && !responding && !reviewingGuesses && StandAreaReached(approachCircle)) {
+                responseReady = true; SetStandAreaVisible(approachCircle, false); session.Record("TestGuesses", "ChildApproached"); ShowResponses();
             }
             if (CurrentStep == PlaygroundStep.OnlookerThought && !thoughtOpen && thoughtClosedAt >= 0 && Time.time - thoughtClosedAt >= thoughtToReflectionSeconds) {
                 gazeToken++; ClearGazeChildren(gazeThought); BeginReflection();
             }
-            if (CurrentStep == PlaygroundStep.ReplayAndPrevent && replayStarted && !replayAreaReached && rig.IsAt(observationCircle.transform, arrivalRadius)) {
-                replayAreaReached = true; rig.SetMovementLocked(false); observationCircle.SetActive(false); session.Record("ReplayAndPrevent", "ReplayCircleReached", "Visible circle reached; movement remains enabled"); routine = StartCoroutine(RunReplay());
+            if (CurrentStep == PlaygroundStep.ReplayAndPrevent && replayStarted && !replayAreaReached && StandAreaReached(observationCircle)) {
+                replayAreaReached = true; rig.SetMovementLocked(false); SetStandAreaVisible(observationCircle, false); session.Record("ReplayAndPrevent", "ReplayCircleReached", "Visible circle reached; movement remains enabled"); routine = StartCoroutine(RunReplay());
             }
+        }
+
+        void SetStandAreaVisible(GameObject area, bool visible) {
+            var destination = area.GetComponent<PlaygroundStandArea>();
+            if (destination) {
+                if (visible) destination.Show(); else destination.Hide();
+            } else area.SetActive(visible);
+        }
+
+        bool StandAreaReached(GameObject area) {
+            var destination = area.GetComponent<PlaygroundStandArea>();
+            bool inside = rig.IsAt(area.transform, arrivalRadius);
+            return destination ? destination.AdvanceArrival(Time.time, inside) : inside;
         }
 
         IEnumerator WatchChanges() {
@@ -338,7 +351,7 @@ namespace BitsPilani.Module1.Playground {
         string ClueSummary() { int count = Mathf.Min(3, session.Data.clues.Count); var shown = session.Data.clues.GetRange(0, count); return string.Join(", ", shown) + (session.Data.clues.Count > count ? " (+ " + (session.Data.clues.Count - count) + ui.Copy("flow_e846f804c3") : ""); }
         public void CompleteGuesses() {
             if (CurrentStep != PlaygroundStep.NoteGuesses || session.Data.guesses.Count < 1 || pendingGuess >= 0) return;
-            SetStep(PlaygroundStep.TestGuesses); responseReady = false; responding = false; reviewingGuesses = false; approachCircle.SetActive(true); SpeakStep(5);
+            SetStep(PlaygroundStep.TestGuesses); responseReady = false; responding = false; reviewingGuesses = false; SetStandAreaVisible(approachCircle, true); SpeakStep(5);
             ui.Show(ui.Copy("flow_a30abe1450"), ui.Copy("flow_b1b3445216"), ui.Copy("flow_196b483580"));
             ui.wristStatus.text = ui.Copy("flow_a30abe1450");
         }
@@ -517,7 +530,7 @@ namespace BitsPilani.Module1.Playground {
             ui.ShowReplayAttention();
             child.ResetChild(); SetBalloonVisible(true); partyMusic.volume = .1f; crowd.volume = .04f;
             if (balloonPopVfx) balloonPopVfx.Stop();
-            rig.SetMovementLocked(false); observationCircle.SetActive(true); ui.SetPrimary(ui.Copy("flow_b47ca6bd00"), null, false);
+            rig.SetMovementLocked(false); SetStandAreaVisible(observationCircle, true); ui.SetPrimary(ui.Copy("flow_b47ca6bd00"), null, false);
             ui.status.text = ui.Copy("flow_c371a55aa5"); ui.wristStatus.text = ui.Copy("flow_980dac031b");
             session.Record("ReplayAndPrevent", "ReplayStarted", "No introductory gazes; movement remains enabled");
         }
@@ -556,7 +569,7 @@ namespace BitsPilani.Module1.Playground {
             session.Record("ReplayAndPrevent", "PreventionSelected", session.Data.replayResponse + "; before pop=" + !replayPop + "; reduces sound exposure=" + replaySupportChosen);
         }
         void ShowSummary() {
-            SetStep(PlaygroundStep.Summary); rig.SetMovementLocked(false); ui.SetTint(false); observationCircle.SetActive(false); approachCircle.SetActive(false);
+            SetStep(PlaygroundStep.Summary); rig.SetMovementLocked(false); ui.SetTint(false); SetStandAreaVisible(observationCircle, false); SetStandAreaVisible(approachCircle, false);
             var d = session.Data;
             ui.ShowAttemptComparison(d, ui.Copy("flow_562273b653") + answerRecorder.SavedCount(1) + ui.Copy("flow_a097e25b64") + answerRecorder.SavedCount(2) + ui.Copy("flow_1c6d56015d") + answerRecorder.SavedCount(3) + ").");
             ui.SetPrimary(ui.Copy("flow_b222a722b9"), FinishModule); ui.wristStatus.text = ui.Copy("flow_407a3e5927"); ui.SetProgress(1);

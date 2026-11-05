@@ -14,7 +14,7 @@ OcclusionCullingSettings:
 RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 10
-  m_Fog: 1
+  m_Fog: 0
   m_FogColor: {r: 0.76, g: 0.84, b: 0.86, a: 1}
   m_FogMode: 3
   m_FogDensity: 0.002
@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 2100000, guid: 5bd4e262b44889648819c6f9afb27a22, type: 2}
+  m_SkyboxMaterial: {fileID: 2100000, guid: fc9d125f22fdcb345b40ebff2c21e3d4, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -37,7 +37,7 @@ RenderSettings:
   m_ReflectionBounces: 1
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
-  m_Sun: {fileID: 7208757218545628221}
+  m_Sun: {fileID: 928673324}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -228,7 +228,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!1 &1321501
 GameObject:
   m_ObjectHideFlags: 0
@@ -1357,7 +1357,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!222 &19628005
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1917,7 +1917,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!1 &24085529
 GameObject:
   m_ObjectHideFlags: 0
@@ -3454,7 +3454,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!222 &42362920
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4655,7 +4655,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!222 &60469434
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -5094,7 +5094,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!222 &70359196
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -6161,7 +6161,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!1 &77313023
 GameObject:
   m_ObjectHideFlags: 0
@@ -6493,7 +6493,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!1 &80712740
 GameObject:
   m_ObjectHideFlags: 0
@@ -8464,7 +8464,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!1 &111721397
 GameObject:
   m_ObjectHideFlags: 0
@@ -9260,7 +9260,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!1 &123460652
 GameObject:
   m_ObjectHideFlags: 0
@@ -10723,7 +10723,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!222 &150070249
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -13431,7 +13431,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!222 &196522198
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -14407,7 +14407,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!222 &202758515
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -17165,7 +17165,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!1 &242195878
 GameObject:
   m_ObjectHideFlags: 0
@@ -20091,7 +20091,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 10
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!1 &297563028
 GameObject:
   m_ObjectHideFlags: 0
@@ -21925,7 +21925,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!1 &320257953
 GameObject:
   m_ObjectHideFlags: 0
@@ -24790,7 +24790,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!1 &357733924
 GameObject:
   m_ObjectHideFlags: 0
@@ -25617,7 +25617,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!222 &366975105
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -27467,7 +27467,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!1 &389735237
 GameObject:
   m_ObjectHideFlags: 0
@@ -27848,7 +27848,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!222 &394703009
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -28159,7 +28159,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!1 &401919965
 GameObject:
   m_ObjectHideFlags: 0
@@ -30496,7 +30496,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!222 &436594602
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -32021,7 +32021,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!1 &462250933
 GameObject:
   m_ObjectHideFlags: 0
@@ -33993,7 +33993,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!1 &479367848
 GameObject:
   m_ObjectHideFlags: 0
@@ -39179,7 +39179,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!1 &563496919
 GameObject:
   m_ObjectHideFlags: 0
@@ -40008,7 +40008,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!222 &571791581
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -40167,7 +40167,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!222 &573644083
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -41914,7 +41914,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!222 &594172856
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -42751,7 +42751,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!222 &600604162
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -47451,7 +47451,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!222 &651455614
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -47790,7 +47790,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!1 &656130570
 GameObject:
   m_ObjectHideFlags: 0
@@ -49118,7 +49118,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!1 &672756981
 GameObject:
   m_ObjectHideFlags: 0
@@ -52345,7 +52345,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!222 &718024036
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -53584,6 +53584,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2281281710407431950, guid: 239ec7f82f20495408a19c5a4b47faa8,
         type: 3}
+      propertyPath: m_Antialiasing
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2281281710407431950, guid: 239ec7f82f20495408a19c5a4b47faa8,
+        type: 3}
       propertyPath: m_RenderPostProcessing
       value: 0
       objectReference: {fileID: 0}
@@ -53595,7 +53600,7 @@ PrefabInstance:
     - target: {fileID: 2373700877002634689, guid: 239ec7f82f20495408a19c5a4b47faa8,
         type: 3}
       propertyPath: m_Name
-      value: Module1 VR Rig - MySample setup
+      value: Module1 VR Rig
       objectReference: {fileID: 0}
     - target: {fileID: 2818591859016478366, guid: 239ec7f82f20495408a19c5a4b47faa8,
         type: 3}
@@ -53660,7 +53665,7 @@ PrefabInstance:
     - target: {fileID: 5092076608439414827, guid: 239ec7f82f20495408a19c5a4b47faa8,
         type: 3}
       propertyPath: RotationType
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5092076608439414827, guid: 239ec7f82f20495408a19c5a4b47faa8,
         type: 3}
@@ -54200,7 +54205,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!222 &737321983
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -55524,7 +55529,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!1 &748794691
 GameObject:
   m_ObjectHideFlags: 0
@@ -56115,9 +56120,10 @@ GameObject:
   m_Component:
   - component: {fileID: 752984464}
   - component: {fileID: 752984466}
-  - component: {fileID: 752984465}
   - component: {fileID: 752984468}
   - component: {fileID: 752984467}
+  - component: {fileID: 752984470}
+  - component: {fileID: 752984469}
   m_Layer: 5
   m_Name: Thought bubble panel
   m_TagString: Untagged
@@ -56146,37 +56152,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 1920, y: 1080}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &752984465
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 752984463}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 1410081675264506268, guid: 68620afd098bb02479e17cee9b10e30e,
-    type: 2}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
 --- !u!222 &752984466
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -56215,6 +56190,51 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0, b: 0, a: 0.1}
   m_EffectDistance: {x: 1, y: -1}
   m_UseGraphicAlpha: 1
+--- !u!114 &752984469
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 752984463}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68356c3764ad390429ddad9e48ce8c31, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FreeModifier
+  radius: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &752984470
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 752984463}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41f1c5417c9d7ab4b84e531f83f60a4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnityEngine.UI.ProceduralImage.ProceduralImage
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 3f91331724a9da84197e9b6d94f0483c, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+  borderWidth: 0
+  falloffDistance: 3
 --- !u!1 &753357893
 GameObject:
   m_ObjectHideFlags: 0
@@ -58458,7 +58478,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!222 &776525948
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -64173,7 +64193,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!222 &852121927
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -69785,7 +69805,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!1 &921912843
 GameObject:
   m_ObjectHideFlags: 0
@@ -70288,7 +70308,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 12
   m_Type: 1
-  m_Color: {r: 1, g: 0.95, b: 0.85, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Intensity: 1.25
   m_Range: 10
   m_SpotAngle: 30
@@ -70298,7 +70318,7 @@ Light:
     m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
-    m_Strength: 1
+    m_Strength: 0.5
     m_Bias: 0.05
     m_NormalBias: 0.4
     m_NearPlane: 0.2
@@ -70352,7 +70372,7 @@ Transform:
   m_GameObject: {fileID: 928673323}
   serializedVersion: 2
   m_LocalRotation: {x: 0.30718157, y: 0.48082832, z: -0.1845727, w: 0.8002353}
-  m_LocalPosition: {x: 0.65997124, y: 0, z: -100.30003}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -73272,7 +73292,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!222 &966648428
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -74674,8 +74694,8 @@ MonoBehaviour:
   quietPoint: {fileID: 1912447778}
   childViewPoint: {fileID: 647108314}
   partyFocus: {fileID: 192991279}
-  observationCircle: {fileID: 292926723}
-  approachCircle: {fileID: 220063114}
+  observationCircle: {fileID: 1141317108}
+  approachCircle: {fileID: 1381967639}
   arrivalRadius: 0.8
   voice: {fileID: 905161210}
   partyMusic: {fileID: 1028782417}
@@ -75635,7 +75655,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!1 &991729078
 GameObject:
   m_ObjectHideFlags: 0
@@ -76149,7 +76169,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!222 &993503496
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -77365,7 +77385,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!222 &1005333553
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -82204,7 +82224,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!1 &1053137754
 GameObject:
   m_ObjectHideFlags: 0
@@ -82834,7 +82854,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!222 &1058551548
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -83503,7 +83523,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!1 &1074820509
 GameObject:
   m_ObjectHideFlags: 0
@@ -85928,7 +85948,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!222 &1104870655
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -86313,7 +86333,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!222 &1108858718
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -88588,6 +88608,117 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1140181672}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1001 &1141317107
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4823518202205099632, guid: cdc919a43bba95b4a8b6916b6aa5321d,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4823518202205099632, guid: cdc919a43bba95b4a8b6916b6aa5321d,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4823518202205099632, guid: cdc919a43bba95b4a8b6916b6aa5321d,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4823518202205099632, guid: cdc919a43bba95b4a8b6916b6aa5321d,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 11.719
+      objectReference: {fileID: 0}
+    - target: {fileID: 4823518202205099632, guid: cdc919a43bba95b4a8b6916b6aa5321d,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.027
+      objectReference: {fileID: 0}
+    - target: {fileID: 4823518202205099632, guid: cdc919a43bba95b4a8b6916b6aa5321d,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -94.84
+      objectReference: {fileID: 0}
+    - target: {fileID: 4823518202205099632, guid: cdc919a43bba95b4a8b6916b6aa5321d,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4823518202205099632, guid: cdc919a43bba95b4a8b6916b6aa5321d,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4823518202205099632, guid: cdc919a43bba95b4a8b6916b6aa5321d,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4823518202205099632, guid: cdc919a43bba95b4a8b6916b6aa5321d,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4823518202205099632, guid: cdc919a43bba95b4a8b6916b6aa5321d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4823518202205099632, guid: cdc919a43bba95b4a8b6916b6aa5321d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4823518202205099632, guid: cdc919a43bba95b4a8b6916b6aa5321d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4823518202205099632, guid: cdc919a43bba95b4a8b6916b6aa5321d,
+        type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4823518202205099639, guid: cdc919a43bba95b4a8b6916b6aa5321d,
+        type: 3}
+      propertyPath: m_Name
+      value: VFX_FarCHild
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4823518202205099639, guid: cdc919a43bba95b4a8b6916b6aa5321d,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1141317109}
+  m_SourcePrefab: {fileID: 100100000, guid: cdc919a43bba95b4a8b6916b6aa5321d, type: 3}
+--- !u!1 &1141317108 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4823518202205099639, guid: cdc919a43bba95b4a8b6916b6aa5321d,
+    type: 3}
+  m_PrefabInstance: {fileID: 1141317107}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1141317109
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1141317108}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7fa62b3814132874598a3f5b59a95c5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BitsPilani.Module1.Playground.PlaygroundStandArea
+  secondsAfterArrival: 2
 --- !u!1 &1142107617
 GameObject:
   m_ObjectHideFlags: 0
@@ -90268,7 +90399,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!1 &1164286362
 GameObject:
   m_ObjectHideFlags: 0
@@ -91558,7 +91689,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!222 &1183643585
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -91829,7 +91960,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!222 &1187641483
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -92212,7 +92343,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!222 &1190775144
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -97594,7 +97725,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!1 &1265107786
 GameObject:
   m_ObjectHideFlags: 0
@@ -98558,7 +98689,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!222 &1276738841
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -99208,7 +99339,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!222 &1287296109
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -101358,7 +101489,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!1 &1314998297
 GameObject:
   m_ObjectHideFlags: 0
@@ -103577,7 +103708,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!1 &1337744432
 GameObject:
   m_ObjectHideFlags: 0
@@ -106837,7 +106968,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!222 &1380655047
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -106846,6 +106977,117 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1380655041}
   m_CullTransparentMesh: 1
+--- !u!1001 &1381967638
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4823518202205099632, guid: cdc919a43bba95b4a8b6916b6aa5321d,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4823518202205099632, guid: cdc919a43bba95b4a8b6916b6aa5321d,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4823518202205099632, guid: cdc919a43bba95b4a8b6916b6aa5321d,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4823518202205099632, guid: cdc919a43bba95b4a8b6916b6aa5321d,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 12.752
+      objectReference: {fileID: 0}
+    - target: {fileID: 4823518202205099632, guid: cdc919a43bba95b4a8b6916b6aa5321d,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.027
+      objectReference: {fileID: 0}
+    - target: {fileID: 4823518202205099632, guid: cdc919a43bba95b4a8b6916b6aa5321d,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -93.6496
+      objectReference: {fileID: 0}
+    - target: {fileID: 4823518202205099632, guid: cdc919a43bba95b4a8b6916b6aa5321d,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4823518202205099632, guid: cdc919a43bba95b4a8b6916b6aa5321d,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4823518202205099632, guid: cdc919a43bba95b4a8b6916b6aa5321d,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4823518202205099632, guid: cdc919a43bba95b4a8b6916b6aa5321d,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4823518202205099632, guid: cdc919a43bba95b4a8b6916b6aa5321d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4823518202205099632, guid: cdc919a43bba95b4a8b6916b6aa5321d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4823518202205099632, guid: cdc919a43bba95b4a8b6916b6aa5321d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4823518202205099632, guid: cdc919a43bba95b4a8b6916b6aa5321d,
+        type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4823518202205099639, guid: cdc919a43bba95b4a8b6916b6aa5321d,
+        type: 3}
+      propertyPath: m_Name
+      value: VFX_NearChild
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4823518202205099639, guid: cdc919a43bba95b4a8b6916b6aa5321d,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1381967640}
+  m_SourcePrefab: {fileID: 100100000, guid: cdc919a43bba95b4a8b6916b6aa5321d, type: 3}
+--- !u!1 &1381967639 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4823518202205099639, guid: cdc919a43bba95b4a8b6916b6aa5321d,
+    type: 3}
+  m_PrefabInstance: {fileID: 1381967638}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1381967640
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1381967639}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7fa62b3814132874598a3f5b59a95c5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BitsPilani.Module1.Playground.PlaygroundStandArea
+  secondsAfterArrival: 2
 --- !u!1 &1383015715
 GameObject:
   m_ObjectHideFlags: 0
@@ -110698,7 +110940,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!222 &1419621408
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -116385,7 +116627,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!222 &1512333014
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -116664,7 +116906,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!222 &1514708534
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -118926,7 +119168,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!222 &1538448948
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -120637,11 +120879,12 @@ GameObject:
   m_Component:
   - component: {fileID: 1559719032}
   - component: {fileID: 1559719031}
-  - component: {fileID: 1559719030}
   - component: {fileID: 1559719029}
   - component: {fileID: 1559719035}
   - component: {fileID: 1559719034}
   - component: {fileID: 1559719033}
+  - component: {fileID: 1559719037}
+  - component: {fileID: 1559719036}
   m_Layer: 5
   m_Name: Close thought bubble
   m_TagString: Untagged
@@ -120689,41 +120932,10 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 1559719030}
+  m_TargetGraphic: {fileID: 0}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &1559719030
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1559719028}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 1410081675264506268, guid: 68620afd098bb02479e17cee9b10e30e,
-    type: 2}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
 --- !u!222 &1559719031
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -120803,6 +121015,51 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0, b: 0, a: 0.16}
   m_EffectDistance: {x: 0.7, y: -0.7}
   m_UseGraphicAlpha: 1
+--- !u!114 &1559719036
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1559719028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68356c3764ad390429ddad9e48ce8c31, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FreeModifier
+  radius: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &1559719037
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1559719028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41f1c5417c9d7ab4b84e531f83f60a4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnityEngine.UI.ProceduralImage.ProceduralImage
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 3f91331724a9da84197e9b6d94f0483c, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+  borderWidth: 0
+  falloffDistance: 3
 --- !u!1 &1559927643
 GameObject:
   m_ObjectHideFlags: 0
@@ -120993,7 +121250,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!1 &1560373223
 GameObject:
   m_ObjectHideFlags: 0
@@ -121473,7 +121730,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!1 &1565566316
 GameObject:
   m_ObjectHideFlags: 0
@@ -124117,7 +124374,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!1 &1608012635
 GameObject:
   m_ObjectHideFlags: 0
@@ -124836,7 +125093,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!222 &1615478654
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -125851,7 +126108,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!222 &1637087410
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -126730,7 +126987,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!1 &1664058692
 GameObject:
   m_ObjectHideFlags: 0
@@ -127932,7 +128189,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!222 &1678062911
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -128048,7 +128305,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!1 &1679923883
 GameObject:
   m_ObjectHideFlags: 0
@@ -128334,7 +128591,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!1 &1681494186
 GameObject:
   m_ObjectHideFlags: 0
@@ -129217,7 +129474,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!222 &1688760939
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -131341,7 +131598,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!1 &1724600617
 GameObject:
   m_ObjectHideFlags: 0
@@ -131561,7 +131818,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!23 &1727753481 stripped
 MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 2912611534920747344, guid: 239ec7f82f20495408a19c5a4b47faa8,
@@ -132749,7 +133006,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!1 &1738377046
 GameObject:
   m_ObjectHideFlags: 0
@@ -135928,7 +136185,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!1 &1776895892
 GameObject:
   m_ObjectHideFlags: 0
@@ -140854,7 +141111,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!222 &1832064356
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -141519,7 +141776,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!222 &1836351921
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -141958,7 +142215,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!1 &1839185823
 GameObject:
   m_ObjectHideFlags: 0
@@ -144687,7 +144944,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!1 &1873658619
 GameObject:
   m_ObjectHideFlags: 0
@@ -147197,7 +147454,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!1 &1897659651
 GameObject:
   m_ObjectHideFlags: 0
@@ -148968,7 +149225,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!1 &1924821447
 GameObject:
   m_ObjectHideFlags: 0
@@ -151436,7 +151693,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!1 &1965919451
 GameObject:
   m_ObjectHideFlags: 0
@@ -151752,7 +152009,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!1 &1968722001
 GameObject:
   m_ObjectHideFlags: 0
@@ -157138,7 +157395,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!1 &2048230753
 GameObject:
   m_ObjectHideFlags: 0
@@ -158599,7 +158856,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!222 &2066717341
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -160538,7 +160795,7 @@ MonoBehaviour:
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
   borderWidth: 0
-  falloffDistance: 1
+  falloffDistance: 3
 --- !u!222 &2102054292
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -161141,7 +161398,7 @@ Transform:
   m_GameObject: {fileID: 2115481176}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.7014731, z: -0, w: 0.71269596}
-  m_LocalPosition: {x: -7.24, y: 0.12, z: 0.36}
+  m_LocalPosition: {x: -7.24, y: -0.012, z: 0.36}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -162998,6 +163255,76 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2141980690}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &2145220872
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2145220875}
+  - component: {fileID: 2145220874}
+  - component: {fileID: 2145220873}
+  m_Layer: 2
+  m_Name: M1 PLAYER MOVEMENT BOUNDARY - edit box in scene
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2145220873
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2145220872}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55103855d2097344393d790790d1051c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BitsPilani.Module1.Playground.PlaygroundMovementBoundary
+  rig: {fileID: 734029248}
+  bounds: {fileID: 2145220874}
+  edgeInset: 0.15
+  sceneOutline: {r: 0.15, g: 0.85, b: 1, a: 0.8}
+--- !u!65 &2145220874
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2145220872}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 8.243319, y: 4, z: 9.644402}
+  m_Center: {x: -4.1412535, y: 0, z: 6.002926}
+--- !u!4 &2145220875
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2145220872}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 17.659973, y: 2, z: -100.29999}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2146342980
 GameObject:
   m_ObjectHideFlags: 0
@@ -693449,7 +693776,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!205 &9042830316964911560
 LODGroup:
   m_ObjectHideFlags: 0
@@ -703151,3 +703478,6 @@ SceneRoots:
   - {fileID: 1409757179}
   - {fileID: 610233077}
   - {fileID: 1043262661}
+  - {fileID: 1381967638}
+  - {fileID: 1141317107}
+  - {fileID: 2145220875}
