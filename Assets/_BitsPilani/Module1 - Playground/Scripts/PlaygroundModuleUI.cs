@@ -163,6 +163,7 @@ namespace BitsPilani.Module1.Playground {
         public string CurrentTitle => title ? title.text : "";
         bool initialized, followInitialized, expanded;
         bool instructionStepActive;
+        bool instructionsHiddenByUser;
         TMP_Text recordAnswerLabel, nextQuestionLabel;
         int activeQuestion;
         string recordingQuestion;
@@ -198,7 +199,7 @@ namespace BitsPilani.Module1.Playground {
             if (narrativeScroll) narrativeScroll.onValueChanged.AddListener(_ => UpdateNarrativeButtons());
             if (narrativeScrollbar) narrativeScrollbar.onValueChanged.AddListener(value => { if (narrativeScroll) narrativeScroll.verticalNormalizedPosition = value; });
         }
-        public void HideInstructions() { mainCanvas.gameObject.SetActive(false); UpdateInstructionButton(); }
+        public void HideInstructions() { instructionsHiddenByUser = true; mainCanvas.gameObject.SetActive(false); UpdateInstructionButton(); }
         void UpdateInstructionButton() { if (wristHelp) wristHelp.interactable = initialized && instructionStepActive && (!wristReturn || !wristReturn.gameObject.activeSelf) && !mainCanvas.gameObject.activeSelf; }
         // Called explicitly once by the Editor authoring tool, never on entering Play mode.
         public void BakeCanvasForEditing() {
@@ -258,7 +259,7 @@ namespace BitsPilani.Module1.Playground {
             var hideImage = NewSurface("Hide instructions", background, new Vector2(130, 42), new Vector2(385, 423), Color.white);
             hideImage.raycastTarget = true; hidePanel = hideImage.gameObject.AddComponent<Button>(); hidePanel.targetGraphic = hideImage;
             var hideLabel = PlaygroundUIStyle.Label("Label", hideImage.transform, title.font, "Hide", new Vector2(116, 36), Vector2.zero, 22);
-            PlaygroundUIStyle.Button(hidePanel, hideLabel); hidePanel.onClick.AddListener(() => mainCanvas.gameObject.SetActive(false));
+            PlaygroundUIStyle.Button(hidePanel, hideLabel); hidePanel.onClick.AddListener(HideInstructions);
             hover = mainCanvas.GetComponent<PlaygroundPanelHover>(); if (!hover) hover = mainCanvas.gameObject.AddComponent<PlaygroundPanelHover>();
             if (sessionVideoStatus && sessionVideoStatus.transform.IsChildOf(mainCanvas.transform)) {
                 sessionVideoStatus.fontSize = 18; sessionVideoStatus.enableAutoSizing = true; sessionVideoStatus.fontSizeMin = 16; sessionVideoStatus.fontSizeMax = 18;
@@ -305,7 +306,7 @@ namespace BitsPilani.Module1.Playground {
             wristStep.text = step == 0 ? Copy("ui_419d0202db") : step > 9 ? Copy("ui_139325a34f") : Copy("ui_c5964dcff2") + step + "  /  " + caption;
         }
         public void Show(string heading, string description, string state, bool withChoices = false) {
-            Initialize(); mainCanvas.gameObject.SetActive(true); UpdateInstructionButton();
+            Initialize(); mainCanvas.gameObject.SetActive(!instructionsHiddenByUser); UpdateInstructionButton();
             if (summaryTableRoot) summaryTableRoot.SetActive(false); if (narrativeScroll) narrativeScroll.gameObject.SetActive(true);
             title.text = heading; body.text = description; status.text = state; footer.text = ""; RefreshNarrative();
             Layout(withChoices || description.Length > 440, withChoices);
@@ -383,7 +384,7 @@ namespace BitsPilani.Module1.Playground {
             UpdateInstructionButton();
             wristHelp.onClick.RemoveAllListeners(); if (action != null) wristHelp.onClick.AddListener(action);
         }
-        void ShowFixedInstructions() { mainCanvas.gameObject.SetActive(true); UpdateInstructionButton(); Recenter(); }
+        void ShowFixedInstructions() { instructionsHiddenByUser = false; mainCanvas.gameObject.SetActive(true); UpdateInstructionButton(); Recenter(); }
         [ContextMenu("Reposition fixed panel near child")]
         public void RepositionFixedPanel() { fixedPanelPlaced = false; PlaceFixedPanelOnce(); }
         void PlaceFixedPanelOnce() {

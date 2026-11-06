@@ -53951,7 +53951,6 @@ MonoBehaviour:
   - {fileID: 734029242}
   - {fileID: 734029241}
   - {fileID: 734029240}
-  - {fileID: 734029239}
   vrUi: {fileID: 248566704}
   desktopUi: {fileID: 248566701}
   controllerPointers:
@@ -88652,17 +88651,17 @@ PrefabInstance:
     - target: {fileID: 4823518202205099632, guid: cdc919a43bba95b4a8b6916b6aa5321d,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.1
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 4823518202205099632, guid: cdc919a43bba95b4a8b6916b6aa5321d,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.1
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 4823518202205099632, guid: cdc919a43bba95b4a8b6916b6aa5321d,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.1
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 4823518202205099632, guid: cdc919a43bba95b4a8b6916b6aa5321d,
         type: 3}
@@ -88751,7 +88750,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fa62b3814132874598a3f5b59a95c5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BitsPilani.Module1.Playground.PlaygroundStandArea
-  secondsAfterArrival: 2
+  secondsAfterArrival: 1
 --- !u!1 &1142107617
 GameObject:
   m_ObjectHideFlags: 0
@@ -107029,17 +107028,17 @@ PrefabInstance:
     - target: {fileID: 4823518202205099632, guid: cdc919a43bba95b4a8b6916b6aa5321d,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.1
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 4823518202205099632, guid: cdc919a43bba95b4a8b6916b6aa5321d,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.1
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 4823518202205099632, guid: cdc919a43bba95b4a8b6916b6aa5321d,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.1
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 4823518202205099632, guid: cdc919a43bba95b4a8b6916b6aa5321d,
         type: 3}
@@ -107128,7 +107127,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fa62b3814132874598a3f5b59a95c5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BitsPilani.Module1.Playground.PlaygroundStandArea
-  secondsAfterArrival: 2
+  secondsAfterArrival: 1
 --- !u!1 &1383015715
 GameObject:
   m_ObjectHideFlags: 0

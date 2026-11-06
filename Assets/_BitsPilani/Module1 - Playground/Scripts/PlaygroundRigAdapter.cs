@@ -89,7 +89,7 @@ namespace BitsPilani.Module1.Playground {
                 var drivers = new HashSet<Behaviour>();
                 if (locomotionBehaviours != null) foreach (var behaviour in locomotionBehaviours) if (behaviour) drivers.Add(behaviour);
                 if (playerRoot) foreach (var behaviour in playerRoot.GetComponentsInChildren<MonoBehaviour>(true)) {
-                    if (behaviour is BNG.LocomotionManager || behaviour is BNG.SmoothLocomotion || behaviour is BNG.PlayerTeleport || behaviour is BNG.PlayerRotation) drivers.Add(behaviour);
+                    if (behaviour is BNG.LocomotionManager || behaviour is BNG.SmoothLocomotion || behaviour is BNG.PlayerTeleport) drivers.Add(behaviour);
                 }
                 foreach (var behaviour in drivers) { movementStates[behaviour] = behaviour.enabled; behaviour.enabled = false; }
             } else {

@@ -90,8 +90,9 @@ namespace BitsPilani.Module1.Playground {
             if (Mathf.Abs(factor - desired) < .0001f && Mathf.Abs(velocity) < .001f) { factor = desired; velocity = 0; }
             transform.localScale = authoredScale * factor;
         }
-        void LateUpdate() { if (!Application.isPlaying) return; if (lastCanInteract != CanInteract) Paint(); AdvanceHoverAnimation(Time.unscaledDeltaTime); }
-        void OnEnable() { ResetScale(); }
+        void LateUpdate() { if (!Application.isPlaying) return; if (!CanInteract || lastCanInteract != CanInteract) RefreshAppearance(); AdvanceHoverAnimation(Time.unscaledDeltaTime); }
+        public void RefreshAppearance() { CaptureAuthoredAppearance(); Paint(); }
+        void OnEnable() { ResetScale(); if (Application.isPlaying) { hovered = selected = false; RefreshAppearance(); } }
         void ResetScale() { factor = 1; velocity = 0; if (hasAuthoredScale) transform.localScale = authoredScale; }
         void OnDisable() { hovered = selected = false; ResetScale(); if (Application.isPlaying) Paint(); HoverChanged?.Invoke(false); }
     }
