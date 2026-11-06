@@ -63,6 +63,11 @@ namespace BitsPilani.Module1.Playground {
         [SerializeField, HideInInspector] Image authoredStatusBackground;
         [SerializeField, HideInInspector] Button authoredHidePanel;
         public Transform head, leftHand;
+        [Tooltip("Keep the saved panel offset above the hand independent of hand roll/pitch/yaw. Its position is captured from your scene when the module initializes.")]
+        public bool stabilizeWristAboveHand = true;
+        Transform wristReferenceFrame;
+        Vector3 stableWristOffset;
+        bool wristPlacementCaptured;
         [HideInInspector] public TMP_Text sessionVideoStatus;
         public TMP_Text stepLabel, title, body, status, footer, hint;
         public TMP_Text primaryLabel, secondaryLabel, wristStep, wristStatus, thoughtText, questionCount;
@@ -181,7 +186,7 @@ namespace BitsPilani.Module1.Playground {
 
         public void Initialize() {
             if (initialized) return;
-            initialized = true;
+            initialized = true; CaptureWristPlacement();
             HideReplayAttention(); if (summaryTableRoot) summaryTableRoot.SetActive(false);
             recordingGroup.SetActive(false); thoughtCanvas.gameObject.SetActive(false); tintCanvas.gameObject.SetActive(false);
             foreach (var c in choices) c.button.gameObject.SetActive(false);
@@ -442,10 +447,43 @@ namespace BitsPilani.Module1.Playground {
             Vector3 away = mainCanvas.transform.position - head.position;
             if (away.sqrMagnitude > .001f) mainCanvas.transform.rotation = Quaternion.Slerp(mainCanvas.transform.rotation, Quaternion.LookRotation(away, Vector3.up), 1 - Mathf.Exp(-deltaTime / Mathf.Max(.1f, followSmoothTime)));
         }
+        Quaternion WristFrameYaw => wristReferenceFrame ? Quaternion.Euler(0, wristReferenceFrame.eulerAngles.y, 0) : Quaternion.identity;
+
+        public void CaptureWristPlacement() {
+            if (wristPlacementCaptured || !wristCanvas || !leftHand) return;
+            var player = leftHand.GetComponentInParent<BNG.BNGPlayerController>();
+            var adapter = leftHand.GetComponentInParent<PlaygroundRigAdapter>();
+            wristReferenceFrame = player && player.TrackingSpace ? player.TrackingSpace : adapter ? adapter.playerRoot : null;
+            stableWristOffset = Quaternion.Inverse(WristFrameYaw) * (wristCanvas.transform.position - leftHand.position);
+            wristPlacementCaptured = true;
+        }
+
+        public void UpdateWristPose(float deltaTime) {
+            if (!wristCanvas || !head) return;
+            if (stabilizeWristAboveHand) {
+                CaptureWristPlacement();
+                if (wristPlacementCaptured && leftHand)
+                    wristCanvas.transform.position = leftHand.position + WristFrameYaw * stableWristOffset;
+            }
+            Vector3 away = wristCanvas.transform.position - head.position;
+            if (away.sqrMagnitude <= .001f) return;
+            if (stabilizeWristAboveHand) {
+                // World up prevents hand/head roll from tipping the canvas into the hand.
+                var up = Mathf.Abs(Vector3.Dot(away.normalized, Vector3.up)) > .999f ? Vector3.forward : Vector3.up;
+                wristCanvas.transform.rotation = Quaternion.LookRotation(away, up);
+            } else wristCanvas.transform.rotation = Quaternion.Slerp(wristCanvas.transform.rotation, Quaternion.LookRotation(away, head.up), 1 - Mathf.Exp(-deltaTime * 14));
+        }
+
+        void OnEnable() { Application.onBeforeRender += StabilizeWristBeforeRender; }
+        void OnDisable() { Application.onBeforeRender -= StabilizeWristBeforeRender; }
+        void StabilizeWristBeforeRender() {
+            if (Application.isPlaying && stabilizeWristAboveHand) UpdateWristPose(0);
+        }
+
         void LateUpdate() {
             if (Application.isPlaying) { UpdateReplayAttention(Time.unscaledTime); UpdateInstructionButton(); }
             if (!Application.isPlaying || !head) return; UpdatePanelPose(Time.unscaledDeltaTime);
-            if (wristCanvas) { Vector3 away = wristCanvas.transform.position - head.position; if (away.sqrMagnitude > .001f) wristCanvas.transform.rotation = Quaternion.Slerp(wristCanvas.transform.rotation, Quaternion.LookRotation(away, head.up), 1 - Mathf.Exp(-Time.unscaledDeltaTime * 14)); }
+            UpdateWristPose(Time.unscaledDeltaTime);
             if (thoughtCanvas && thoughtCanvas.gameObject.activeSelf) { Vector3 away = thoughtCanvas.transform.position - head.position; away.y = 0; if (away.sqrMagnitude > .001f) thoughtCanvas.transform.rotation = Quaternion.Slerp(thoughtCanvas.transform.rotation, Quaternion.LookRotation(away, Vector3.up), 1 - Mathf.Exp(-Time.unscaledDeltaTime * 10)); }
         }
     }
