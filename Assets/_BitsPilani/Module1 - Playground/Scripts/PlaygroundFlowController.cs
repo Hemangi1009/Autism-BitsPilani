@@ -133,6 +133,11 @@ namespace BitsPilani.Module1.Playground {
         Coroutine routine;
         bool initialized;
         bool completedEventSent;
+        bool skippingStep;
+        int lastSkipFrame = -1;
+        public bool CanSkipCurrentStep => session && session.Data != null && !skippingStep && !finishingModule &&
+            CurrentStep >= PlaygroundStep.EnterPlayground && CurrentStep <= PlaygroundStep.ReplayAndPrevent &&
+            (!answerRecorder || !answerRecorder.IsSaving);
         bool retryRecordingRequested, finishingModule;
         int lastAnswerUiSecond = -1;
 
@@ -163,8 +168,61 @@ namespace BitsPilani.Module1.Playground {
             if (interactionVoiceovers) interactionVoiceovers.CancelPending(); CurrentStep = next; ui.sceneFocus = next == PlaygroundStep.OnlookerThought ? gazeOnlooker : next == PlaygroundStep.ChildPerspective ? partyFocus : child.transform; ui.SetStep((int)next, StepCaptions[(int)next]); ui.SetProgress(0);
             ui.wristStatus.text = StepCaptions[(int)next];
             ui.SetWristTools(false, false, null, null);
-            session.Record(next.ToString(), "StepEntered");
+            session.Record(next.ToString(), "StepEntered"); RefreshSkipButton();
         }
+        void RefreshSkipButton() { if (ui && ui.skipStep) ui.skipStep.interactable = CanSkipCurrentStep; }
+
+        public void SkipCurrentStep() {
+            if (!CanSkipCurrentStep || lastSkipFrame == Time.frameCount) return;
+            lastSkipFrame = Time.frameCount;
+            skippingStep = true; RefreshSkipButton();
+            var skipped = CurrentStep;
+            try {
+                gazeToken++;
+                StopAllCoroutines(); routine = null; questionVoiceRoutine = null; questionNarrating = false;
+                if (answerRecorder && answerRecorder.IsRecording) answerRecorder.StopAndSave("Step skipped");
+                if (interactionVoiceovers) interactionVoiceovers.CancelPending();
+                if (voice) voice.Stop();
+                foreach (var anchor in new[] { gazeChild, gazeOnlooker, gazeParty, gazeThought }) if (anchor) ClearGazeChildren(anchor);
+                SetStandAreaVisible(observationCircle, false); SetStandAreaVisible(approachCircle, false);
+                if (rig.InChildView) {
+                    rig.ReturnToParentView();
+                    if (perspectiveBodies) perspectiveBodies.RestoreParentView();
+                    RestorePerspectiveProps(); partyMusic.pitch = 1; partyMusic.volume = .18f; crowd.volume = .09f;
+                }
+                rig.SetMovementLocked(false); ui.SetTint(false); ui.SetChildViewReturn(false, false, null);
+                ui.thoughtCanvas.gameObject.SetActive(false); ui.HideReplayAttention();
+                pendingGuess = -1; responding = false; reviewingGuesses = false; responseReady = false;
+                if (!session.Data.skippedSteps.Contains(skipped.ToString())) session.Data.skippedSteps.Add(skipped.ToString());
+                string detail = "Whole step skipped";
+                if (skipped == PlaygroundStep.CollectClues) { session.Data.clues.Clear(); detail = ui.noCluesSelectedText; }
+                if (skipped == PlaygroundStep.NoteGuesses) { session.Data.guesses.Clear(); detail = ui.noGuessesSelectedText; }
+                session.Record(skipped.ToString(), "StepSkipped", detail);
+                switch (skipped) {
+                    case PlaygroundStep.EnterPlayground:
+                        IntroGazesComplete = true; introCount = 3; routine = StartCoroutine(WatchChanges()); break;
+                    case PlaygroundStep.WatchChanges:
+                        firstPop = true; firstPopAt = Time.time; SetBalloonVisible(false);
+                        child.SetState(PlaygroundChildState.Distressed); BeginClues(); break;
+                    case PlaygroundStep.CollectClues:
+                        BeginGuesses(); ui.footer.text = ui.noCluesSelectedText; break;
+                    case PlaygroundStep.NoteGuesses:
+                        BeginResponseStep(); ui.footer.text = ui.noGuessesSelectedText; break;
+                    case PlaygroundStep.TestGuesses:
+                        session.Data.firstOutcome = "Not observed (step skipped)";
+                        BeginChildPerspectiveStep(); break;
+                    case PlaygroundStep.ChildPerspective: BeginOnlooker(); break;
+                    case PlaygroundStep.OnlookerThought: BeginReflection(); break;
+                    case PlaygroundStep.Reflect:
+                        for (int i = 0; i < session.Data.reflectionAnswers.Length; i++)
+                            if (string.IsNullOrEmpty(session.Data.reflectionAnswers[i])) session.Data.reflectionAnswers[i] = "Not answered (step skipped)";
+                        reflectionFeedback = true; PrepareReplay(); break;
+                    case PlaygroundStep.ReplayAndPrevent:
+                        session.Data.replayOutcome = "Not observed (step skipped)"; ShowSummary(); break;
+                }
+            } finally { skippingStep = false; RefreshSkipButton(); }
+        }
+
         void PlayInteraction(PlaygroundVoiceoverCue cue) { if (interactionVoiceovers) interactionVoiceovers.Play(cue); }
         void PlayStartInteraction(PlaygroundVoiceoverCue cue) { if (interactionVoiceovers) interactionVoiceovers.PlayAfterCurrent(cue); }
         bool NarrationPlaying => interactionVoiceovers ? interactionVoiceovers.IsPlaying : voice && voice.isPlaying;
@@ -354,6 +412,9 @@ namespace BitsPilani.Module1.Playground {
         }
         public void CompleteClues() {
             if (CurrentStep != PlaygroundStep.CollectClues || session.Data.clues.Count < 3) { session.Record(CurrentStep.ToString(), "AdvanceBlocked", "At least three unique clues required"); return; }
+            BeginGuesses();
+        }
+        void BeginGuesses() {
             SetStep(PlaygroundStep.NoteGuesses); SpeakStep(4); pendingGuess = -1;
             ui.Show(ui.Copy("flow_38e8f250a9"), ui.Copy("flow_6525d37bb2"), ui.Copy("flow_bbe21527ee"));
             ui.SetPrimary(ui.Copy("flow_8ddc58bc4e"), OpenGuessTool); ui.SetWristTools(false, true, null, OpenGuessTool); ui.wristStatus.text = ui.Copy("flow_c8330392e8");
@@ -390,10 +451,13 @@ namespace BitsPilani.Module1.Playground {
             session.Record(CurrentStep.ToString(), "GuessEvidence", card + " / " + GuessEvidence[pendingGuess]); RenderGuessTool(); PlayInteraction(interactionVoiceovers?.confidenceSaved);
         }
         PlaygroundGuess FindGuess(string idea) { return session.Data.guesses.Find(g => g.idea == idea); }
-        string GuessSummary() { var b = new StringBuilder(); int count = Mathf.Min(3, session.Data.guesses.Count); for (int i = 0; i < count; i++) { var g = session.Data.guesses[i]; b.AppendLine(g.idea + " - " + g.ConfidenceLabel); } if (session.Data.guesses.Count > count) b.AppendLine("+ " + (session.Data.guesses.Count - count) + ui.Copy("flow_e0e9e74383")); return b.ToString().Trim(); }
-        string ClueSummary() { int count = Mathf.Min(3, session.Data.clues.Count); var shown = session.Data.clues.GetRange(0, count); return string.Join(", ", shown) + (session.Data.clues.Count > count ? " (+ " + (session.Data.clues.Count - count) + ui.Copy("flow_e846f804c3") : ""); }
+        string GuessSummary() { if (session.Data.guesses.Count == 0) return ui.noGuessesSelectedText; var b = new StringBuilder(); int count = Mathf.Min(3, session.Data.guesses.Count); for (int i = 0; i < count; i++) { var g = session.Data.guesses[i]; b.AppendLine(g.idea + " - " + g.ConfidenceLabel); } if (session.Data.guesses.Count > count) b.AppendLine("+ " + (session.Data.guesses.Count - count) + ui.Copy("flow_e0e9e74383")); return b.ToString().Trim(); }
+        string ClueSummary() { if (session.Data.clues.Count == 0) return ui.noCluesSelectedText; int count = Mathf.Min(3, session.Data.clues.Count); var shown = session.Data.clues.GetRange(0, count); return string.Join(", ", shown) + (session.Data.clues.Count > count ? " (+ " + (session.Data.clues.Count - count) + ui.Copy("flow_e846f804c3") : ""); }
         public void CompleteGuesses() {
             if (CurrentStep != PlaygroundStep.NoteGuesses || session.Data.guesses.Count < 1 || pendingGuess >= 0) return;
+            BeginResponseStep();
+        }
+        void BeginResponseStep() {
             SetStep(PlaygroundStep.TestGuesses); responseReady = false; responding = false; reviewingGuesses = false; SetStandAreaVisible(approachCircle, true); SpeakStep(5);
             ui.Show(ui.Copy("flow_a30abe1450"), ui.Copy("flow_b1b3445216"), ui.Copy("flow_196b483580"));
             ui.wristStatus.text = ui.Copy("flow_a30abe1450");
@@ -431,6 +495,9 @@ namespace BitsPilani.Module1.Playground {
         }
         public void CompleteGuessReview() {
             if (CurrentStep != PlaygroundStep.TestGuesses || !reviewingGuesses || pendingGuess >= 0) return;
+            BeginChildPerspectiveStep();
+        }
+        void BeginChildPerspectiveStep() {
             reviewingGuesses = false; SetStep(PlaygroundStep.ChildPerspective); PlayInteraction(interactionVoiceovers?.childPerspectiveOffered);
             ui.Show(ui.Copy("flow_fe91f3b2bb"), ui.Copy("flow_8d54d516af"), ui.Copy("flow_6a7ca301eb"));
             ui.SetPrimary(ui.Copy("flow_fe91f3b2bb"), StartChildPerspective); ui.wristStatus.text = ui.Copy("flow_9157bbced8");

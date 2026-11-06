@@ -16,6 +16,7 @@ namespace BitsPilani.Module1.Playground {
     [Serializable] public class PlaygroundSessionData {
         public string sessionId, startedUtc, completedUtc;
         public List<string> clues = new List<string>();
+        public List<string> skippedSteps = new List<string>();
         public List<PlaygroundGuess> guesses = new List<PlaygroundGuess>();
         public string firstResponse = "No response", firstOutcome = "Not observed";
         public float firstResponseSeconds = -1;

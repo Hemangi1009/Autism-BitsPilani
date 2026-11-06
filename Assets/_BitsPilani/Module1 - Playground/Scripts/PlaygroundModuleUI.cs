@@ -51,7 +51,7 @@ namespace BitsPilani.Module1.Playground {
             string firstTiming = data.firstResponseSeconds < 0 ? Copy("ui_f2292b7b38") : data.firstResponseSeconds.ToString("F1") + Copy("ui_508613acea");
             bool replayResponse = !string.IsNullOrEmpty(data.replayResponse) && data.replayResponse != "No response";
             string secondTiming = !replayResponse ? Copy("ui_81a9e3ba15") : data.replaySecondsBeforePop > 0 ? data.replaySecondsBeforePop.ToString("F1") + Copy("ui_b537a6b181") : Copy("ui_f05a7a3556");
-            string[] first = { data.firstResponse, firstTiming, data.firstOutcome, data.clues.Count + (data.clues.Count == 1 ? Copy("ui_d2e0c3762f") : Copy("ui_d05260aeaa")) + data.guesses.Count + (data.guesses.Count == 1 ? Copy("ui_9eecdf20a0") : Copy("ui_5f8a84dbe9")) };
+            string[] first = { data.firstResponse, firstTiming, data.firstOutcome, (data.clues.Count == 0 ? noCluesSelectedText : data.clues.Count + (data.clues.Count == 1 ? Copy("ui_d2e0c3762f") : Copy("ui_d05260aeaa"))) + "\n" + (data.guesses.Count == 0 ? noGuessesSelectedText : data.guesses.Count + (data.guesses.Count == 1 ? Copy("ui_9eecdf20a0") : Copy("ui_5f8a84dbe9"))) };
             string[] second = { data.replayResponse, secondTiming, data.replayOutcome, Copy("ui_f48147d4c7") };
             for (int i = 0; i < 4; i++) { summaryRows[i].firstAttempt.text = first[i]; summaryRows[i].replay.text = second[i]; }
             PreviewSummaryTable(); footer.text = audioSummary; HideReplayAttention();
@@ -67,6 +67,10 @@ namespace BitsPilani.Module1.Playground {
         public TMP_Text stepLabel, title, body, status, footer, hint;
         public TMP_Text primaryLabel, secondaryLabel, wristStep, wristStatus, thoughtText, questionCount;
         public Button primary, secondary, clueTool, guessTool, wristHelp, thoughtClose;
+        [Header("Whole-step skip (scene-authored header button)")]
+        public Button skipStep;
+        public string noCluesSelectedText = "No clues selected";
+        public string noGuessesSelectedText = "No guesses selected";
         // Retain serialized field names so the user's existing canvas references survive.
         [InspectorName("Next Question Button")] public Button skipQuestion;
         [InspectorName("Record Answer Button")] public Button recordingPlaceholder;

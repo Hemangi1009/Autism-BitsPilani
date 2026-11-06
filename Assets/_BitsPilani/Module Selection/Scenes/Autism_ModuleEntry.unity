@@ -185,8 +185,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4279111182
-  m_fontColor: {r: 0.055, g: 0.055, b: 0.055, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -367,11 +367,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BitsPilani.Module1.Playground.PlaygroundButtonFeedback
   hoverScale: 1.025
   hoverSmoothTime: 0.1
-  hoverBackground: {r: 0, g: 0, b: 0, a: 1}
-  hoverText: {r: 1, g: 1, b: 1, a: 1}
+  hoverBackground: {r: 0.81960785, g: 0.81960785, b: 0.81960785, a: 1}
+  hoverText: {r: 0, g: 0, b: 0, a: 1}
   disabledBackground: {r: 0.92, g: 0.92, b: 0.92, a: 1}
   disabledText: {r: 0.37, g: 0.37, b: 0.37, a: 1}
   selectedBackground: {r: 0.88, g: 0.88, b: 0.88, a: 1}
+  selectedText: {r: 0, g: 0, b: 0, a: 1}
   hoverBorder: {r: 0, g: 0, b: 0, a: 1}
   selectedBorder: {r: 0, g: 0, b: 0, a: 1}
 --- !u!114 &61741068
@@ -417,7 +418,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnityEngine.UI.ProceduralImage.ProceduralImage
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -697,11 +698,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BitsPilani.Module1.Playground.PlaygroundButtonFeedback
   hoverScale: 1.025
   hoverSmoothTime: 0.1
-  hoverBackground: {r: 0, g: 0, b: 0, a: 1}
-  hoverText: {r: 1, g: 1, b: 1, a: 1}
+  hoverBackground: {r: 0.81960785, g: 0.81960785, b: 0.81960785, a: 1}
+  hoverText: {r: 0, g: 0, b: 0, a: 1}
   disabledBackground: {r: 0.92, g: 0.92, b: 0.92, a: 1}
   disabledText: {r: 0.37, g: 0.37, b: 0.37, a: 1}
   selectedBackground: {r: 0.88, g: 0.88, b: 0.88, a: 1}
+  selectedText: {r: 0, g: 0, b: 0, a: 1}
   hoverBorder: {r: 0, g: 0, b: 0, a: 1}
   selectedBorder: {r: 0, g: 0, b: 0, a: 1}
 --- !u!114 &345364348
@@ -747,7 +749,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnityEngine.UI.ProceduralImage.ProceduralImage
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -890,11 +892,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BitsPilani.Module1.Playground.PlaygroundButtonFeedback
   hoverScale: 1.025
   hoverSmoothTime: 0.1
-  hoverBackground: {r: 0, g: 0, b: 0, a: 1}
-  hoverText: {r: 1, g: 1, b: 1, a: 1}
+  hoverBackground: {r: 0.81960785, g: 0.81960785, b: 0.81960785, a: 1}
+  hoverText: {r: 0, g: 0, b: 0, a: 1}
   disabledBackground: {r: 0.92, g: 0.92, b: 0.92, a: 1}
   disabledText: {r: 0.37, g: 0.37, b: 0.37, a: 1}
   selectedBackground: {r: 0.88, g: 0.88, b: 0.88, a: 1}
+  selectedText: {r: 0, g: 0, b: 0, a: 1}
   hoverBorder: {r: 0, g: 0, b: 0, a: 1}
   selectedBorder: {r: 0, g: 0, b: 0, a: 1}
 --- !u!114 &371722771
@@ -940,7 +943,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnityEngine.UI.ProceduralImage.ProceduralImage
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1155,8 +1158,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4284374622
-  m_fontColor: {r: 0.37, g: 0.37, b: 0.37, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -1474,11 +1477,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BitsPilani.Module1.Playground.PlaygroundButtonFeedback
   hoverScale: 1.025
   hoverSmoothTime: 0.1
-  hoverBackground: {r: 0, g: 0, b: 0, a: 1}
-  hoverText: {r: 1, g: 1, b: 1, a: 1}
+  hoverBackground: {r: 0.81960785, g: 0.81960785, b: 0.81960785, a: 1}
+  hoverText: {r: 0, g: 0, b: 0, a: 1}
   disabledBackground: {r: 0.92, g: 0.92, b: 0.92, a: 1}
   disabledText: {r: 0.37, g: 0.37, b: 0.37, a: 1}
   selectedBackground: {r: 0.88, g: 0.88, b: 0.88, a: 1}
+  selectedText: {r: 0, g: 0, b: 0, a: 1}
   hoverBorder: {r: 0, g: 0, b: 0, a: 1}
   selectedBorder: {r: 0, g: 0, b: 0, a: 1}
 --- !u!114 &450605242
@@ -1524,7 +1528,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnityEngine.UI.ProceduralImage.ProceduralImage
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1871,8 +1875,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4284374622
-  m_fontColor: {r: 0.37, g: 0.37, b: 0.37, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -2008,8 +2012,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4284374622
-  m_fontColor: {r: 0.37, g: 0.37, b: 0.37, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -2341,7 +2345,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnityEngine.UI.ProceduralImage.ProceduralImage
   m_Material: {fileID: 0}
-  m_Color: {r: 0.955, g: 0.955, b: 0.955, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -2777,8 +2781,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4284374622
-  m_fontColor: {r: 0.37, g: 0.37, b: 0.37, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -2914,8 +2918,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4279111182
-  m_fontColor: {r: 0.055, g: 0.055, b: 0.055, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -3003,6 +3007,11 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1434583453011501496, guid: 239ec7f82f20495408a19c5a4b47faa8,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2373700877002634689, guid: 239ec7f82f20495408a19c5a4b47faa8,
         type: 3}
       propertyPath: m_Name
@@ -3071,6 +3080,11 @@ PrefabInstance:
     - target: {fileID: 5092076608439414827, guid: 239ec7f82f20495408a19c5a4b47faa8,
         type: 3}
       propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5609265778421479674, guid: 239ec7f82f20495408a19c5a4b47faa8,
+        type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5787202721426139191, guid: 239ec7f82f20495408a19c5a4b47faa8,
@@ -3324,8 +3338,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4284374622
-  m_fontColor: {r: 0.37, g: 0.37, b: 0.37, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -3710,8 +3724,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4284374622
-  m_fontColor: {r: 0.37, g: 0.37, b: 0.37, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -3903,8 +3917,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4284374622
-  m_fontColor: {r: 0.37, g: 0.37, b: 0.37, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -4040,8 +4054,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4279111182
-  m_fontColor: {r: 0.055, g: 0.055, b: 0.055, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -4177,8 +4191,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4279111182
-  m_fontColor: {r: 0.055, g: 0.055, b: 0.055, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -4453,8 +4467,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4280887593
-  m_fontColor: {r: 0.16, g: 0.16, b: 0.16, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
