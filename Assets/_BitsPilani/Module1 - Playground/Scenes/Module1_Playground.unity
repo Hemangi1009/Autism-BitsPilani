@@ -74657,6 +74657,7 @@ GameObject:
   - component: {fileID: 979108873}
   - component: {fileID: 979108876}
   - component: {fileID: 979108875}
+  - component: {fileID: 979108877}
   m_Layer: 0
   m_Name: Module1 Playground Flow
   m_TagString: Untagged
@@ -74727,6 +74728,7 @@ MonoBehaviour:
   partyMusic: {fileID: 1028782417}
   crowd: {fileID: 612408196}
   pop: {fileID: 804514625}
+  interactionVoiceovers: {fileID: 979108877}
   stepVoiceovers:
   - {fileID: 0}
   - {fileID: 8300000, guid: 2af373e63f42c1941bf030c46258c783, type: 3}
@@ -75034,6 +75036,162 @@ MonoBehaviour:
   - {fileID: 1836521670}
   - {fileID: 719933335}
   - {fileID: 1885915217}
+--- !u!114 &979108877
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 979108871}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76c6bdcb1ccd44648bb506f6ca6b0eac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BitsPilani.Module1.Playground.PlaygroundInteractionVoiceovers
+  voice: {fileID: 905161210}
+  flow: {fileID: 979108874}
+  session: {fileID: 979108873}
+  explorationStarted:
+    clip: {fileID: 8300000, guid: 3f5ae34595bbf164eaa471b31c8fcfd6, type: 3}
+    delaySeconds: 0
+  childGazeStarted:
+    clip: {fileID: 8300000, guid: 59003e0ad8499994b8eb4c6f9dc88deb, type: 3}
+    delaySeconds: 0
+  childGazeCompleted:
+    clip: {fileID: 0}
+    delaySeconds: 0
+  onlookerGazeStarted:
+    clip: {fileID: 8300000, guid: fc86eaac70e10d44db3d978730539f3a, type: 3}
+    delaySeconds: 0
+  onlookerGazeCompleted:
+    clip: {fileID: 0}
+    delaySeconds: 0
+  partyGazeStarted:
+    clip: {fileID: 8300000, guid: fcc28434fe41117468de73039f5f4d66, type: 3}
+    delaySeconds: 0
+  allIntroGazesCompleted:
+    clip: {fileID: 8300000, guid: 028393131efcf4a42b37c362fa88329e, type: 3}
+    delaySeconds: 0
+  observationAreaShown:
+    clip: {fileID: 8300000, guid: 84555703029d75a45a6d58d5f023a449, type: 3}
+    delaySeconds: 0
+  observationStarted:
+    clip: {fileID: 8300000, guid: 52103734c4db3ad4b8b3430ca517f0ca, type: 3}
+    delaySeconds: 0
+  earlyWarningShown:
+    clip: {fileID: 0}
+    delaySeconds: 0
+  firstBalloonPopped:
+    clip: {fileID: 0}
+    delaySeconds: 0
+  clueStepStarted:
+    clip: {fileID: 8300000, guid: 938592939956a3b4d93d3534023b0670, type: 3}
+    delaySeconds: 0
+  clueToolOpened:
+    clip: {fileID: 0}
+    delaySeconds: 0
+  clueSelected:
+    clip: {fileID: 0}
+    delaySeconds: 0
+  clueRemoved:
+    clip: {fileID: 0}
+    delaySeconds: 0
+  cluePageChanged:
+    clip: {fileID: 0}
+    delaySeconds: 0
+  guessStepStarted:
+    clip: {fileID: 8300000, guid: fcf4068a9f2848141ae5e23cc715f84f, type: 3}
+    delaySeconds: 0
+  guessToolOpened:
+    clip: {fileID: 0}
+    delaySeconds: 0
+  guessSelected:
+    clip: {fileID: 0}
+    delaySeconds: 0
+  confidenceSaved:
+    clip: {fileID: 0}
+    delaySeconds: 0
+  guessPageChanged:
+    clip: {fileID: 0}
+    delaySeconds: 0
+  approachChildStarted:
+    clip: {fileID: 8300000, guid: e3d860293760efd4db5b927ea14afaf3, type: 3}
+    delaySeconds: 0
+  responseChoicesShown:
+    clip: {fileID: 0}
+    delaySeconds: 0
+  responseChosen:
+    clip: {fileID: 8300000, guid: 669f05553e28db4438d156a01138135f, type: 3}
+    delaySeconds: 0
+  responseMidpoint:
+    clip: {fileID: 0}
+    delaySeconds: 0
+  guessReviewStarted:
+    clip: {fileID: 0}
+    delaySeconds: 0
+  childPerspectiveOffered:
+    clip: {fileID: 0}
+    delaySeconds: 0
+  childViewEntered:
+    clip: {fileID: 8300000, guid: 1533ab891616b7e44808c2fd79c9b578, type: 3}
+    delaySeconds: 0
+  returnToParentReady:
+    clip: {fileID: 0}
+    delaySeconds: 0
+  onlookerStepStarted:
+    clip: {fileID: 8300000, guid: 8d1cc6d1afcaa9d4099381153818d5ae, type: 3}
+    delaySeconds: 0
+  thoughtGazeStarted:
+    clip: {fileID: 0}
+    delaySeconds: 0
+  thoughtBubbleOpened:
+    clip: {fileID: 0}
+    delaySeconds: 0
+  thoughtBubbleClosed:
+    clip: {fileID: 0}
+    delaySeconds: 0
+  reflectionIntroduction:
+    clip: {fileID: 8300000, guid: 64e2632572ba3d645889bb3a6c6416ab, type: 3}
+    delaySeconds: 0
+  reflectionQuestion1:
+    clip: {fileID: 8300000, guid: 541e9e2b2fb46a141bdc3208c96ad3ba, type: 3}
+    delaySeconds: 0
+  reflectionQuestion2:
+    clip: {fileID: 8300000, guid: cf0236f3634305242b847f2cd8bb3e70, type: 3}
+    delaySeconds: 0
+  reflectionQuestion3:
+    clip: {fileID: 8300000, guid: c324cf76f0b93fb4286dbfaeb59e6e3e, type: 3}
+    delaySeconds: 0
+  answerSaved:
+    clip: {fileID: 0}
+    delaySeconds: 0
+  reflectionFeedbackShown:
+    clip: {fileID: 0}
+    delaySeconds: 0
+  replayOffered:
+    clip: {fileID: 8300000, guid: 2e35f58fb380eb049b3ca0ef1164ad9b, type: 3}
+    delaySeconds: 0
+  replayStarted:
+    clip: {fileID: 0}
+    delaySeconds: 0
+  replayObservationAreaShown:
+    clip: {fileID: 0}
+    delaySeconds: 0
+  replayObservationStarted:
+    clip: {fileID: 8300000, guid: 4a958fc660c537342a1ef7c538af22d9, type: 3}
+    delaySeconds: 0
+  replayEarlyWarningShown:
+    clip: {fileID: 0}
+    delaySeconds: 0
+  replayBalloonPopped:
+    clip: {fileID: 0}
+    delaySeconds: 0
+  replayPreventionChosen:
+    clip: {fileID: 0}
+    delaySeconds: 0
+  summaryShown:
+    clip: {fileID: 8300000, guid: a5500d0ff5599c648add9abc1ec3ccc1, type: 3}
+    delaySeconds: 0
 --- !u!1 &979791099
 GameObject:
   m_ObjectHideFlags: 0
