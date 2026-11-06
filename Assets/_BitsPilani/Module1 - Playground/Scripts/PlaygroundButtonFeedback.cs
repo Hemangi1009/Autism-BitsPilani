@@ -16,6 +16,7 @@ namespace BitsPilani.Module1.Playground {
         public Color disabledBackground = new Color(.92f,.92f,.92f);
         public Color disabledText = new Color(.37f,.37f,.37f);
         public Color selectedBackground = new Color(.88f,.88f,.88f);
+        public Color selectedText = Color.black;
         public Color hoverBorder = Color.black;
         public Color selectedBorder = Color.black;
         Button button;
@@ -69,7 +70,11 @@ namespace BitsPilani.Module1.Playground {
             // then restore each label's own gray/black shade when the pointer leaves.
             foreach (var text in GetComponentsInChildren<TMP_Text>(true)) {
                 if (!idleLabels.ContainsKey(text)) idleLabels[text] = text.color;
-                text.color = focused ? hoverText : !interactive ? disabledText : idleLabels[text];
+                // text.color = focused ? hoverText : !interactive ? disabledText : idleLabels[text];
+                text.color = !interactive ? disabledText
+                    : choiceSelected ? selectedText
+                    : focused ? hoverText
+                    : idleLabels[text];
             }
             if (border) border.effectColor = focused ? hoverBorder : choiceSelected ? selectedBorder : idleBorder;
             if (button && button.targetGraphic) {

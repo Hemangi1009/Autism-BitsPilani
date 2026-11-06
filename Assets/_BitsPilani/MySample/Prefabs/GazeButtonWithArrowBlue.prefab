@@ -883,6 +883,7 @@ GameObject:
   - component: {fileID: 1842351782400839208}
   - component: {fileID: 2102364257476620172}
   - component: {fileID: 5770341379519898829}
+  - component: {fileID: 1377483502233482459}
   m_Layer: 0
   m_Name: GazeButtonWithArrowBlue
   m_TagString: button
@@ -1028,7 +1029,19 @@ MonoBehaviour:
   Enabled: 1
   OnPointerClickEvent:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1842351782400839208}
+        m_TargetAssemblyTypeName: GazeButton, Assembly-CSharp
+        m_MethodName: OnClick
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   OnPointerEnterEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -1041,3 +1054,16 @@ MonoBehaviour:
   OnPointerUpEvent:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &1377483502233482459
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7635115176129400355}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b2b76461c04f52469be886da986147b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FaceCamera
+  rotationSpeed: 5
