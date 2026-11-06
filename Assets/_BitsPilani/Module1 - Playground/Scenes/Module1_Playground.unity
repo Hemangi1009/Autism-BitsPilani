@@ -1839,8 +1839,8 @@ MonoBehaviour:
   hoverSmoothTime: 0.1
   hoverBackground: {r: 0.81960785, g: 0.81960785, b: 0.81960785, a: 1}
   hoverText: {r: 0, g: 0, b: 0, a: 1}
-  disabledBackground: {r: 0.92, g: 0.92, b: 0.92, a: 1}
-  disabledText: {r: 0.37, g: 0.37, b: 0.37, a: 1}
+  disabledBackground: {r: 0.87058824, g: 0.87058824, b: 0.87058824, a: 1}
+  disabledText: {r: 0, g: 0, b: 0, a: 1}
   selectedBackground: {r: 0.88, g: 0.88, b: 0.88, a: 1}
   selectedText: {r: 0, g: 0, b: 0, a: 1}
   hoverBorder: {r: 0, g: 0, b: 0, a: 1}
@@ -8390,8 +8390,8 @@ MonoBehaviour:
   hoverSmoothTime: 0.1
   hoverBackground: {r: 0.81960785, g: 0.81960785, b: 0.81960785, a: 1}
   hoverText: {r: 0, g: 0, b: 0, a: 1}
-  disabledBackground: {r: 0.92, g: 0.92, b: 0.92, a: 1}
-  disabledText: {r: 0.37, g: 0.37, b: 0.37, a: 1}
+  disabledBackground: {r: 0.87058824, g: 0.87058824, b: 0.87058824, a: 1}
+  disabledText: {r: 0, g: 0, b: 0, a: 1}
   selectedBackground: {r: 0.88, g: 0.88, b: 0.88, a: 1}
   selectedText: {r: 0, g: 0, b: 0, a: 1}
   hoverBorder: {r: 0, g: 0, b: 0, a: 1}
@@ -31956,8 +31956,8 @@ MonoBehaviour:
   hoverSmoothTime: 0.1
   hoverBackground: {r: 0.81960785, g: 0.81960785, b: 0.81960785, a: 1}
   hoverText: {r: 0, g: 0, b: 0, a: 1}
-  disabledBackground: {r: 0.92, g: 0.92, b: 0.92, a: 1}
-  disabledText: {r: 0.37, g: 0.37, b: 0.37, a: 1}
+  disabledBackground: {r: 0.87058824, g: 0.87058824, b: 0.87058824, a: 1}
+  disabledText: {r: 0, g: 0, b: 0, a: 1}
   selectedBackground: {r: 0.88, g: 0.88, b: 0.88, a: 1}
   selectedText: {r: 0, g: 0, b: 0, a: 1}
   hoverBorder: {r: 0, g: 0, b: 0, a: 1}
@@ -39063,8 +39063,8 @@ MonoBehaviour:
   hoverSmoothTime: 0.1
   hoverBackground: {r: 0.81960785, g: 0.81960785, b: 0.81960785, a: 1}
   hoverText: {r: 0, g: 0, b: 0, a: 1}
-  disabledBackground: {r: 0.92, g: 0.92, b: 0.92, a: 1}
-  disabledText: {r: 0.37, g: 0.37, b: 0.37, a: 1}
+  disabledBackground: {r: 0.87058824, g: 0.87058824, b: 0.87058824, a: 1}
+  disabledText: {r: 0.7735849, g: 0.7735849, b: 0.7735849, a: 1}
   selectedBackground: {r: 0.88, g: 0.88, b: 0.88, a: 1}
   selectedText: {r: 0, g: 0, b: 0, a: 1}
   hoverBorder: {r: 0, g: 0, b: 0, a: 1}
@@ -45559,7 +45559,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 635350199}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 13}
+  m_LocalPosition: {x: 0, y: 0, z: 8.601}
   m_LocalScale: {x: 0.0008, y: 0.0008, z: 0.0008}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -45568,7 +45568,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1.7, y: 2.275}
+  m_AnchoredPosition: {x: -1.04, y: 2.275}
   m_SizeDelta: {x: 1920, y: 1080}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &635350201
@@ -74762,10 +74762,12 @@ MonoBehaviour:
   perspectiveProps:
   - {fileID: 2115481177}
   - {fileID: 428899319}
+  - {fileID: 1685310329}
+  - {fileID: 1941530623}
   initialLoadSeconds: 6
-  watchSeconds: 25
-  responseSeconds: 20
-  perspectiveSeconds: 25
+  watchSeconds: 15
+  responseSeconds: 15
+  perspectiveSeconds: 15
   thoughtToReflectionSeconds: 4
   replayWarningSeconds: 15
   replayAfterPopSeconds: 8
@@ -85868,7 +85870,7 @@ Transform:
   m_GameObject: {fileID: 1101064048}
   serializedVersion: 2
   m_LocalRotation: {x: 0.5107458, y: 0.48901814, z: -0.48901814, w: 0.5107458}
-  m_LocalPosition: {x: -0.93, y: 2.32, z: 8.79}
+  m_LocalPosition: {x: -1.205, y: 1.42, z: 8.887}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -128719,8 +128721,8 @@ MonoBehaviour:
   hoverSmoothTime: 0.1
   hoverBackground: {r: 0.81960785, g: 0.81960785, b: 0.81960785, a: 1}
   hoverText: {r: 0, g: 0, b: 0, a: 1}
-  disabledBackground: {r: 0.92, g: 0.92, b: 0.92, a: 1}
-  disabledText: {r: 0.37, g: 0.37, b: 0.37, a: 1}
+  disabledBackground: {r: 0.87058824, g: 0.87058824, b: 0.87058824, a: 1}
+  disabledText: {r: 0, g: 0, b: 0, a: 1}
   selectedBackground: {r: 0.88, g: 0.88, b: 0.88, a: 1}
   selectedText: {r: 0, g: 0, b: 0, a: 1}
   hoverBorder: {r: 0, g: 0, b: 0, a: 1}
@@ -147585,8 +147587,8 @@ MonoBehaviour:
   hoverSmoothTime: 0.1
   hoverBackground: {r: 0.81960785, g: 0.81960785, b: 0.81960785, a: 1}
   hoverText: {r: 0, g: 0, b: 0, a: 1}
-  disabledBackground: {r: 0.92, g: 0.92, b: 0.92, a: 1}
-  disabledText: {r: 0.37, g: 0.37, b: 0.37, a: 1}
+  disabledBackground: {r: 0.87058824, g: 0.87058824, b: 0.87058824, a: 1}
+  disabledText: {r: 0, g: 0, b: 0, a: 1}
   selectedBackground: {r: 0.88, g: 0.88, b: 0.88, a: 1}
   selectedText: {r: 0, g: 0, b: 0, a: 1}
   hoverBorder: {r: 0, g: 0, b: 0, a: 1}
@@ -153289,7 +153291,7 @@ Transform:
   m_GameObject: {fileID: 1979881368}
   serializedVersion: 2
   m_LocalRotation: {x: 0.5107458, y: 0.48901814, z: -0.48901814, w: 0.5107458}
-  m_LocalPosition: {x: -0.93, y: 2.32, z: 8.79}
+  m_LocalPosition: {x: -1.205, y: 1.42, z: 8.887}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

@@ -53,9 +53,18 @@ namespace BitsPilani.Module1.Playground {
         public Transform[] perspectiveProps;
         [Header("Durations in seconds")]
         [Min(6)] public float initialLoadSeconds = 6f;
-        public float watchSeconds = 25f, responseSeconds = 20f, perspectiveSeconds = 25f;
-        public float thoughtToReflectionSeconds = 4f;
-        public float replayWarningSeconds = 15f, replayAfterPopSeconds = 8f;
+        [Min(1), Tooltip("Total first-observation time. Warning occurs at 16%, balloon pop at 40%.")] public float watchSeconds = 25f;
+        [Min(1), Tooltip("Time to observe the selected response. The child reaction changes halfway through.")] public float responseSeconds = 20f;
+        [Min(1), Tooltip("Child-view observation time before Return becomes available.")] public float perspectiveSeconds = 25f;
+        [Min(0)] public float thoughtToReflectionSeconds = 4f;
+        [Min(1), Tooltip("Replay time before the pop. Early warning occurs at 20% of this duration.")] public float replayWarningSeconds = 15f;
+        [Min(0)] public float replayAfterPopSeconds = 8f;
+
+        // Keep the authored default pacing while scaling story events with each phase.
+        public float WatchWarningTime => watchSeconds * .16f;
+        public float WatchPopTime => watchSeconds * .4f;
+        public float ResponseMidpointTime => responseSeconds * .5f;
+        public float ReplayEarlyWarningTime => replayWarningSeconds * .2f;
 
         public PlaygroundStep CurrentStep { get; private set; }
         public bool IntroGazesComplete { get; private set; }
@@ -289,8 +298,8 @@ namespace BitsPilani.Module1.Playground {
             float start = Time.time; bool warned = false; firstPop = false;
             while (Time.time - start < watchSeconds) {
                 float elapsed = Time.time - start;
-                if (!warned && elapsed >= 4f) { warned = true; crowd.volume = .12f; child.SetState(PlaygroundChildState.EarlyWarning); PlayInteraction(interactionVoiceovers?.earlyWarningShown); session.Record("WatchChanges", "EarlyCue", "Hand to ear; crowd louder; still pose"); }
-                if (!firstPop && elapsed >= 10f) { firstPop = true; firstPopAt = Time.time; PopBalloon(); child.SetState(PlaygroundChildState.Distressed); PlayInteraction(interactionVoiceovers?.firstBalloonPopped); }
+                if (!warned && elapsed >= WatchWarningTime) { warned = true; crowd.volume = .12f; child.SetState(PlaygroundChildState.EarlyWarning); PlayInteraction(interactionVoiceovers?.earlyWarningShown); session.Record("WatchChanges", "EarlyCue", "Hand to ear; crowd louder; still pose"); }
+                if (!firstPop && elapsed >= WatchPopTime) { firstPop = true; firstPopAt = Time.time; PopBalloon(); child.SetState(PlaygroundChildState.Distressed); PlayInteraction(interactionVoiceovers?.firstBalloonPopped); }
                 ui.status.text = (firstPop ? ui.Copy("flow_02924b240f") : ui.Copy("flow_5db9e6901b")) + ui.Copy("flow_e8741f0d80") + Mathf.CeilToInt(Mathf.Max(0, watchSeconds - elapsed)) + ui.Copy("flow_a0f1490a20");
                 ui.wristStatus.text = ui.Copy("flow_69063bd02f") + Mathf.CeilToInt(Mathf.Max(0, watchSeconds - elapsed)) + ui.Copy("flow_a0f1490a20");
                 ui.SetProgress(elapsed / watchSeconds); yield return null;
@@ -409,7 +418,7 @@ namespace BitsPilani.Module1.Playground {
             float start = Time.time; bool midpoint = false; bool positive = (int)response <= 2;
             while (Time.time - start < responseSeconds) {
                 float elapsed = Time.time - start;
-                if (!midpoint && elapsed >= responseSeconds * .5f) {
+                if (!midpoint && elapsed >= ResponseMidpointTime) {
                     midpoint = true; PlayInteraction(interactionVoiceovers?.responseMidpoint); child.SetState(positive ? PlaygroundChildState.Calming : response == PlaygroundResponse.LoudVoiceOrSuddenTouch ? PlaygroundChildState.Escalated : PlaygroundChildState.Distressed);
                 }
                 ui.SetProgress(elapsed / responseSeconds); ui.status.text = ui.Copy("flow_8dfaeb8653") + Mathf.CeilToInt(Mathf.Max(0, responseSeconds - elapsed)) + ui.Copy("flow_a0f1490a20");
@@ -433,7 +442,7 @@ namespace BitsPilani.Module1.Playground {
             if (perspectiveBodies) perspectiveBodies.EnterChildView(rig);
             rig.EnterChildView(childViewPoint, 1.25f);
             for (int i = 0; i < perspectiveProps.Length; i++) {
-                var prop = perspectiveProps[i]; prop.localScale = propScales[i] * 1.35f;
+                var prop = perspectiveProps[i]; prop.localScale = propScales[i] * 1.75f;
                 Vector3 closer = childViewPoint.position - prop.position; closer.y = 0; prop.position += closer.normalized * .7f;
                 var anchor = prop.GetComponent<PlaygroundSurfaceAnchor>(); if (anchor) anchor.SnapToSupport();
             }
@@ -576,7 +585,7 @@ namespace BitsPilani.Module1.Playground {
             float total = replayWarningSeconds + replayAfterPopSeconds; bool warned = false;
             while (Time.time - replayStartedAt < total) {
                 float elapsed = Time.time - replayStartedAt;
-                if (!warned && elapsed >= 3f) { warned = true; PlayInteraction(interactionVoiceovers?.replayEarlyWarningShown); crowd.volume = .1f; if (!replaySupportChosen) child.SetState(PlaygroundChildState.EarlyWarning); session.Record("ReplayAndPrevent", "EarlyCueShown"); }
+                if (!warned && elapsed >= ReplayEarlyWarningTime) { warned = true; PlayInteraction(interactionVoiceovers?.replayEarlyWarningShown); crowd.volume = .1f; if (!replaySupportChosen) child.SetState(PlaygroundChildState.EarlyWarning); session.Record("ReplayAndPrevent", "EarlyCueShown"); }
                 if (!replayPop && elapsed >= replayWarningSeconds) {
                     replayPop = true; PopBalloon(); PlayInteraction(interactionVoiceovers?.replayBalloonPopped); child.SetState(replaySupportChosen ? PlaygroundChildState.Calm : PlaygroundChildState.Distressed);
                     session.Record("ReplayAndPrevent", "PopOutcome", replaySupportChosen ? "Sound-reducing support in place" : "Sound exposure unchanged");
