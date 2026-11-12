@@ -450,6 +450,13 @@ namespace BitsPilani.Module1.Playground {
         public void SetGuessConfidence(int confidence) {
             if (pendingGuess < 0 || confidence < 0 || confidence > 2) return;
             string card = GuessCards[pendingGuess]; var guess = FindGuess(card);
+            // Clicking the saved confidence again toggles this guess off, like a selected clue.
+            if (guess != null && guess.confidence == confidence) {
+                session.Data.guesses.Remove(guess);
+                session.Record(CurrentStep.ToString(), "GuessRemoved", card + " / " + Confidence[confidence]);
+                RenderGuessTool();
+                return;
+            }
             if (guess == null) { guess = new PlaygroundGuess { idea = card }; session.Data.guesses.Add(guess); }
             guess.confidence = confidence; session.Record(CurrentStep.ToString(), "GuessConfidence", card + " / " + Confidence[confidence]);
             session.Record(CurrentStep.ToString(), "GuessEvidence", card + " / " + GuessEvidence[pendingGuess]); RenderGuessTool(); PlayInteraction(interactionVoiceovers?.confidenceSaved);
