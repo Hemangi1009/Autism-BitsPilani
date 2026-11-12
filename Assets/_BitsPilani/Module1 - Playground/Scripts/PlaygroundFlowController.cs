@@ -426,7 +426,11 @@ namespace BitsPilani.Module1.Playground {
         void RenderGuessTool() {
             if (CurrentStep != PlaygroundStep.NoteGuesses && !(CurrentStep == PlaygroundStep.TestGuesses && reviewingGuesses)) return;
             pendingGuess = -1;
-            ui.Show(reviewingGuesses ? ui.Copy("flow_258f62f5d8") : ui.Copy("flow_b905aea83e"), reviewingGuesses ? ui.Copy("flow_4cc641b191") : ui.Copy("flow_7660bd5ad4"), ui.Copy("flow_2bf54b6d4f") + session.Data.guesses.Count, true);
+            string reviewContext = reviewingGuesses && ui.reviewDashboard
+                ? ui.reviewDashboard.GuessReviewContext(session.Data, ui.noCluesSelectedText) : ui.Copy("flow_4cc641b191");
+            ui.Show(reviewingGuesses ? ui.Copy("flow_258f62f5d8") : ui.Copy("flow_b905aea83e"), reviewingGuesses ? reviewContext : ui.Copy("flow_7660bd5ad4"),
+                reviewingGuesses && ui.reviewDashboard ? ui.reviewDashboard.guessReviewInstruction : ui.Copy("flow_2bf54b6d4f") + session.Data.guesses.Count, true);
+            if (reviewingGuesses && ui.reviewDashboard) ui.reviewDashboard.FormatGuessReviewText(ui.body);
             bool[] selected = new bool[GuessCards.Length]; for (int i = 0; i < GuessCards.Length; i++) selected[i] = FindGuess(GuessCards[i]) != null;
             DrawChoicePage(GuessCards, selected, guessPage, SelectGuess);
             ui.footer.text = ui.Copy("flow_108d9ea56d") + (guessPage + 1) + ui.Copy("flow_607f2de6ce") + ChoicePageCount(GuessCards.Length) + "  |  " + session.Data.guesses.Count + ui.Copy("flow_5b4d15ab4d");
@@ -629,8 +633,7 @@ namespace BitsPilani.Module1.Playground {
             session.Record("Reflect", "QuestionAnswered", ReflectionQuestions[reflectionIndex] + "; clips=" + answerRecorder.SavedCount(reflectionIndex + 1)); reflectionIndex++;
             if (reflectionIndex < 3) { ShowReflectionQuestion(); return; }
             reflectionFeedback = true; PlayInteraction(interactionVoiceovers?.reflectionFeedbackShown);
-            string feedback = ui.Copy("flow_88b1db6b71") + ClueSummary() + ui.Copy("flow_493975531f") + GuessSummary() + ui.Copy("flow_c625360168") + session.Data.firstResponse + ".\n\n" + ReflectionRecordingSummary();
-            ui.Show(ui.Copy("flow_39fddabbbc"), feedback, ui.Copy("flow_c2e04525b9"));
+            ui.ShowReflectionReview(session.Data, ReflectionRecordingSummary());
             ui.SetPrimary(ui.Copy("flow_3e57f1badc"), PrepareReplay); ui.wristStatus.text = ui.Copy("flow_dcf585e53f");
         }
 

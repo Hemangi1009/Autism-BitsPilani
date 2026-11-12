@@ -17,6 +17,8 @@ namespace BitsPilani.Module1.Playground {
         public Canvas replayAttentionCanvas;
         [Min(1)] public float replayAttentionSeconds = 5;
         public GameObject summaryTableRoot;
+        [Header("Scene-authored review dashboard")]
+        public PlaygroundReviewDashboard reviewDashboard;
         [Tooltip("Rows: response, timing, outcome, clues/guesses.")]
         public PlaygroundSummaryRow[] summaryRows;
         float replayAttentionUntil;
@@ -43,7 +45,29 @@ namespace BitsPilani.Module1.Playground {
             if (narrativeUp) narrativeUp.gameObject.SetActive(false); if (narrativeDown) narrativeDown.gameObject.SetActive(false);
             if (summaryTableRoot) summaryTableRoot.SetActive(true);
         }
+        public void ShowReflectionReview(PlaygroundSessionData data, string audioSummary) {
+            if (reviewDashboard) {
+                Show(reviewDashboard.reflectionHeading, "", "");
+                reviewDashboard.Present(data, false, noCluesSelectedText, noGuessesSelectedText);
+                footer.text = reviewDashboard.RecordingSummary(data);
+                hint.text = reviewDashboard.HasOverflow ? reviewDashboard.scrollPrompt : reviewDashboard.reflectionPrompt;
+                return;
+            }
+            var clues = data.clues.Count == 0 ? noCluesSelectedText : string.Join("\n", data.clues);
+            var guesses = new System.Text.StringBuilder();
+            foreach (var guess in data.guesses) guesses.AppendLine(guess.idea + " - " + guess.ConfidenceLabel);
+            Show(Copy("flow_39fddabbbc"), Copy("flow_88b1db6b71") + clues + Copy("flow_493975531f") +
+                (data.guesses.Count == 0 ? noGuessesSelectedText : guesses.ToString()) + Copy("flow_c625360168") + data.firstResponse, audioSummary);
+        }
+
         public void ShowAttemptComparison(PlaygroundSessionData data, string audioSummary) {
+            if (reviewDashboard) {
+                Show(reviewDashboard.comparisonHeading, "", "");
+                reviewDashboard.Present(data, true, noCluesSelectedText, noGuessesSelectedText);
+                footer.text = reviewDashboard.RecordingSummary(data);
+                hint.text = reviewDashboard.HasOverflow ? reviewDashboard.scrollPrompt : reviewDashboard.comparisonPrompt;
+                HideReplayAttention(); return;
+            }
             Show(Copy("ui_dc59cb9d06"), "", Copy("ui_c5747a2648"));
             if (!summaryTableRoot || summaryRows == null || summaryRows.Length != 4) {
                 body.text = Copy("ui_0a356fd6ac") + data.firstResponse + "\n" + data.firstOutcome + Copy("ui_ff6e6a9ba5") + data.replayResponse + "\n" + data.replayOutcome; RefreshNarrative(); return;
@@ -314,12 +338,12 @@ namespace BitsPilani.Module1.Playground {
             }
         }
         public void SetStep(int step, string caption) {
-            Initialize(); instructionStepActive = step > 0; Recenter(); SetChildViewReturn(false, false, null); SetWristShortcut(Copy("ui_548442ddeb"), ShowFixedInstructions);
+            Initialize(); if (reviewDashboard) reviewDashboard.Hide(); instructionStepActive = step > 0; Recenter(); SetChildViewReturn(false, false, null); SetWristShortcut(Copy("ui_548442ddeb"), ShowFixedInstructions);
             stepLabel.text = step == 0 ? Copy("ui_4530b7b026") : step > 9 ? Copy("ui_7b431b9c6c") : Copy("ui_6223752081") + step + Copy("ui_38c0c8830d");
             wristStep.text = step == 0 ? Copy("ui_419d0202db") : step > 9 ? Copy("ui_139325a34f") : Copy("ui_c5964dcff2") + step + "  /  " + caption;
         }
         public void Show(string heading, string description, string state, bool withChoices = false) {
-            Initialize(); mainCanvas.gameObject.SetActive(!instructionsHiddenByUser); UpdateInstructionButton();
+            Initialize(); if (reviewDashboard) reviewDashboard.Hide(); mainCanvas.gameObject.SetActive(!instructionsHiddenByUser); UpdateInstructionButton();
             if (summaryTableRoot) summaryTableRoot.SetActive(false); if (narrativeScroll) narrativeScroll.gameObject.SetActive(true);
             title.text = heading; body.text = description; status.text = state; footer.text = ""; RefreshNarrative();
             Layout(withChoices || description.Length > 440, withChoices);
