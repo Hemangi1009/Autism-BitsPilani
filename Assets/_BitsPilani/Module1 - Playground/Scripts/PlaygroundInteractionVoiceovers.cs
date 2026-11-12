@@ -45,6 +45,14 @@ namespace BitsPilani.Module1.Playground {
         [Header("Step 5 - approach, response and review")]
         public PlaygroundVoiceoverCue approachChildStarted = new PlaygroundVoiceoverCue();
         public PlaygroundVoiceoverCue responseChoicesShown = new PlaygroundVoiceoverCue();
+        [Header("Step 5 - optional selected-card dialogue")]
+        public PlaygroundVoiceoverCue cardSpeakSoftly = new PlaygroundVoiceoverCue();
+        public PlaygroundVoiceoverCue cardEarDefenders = new PlaygroundVoiceoverCue();
+        public PlaygroundVoiceoverCue cardMoveAway = new PlaygroundVoiceoverCue();
+        public PlaygroundVoiceoverCue cardWaitAndWatch = new PlaygroundVoiceoverCue();
+        public PlaygroundVoiceoverCue cardLoudVoiceOrSuddenTouch = new PlaygroundVoiceoverCue();
+        [Min(0), Tooltip("Pause after the selected card VO ends, or after the click if that VO is empty. Response Chosen plays next, including its own optional Delay Seconds.")]
+        public float responseChosenPauseSeconds = 2.5f;
         public PlaygroundVoiceoverCue responseChosen = new PlaygroundVoiceoverCue();
         public PlaygroundVoiceoverCue responseMidpoint = new PlaygroundVoiceoverCue();
         public PlaygroundVoiceoverCue guessReviewStarted = new PlaygroundVoiceoverCue();
@@ -75,6 +83,11 @@ namespace BitsPilani.Module1.Playground {
         [Header("Summary")]
         public PlaygroundVoiceoverCue summaryShown = new PlaygroundVoiceoverCue();
 
+        enum ResponseVoiceStage { None, Card, Pause, Chosen }
+        ResponseVoiceStage responseVoiceStage;
+        float responsePauseUntil;
+        public bool IsResponseSequenceActive => responseVoiceStage != ResponseVoiceStage.None;
+
         AudioClip pendingClip, queuedStartClip;
         float queuedStartTime;
         bool pendingIsStart;
@@ -83,13 +96,45 @@ namespace BitsPilani.Module1.Playground {
         public AudioClip PendingClip => pendingClip;
         public float ScheduledStartTime => scheduledStartTime;
         public AudioClip QueuedStartClip => queuedStartClip;
-        public bool IsPlaying => pendingClip || queuedStartClip || voice && voice.isPlaying;
+        public bool IsPlaying => IsResponseSequenceActive || pendingClip || queuedStartClip || voice && voice.isPlaying;
 
         public PlaygroundVoiceoverCue GetQuestionCue(int question) {
             return question == 1 ? reflectionQuestion1 : question == 2 ? reflectionQuestion2 : question == 3 ? reflectionQuestion3 : null;
         }
 
-        public bool Play(PlaygroundVoiceoverCue cue) { return Schedule(cue, Time.time); }
+        public bool Play(PlaygroundVoiceoverCue cue) {
+            // Step 5 midpoint/review narration must not cut off the requested card -> pause -> response sequence.
+            return IsResponseSequenceActive ? ScheduleAfterCurrent(cue, Time.time) : Schedule(cue, Time.time);
+        }
+
+        public PlaygroundVoiceoverCue GetResponseCardCue(PlaygroundResponse response) {
+            switch (response) {
+                case PlaygroundResponse.SpeakSoftly: return cardSpeakSoftly;
+                case PlaygroundResponse.EarDefenders: return cardEarDefenders;
+                case PlaygroundResponse.MoveAway: return cardMoveAway;
+                case PlaygroundResponse.WaitAndWatch: return cardWaitAndWatch;
+                case PlaygroundResponse.LoudVoiceOrSuddenTouch: return cardLoudVoiceOrSuddenTouch;
+                default: return null;
+            }
+        }
+
+        public bool PlayResponseCardSequence(PlaygroundResponse response) { return ScheduleResponseCardSequence(response, Time.time); }
+
+        public bool ScheduleResponseCardSequence(PlaygroundResponse response, float now) {
+            if (!voice || !isActiveAndEnabled) return false;
+            CancelPending();
+            if (Application.isPlaying) voice.Stop();
+            var cue = GetResponseCardCue(response);
+            if (cue != null && cue.clip) {
+                pendingClip = cue.clip;
+                scheduledStartTime = now + Mathf.Max(0, cue.delaySeconds);
+                responseVoiceStage = ResponseVoiceStage.Card;
+            } else {
+                responsePauseUntil = now + Mathf.Max(0, responseChosenPauseSeconds);
+                responseVoiceStage = ResponseVoiceStage.Pause;
+            }
+            return true;
+        }
 
         public bool Schedule(PlaygroundVoiceoverCue cue, float now) {
             // Empty cues do not interrupt an existing clip or fall back to legacy narration.
@@ -123,7 +168,11 @@ namespace BitsPilani.Module1.Playground {
             while (token == generation && IsPlaying) yield return null;
         }
 
-        public void CancelPending() { pendingClip = null; queuedStartClip = null; pendingIsStart = false; generation++; }
+        public void CancelPending() {
+            if (IsResponseSequenceActive && voice && Application.isPlaying) voice.Stop();
+            responseVoiceStage = ResponseVoiceStage.None;
+            pendingClip = null; queuedStartClip = null; pendingIsStart = false; generation++;
+        }
 
         public void CancelWaitingStart() {
             queuedStartClip = null;
@@ -132,7 +181,22 @@ namespace BitsPilani.Module1.Playground {
 
         public bool AdvancePlayback(float now) {
             if (!voice) return false;
-            if (!pendingClip && queuedStartClip && !voice.isPlaying) {
+            // Observe real playback completion rather than guessing from clip length/pitch.
+            if (responseVoiceStage == ResponseVoiceStage.Card && !pendingClip && !voice.isPlaying) {
+                responsePauseUntil = now + Mathf.Max(0, responseChosenPauseSeconds);
+                responseVoiceStage = ResponseVoiceStage.Pause;
+            }
+            if (responseVoiceStage == ResponseVoiceStage.Pause && now >= responsePauseUntil) {
+                if (responseChosen != null && responseChosen.clip) {
+                    pendingClip = responseChosen.clip;
+                    scheduledStartTime = now + Mathf.Max(0, responseChosen.delaySeconds);
+                    responseVoiceStage = ResponseVoiceStage.Chosen;
+                } else responseVoiceStage = ResponseVoiceStage.None;
+            }
+            if (responseVoiceStage == ResponseVoiceStage.Chosen && !pendingClip && !voice.isPlaying)
+                responseVoiceStage = ResponseVoiceStage.None;
+
+            if (!IsResponseSequenceActive && !pendingClip && queuedStartClip && !voice.isPlaying) {
                 pendingClip = queuedStartClip;
                 queuedStartClip = null;
                 pendingIsStart = true;

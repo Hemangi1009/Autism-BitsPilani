@@ -7,7 +7,7 @@ using BitsPilani.Module1.Playground;
 public sealed class PlaygroundFlowControllerEditor : Editor {
     static readonly string[] TimingFields = {
         "initialLoadSeconds", "watchSeconds", "responseSeconds", "perspectiveSeconds",
-        "thoughtToReflectionSeconds", "replayWarningSeconds", "replayAfterPopSeconds"
+        "replayWarningSeconds", "replayAfterPopSeconds"
     };
     static readonly string[] ExcludedFields = {
         "m_Script", "initialLoadSeconds", "watchSeconds", "responseSeconds", "perspectiveSeconds",

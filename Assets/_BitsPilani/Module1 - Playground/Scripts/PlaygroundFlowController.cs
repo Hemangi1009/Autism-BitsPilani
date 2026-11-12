@@ -56,7 +56,7 @@ namespace BitsPilani.Module1.Playground {
         [Min(1), Tooltip("Total first-observation time. Warning occurs at 16%, balloon pop at 40%.")] public float watchSeconds = 25f;
         [Min(1), Tooltip("Time to observe the selected response. The child reaction changes halfway through.")] public float responseSeconds = 20f;
         [Min(1), Tooltip("Child-view observation time before Return becomes available.")] public float perspectiveSeconds = 25f;
-        [Min(0)] public float thoughtToReflectionSeconds = 4f;
+        [HideInInspector] public float thoughtToReflectionSeconds = 4f; // Legacy scene value; no delay is used.
         [Min(1), Tooltip("Replay time before the pop. Early warning occurs at 20% of this duration.")] public float replayWarningSeconds = 15f;
         [Min(0)] public float replayAfterPopSeconds = 8f;
 
@@ -124,10 +124,12 @@ namespace BitsPilani.Module1.Playground {
         Vector3[] propPositions, propScales;
         Quaternion[] propRotations;
         bool responseReady, reviewingGuesses, returnReady, thoughtOpen, reflectionFeedback;
+        bool thoughtViewedOnce;
+        public bool ThoughtViewedOnce => thoughtViewedOnce;
         bool replayStarted, replayAreaReached, replayPop, replayChoiceMade, firstPop;
         bool responding, replaySupportChosen;
         int introCount, reflectionIndex, gazeToken;
-        float firstPopAt, replayStartedAt, thoughtClosedAt = -1;
+        float firstPopAt, replayStartedAt;
         int pendingGuess = -1;
         int cluePage, guessPage;
         Coroutine routine;
@@ -325,9 +327,7 @@ namespace BitsPilani.Module1.Playground {
             if (CurrentStep == PlaygroundStep.TestGuesses && !responseReady && !responding && !reviewingGuesses && StandAreaReached(approachCircle)) {
                 responseReady = true; SetStandAreaVisible(approachCircle, false); session.Record("TestGuesses", "ChildApproached"); ShowResponses();
             }
-            if (CurrentStep == PlaygroundStep.OnlookerThought && !thoughtOpen && thoughtClosedAt >= 0 && Time.time - thoughtClosedAt >= thoughtToReflectionSeconds) {
-                gazeToken++; ClearGazeChildren(gazeThought); BeginReflection();
-            }
+
             if (CurrentStep == PlaygroundStep.ReplayAndPrevent && replayStarted && !replayAreaReached && StandAreaReached(observationCircle)) {
                 replayAreaReached = true; rig.SetMovementLocked(false); SetStandAreaVisible(observationCircle, false); session.Record("ReplayAndPrevent", "ReplayCircleReached", "Visible circle reached; movement remains enabled"); routine = StartCoroutine(RunReplay());
             }
@@ -478,7 +478,7 @@ namespace BitsPilani.Module1.Playground {
         }
         IEnumerator ObserveResponse(PlaygroundResponse response) {
             ui.Show(ui.Copy("flow_e8837a189e"), ui.Copy("flow_168e66b480") + session.Data.firstResponse + ui.Copy("flow_61a4cac9b5"), ui.Copy("flow_d828559e10"));
-            rig.SetMovementLocked(false); PlayInteraction(interactionVoiceovers?.responseChosen);
+            rig.SetMovementLocked(false); if (interactionVoiceovers) interactionVoiceovers.PlayResponseCardSequence(response);
             float start = Time.time; bool midpoint = false; bool positive = (int)response <= 2;
             while (Time.time - start < responseSeconds) {
                 float elapsed = Time.time - start;
@@ -533,28 +533,32 @@ namespace BitsPilani.Module1.Playground {
         void RestorePerspectiveProps() { if (propPositions == null) return; for (int i = 0; i < perspectiveProps.Length; i++) { if (!perspectiveProps[i]) continue; perspectiveProps[i].localPosition = propPositions[i]; perspectiveProps[i].localScale = propScales[i]; perspectiveProps[i].localRotation = propRotations[i]; } }
 
         void BeginOnlooker() {
-            SetStep(PlaygroundStep.OnlookerThought); thoughtClosedAt = -1; thoughtOpen = false; SpeakStep(7);
+            if (thoughtViewedOnce) { BeginReflection(); return; }
+            SetStep(PlaygroundStep.OnlookerThought); thoughtOpen = false; SpeakStep(7);
             ui.Show(ui.Copy("flow_0028ce8de4"), ui.Copy("flow_af7049bec8"), ui.Copy("flow_40dbc88ab2"));
             ui.wristStatus.text = ui.Copy("flow_f2ce014375"); CreateThoughtGaze();
         }
         void CreateThoughtGaze() {
+            if (thoughtViewedOnce) return;
             int token = ++gazeToken;
             PlayStartInteraction(interactionVoiceovers?.thoughtGazeStarted);
             FactoryManager.CreateGaze(gazeThought, () => { if (token != gazeToken || CurrentStep != PlaygroundStep.OnlookerThought || thoughtOpen) return; OpenThoughtBubble(); });
         }
         public void OpenThoughtBubble() {
-            if (CurrentStep != PlaygroundStep.OnlookerThought || thoughtOpen) return;
-            if (interactionVoiceovers) interactionVoiceovers.CancelWaitingStart(); thoughtOpen = true; thoughtClosedAt = -1;
+            if (CurrentStep != PlaygroundStep.OnlookerThought || thoughtOpen || thoughtViewedOnce) return;
+            if (interactionVoiceovers) interactionVoiceovers.CancelWaitingStart(); thoughtOpen = true; thoughtViewedOnce = true;
             ui.wristStatus.text = ui.Copy("flow_b328ed4417");
             ui.ShowThought(ui.Copy("flow_1996f4d889"), CloseThoughtBubble);
             session.Record("OnlookerThought", "ThoughtBubbleOpened"); PlayInteraction(interactionVoiceovers?.thoughtBubbleOpened);
         }
         public void CloseThoughtBubble() {
             if (CurrentStep != PlaygroundStep.OnlookerThought || !thoughtOpen) return;
-            thoughtOpen = false; ui.thoughtCanvas.gameObject.SetActive(false); thoughtClosedAt = Time.time; PlayInteraction(interactionVoiceovers?.thoughtBubbleClosed);
-            session.Record("OnlookerThought", "ThoughtBubbleClosed", "Reflection begins after four seconds unless reopened");
-            ui.status.text = ui.Copy("flow_39c0b49b68"); CreateThoughtGaze();
-            ui.wristStatus.text = ui.Copy("flow_8691ecaa43");
+            thoughtOpen = false; ui.thoughtCanvas.gameObject.SetActive(false);
+            gazeToken++; ClearGazeChildren(gazeThought);
+            if (interactionVoiceovers) interactionVoiceovers.CancelPending();
+            if (voice) voice.Stop();
+            session.Record("OnlookerThought", "ThoughtBubbleClosed", "Viewed once; reflection questions shown immediately");
+            BeginReflection(true);
         }
 
         void InitializeAnswerRecording() {
@@ -563,20 +567,21 @@ namespace BitsPilani.Module1.Playground {
             answerRecorder.ClipSaved -= OnAnswerClipSaved; answerRecorder.StateChanged -= RefreshAnswerRecordingUI;
             answerRecorder.ClipSaved += OnAnswerClipSaved; answerRecorder.StateChanged += RefreshAnswerRecordingUI;
         }
-        void BeginReflection() {
-            SetStep(PlaygroundStep.Reflect); reflectionIndex = 0; reflectionFeedback = false; ShowReflectionQuestion(true);
+        void BeginReflection(bool playThoughtClosedVoiceover = false) {
+            SetStep(PlaygroundStep.Reflect); reflectionIndex = 0; reflectionFeedback = false; ShowReflectionQuestion(true, playThoughtClosedVoiceover);
         }
-        void ShowReflectionQuestion(bool playIntroduction = false) {
+        void ShowReflectionQuestion(bool playIntroduction = false, bool playThoughtClosedVoiceover = false) {
             questionNarrating = true;
             answerRecorder.ClearStatus();
             ui.ShowRecordingQuestion(ReflectionQuestions[reflectionIndex], reflectionIndex, ToggleAnswerRecording, NextReflectionQuestion, questionNarrating);
             lastAnswerUiSecond = -1; RefreshAnswerRecordingUI();
             session.Record("Reflect", "QuestionShown", ReflectionQuestions[reflectionIndex]);
             if (questionVoiceRoutine != null) StopCoroutine(questionVoiceRoutine);
-            questionVoiceRoutine = StartCoroutine(NarrateReflectionQuestion(playIntroduction));
+            questionVoiceRoutine = StartCoroutine(NarrateReflectionQuestion(playIntroduction, playThoughtClosedVoiceover));
         }
-        IEnumerator NarrateReflectionQuestion(bool introduction) {
+        IEnumerator NarrateReflectionQuestion(bool introduction, bool playThoughtClosedVoiceover = false) {
             if (interactionVoiceovers) {
+                if (playThoughtClosedVoiceover) yield return interactionVoiceovers.PlayAndWait(interactionVoiceovers.thoughtBubbleClosed);
                 if (introduction) yield return interactionVoiceovers.PlayAndWait(interactionVoiceovers.reflectionIntroduction);
                 yield return interactionVoiceovers.PlayAndWait(interactionVoiceovers.GetQuestionCue(reflectionIndex + 1));
             }

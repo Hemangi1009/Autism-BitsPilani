@@ -54052,15 +54052,30 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6350089096231203613, guid: 239ec7f82f20495408a19c5a4b47faa8,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6716838198511065500, guid: 239ec7f82f20495408a19c5a4b47faa8,
         type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6880606242902464753, guid: 239ec7f82f20495408a19c5a4b47faa8,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7075715278996453256, guid: 239ec7f82f20495408a19c5a4b47faa8,
         type: 3}
       propertyPath: DebugTextHolder
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7343181177941215044, guid: 239ec7f82f20495408a19c5a4b47faa8,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8036401071720548876, guid: 239ec7f82f20495408a19c5a4b47faa8,
         type: 3}
@@ -75472,6 +75487,22 @@ MonoBehaviour:
   responseChoicesShown:
     clip: {fileID: 0}
     delaySeconds: 0
+  cardSpeakSoftly:
+    clip: {fileID: 8300000, guid: 3cda5e1ef4c1ac7469d4f389f06dd94f, type: 3}
+    delaySeconds: 0
+  cardEarDefenders:
+    clip: {fileID: 0}
+    delaySeconds: 0
+  cardMoveAway:
+    clip: {fileID: 0}
+    delaySeconds: 0
+  cardWaitAndWatch:
+    clip: {fileID: 0}
+    delaySeconds: 0
+  cardLoudVoiceOrSuddenTouch:
+    clip: {fileID: 8300000, guid: ff93ad02528c6134baf8a1c9b3e331b0, type: 3}
+    delaySeconds: 0
+  responseChosenPauseSeconds: 1.5
   responseChosen:
     clip: {fileID: 8300000, guid: 669f05553e28db4438d156a01138135f, type: 3}
     delaySeconds: 0
@@ -75479,7 +75510,7 @@ MonoBehaviour:
     clip: {fileID: 0}
     delaySeconds: 0
   guessReviewStarted:
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: c6e7e0b70f336554a8578469d17b80f0, type: 3}
     delaySeconds: 0
   childPerspectiveOffered:
     clip: {fileID: 0}
