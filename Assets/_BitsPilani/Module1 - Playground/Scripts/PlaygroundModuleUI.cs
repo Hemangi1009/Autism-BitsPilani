@@ -84,6 +84,8 @@ namespace BitsPilani.Module1.Playground {
         [Header("Landscape narrative and child-view return")]
         public ScrollRect narrativeScroll;
         public Button narrativeUp, narrativeDown, wristReturn;
+        [Header("Independent child-view return fallback")]
+        public PlaygroundChildViewReturnControl childViewReturnControl;
         public Scrollbar narrativeScrollbar;
         [Header("Narrative layout variants (canvas pixels)")]
         public Vector2 textOnlyNarrativeSize = new Vector2(1740, 500);
@@ -138,7 +140,9 @@ namespace BitsPilani.Module1.Playground {
             UpdateNarrativeButtons();
         }
         public void SetChildViewReturn(bool visible, bool ready, UnityAction callback) {
-            if (wristCanvas && visible) wristCanvas.gameObject.SetActive(true);
+            if (childViewReturnControl) childViewReturnControl.SetReturnState(visible, ready, callback);
+            // Respect the hand canvas's scene/Inspector activation state. Child view must not turn it back on.
+            if (!wristCanvas || !wristCanvas.gameObject.activeInHierarchy) return;
             if (!wristReturn) { if (visible) { SetWristShortcut(ready ? Copy("ui_3c347c3e65") : Copy("ui_8936210f4c"), callback); wristHelp.interactable = ready; } return; }
             wristReturn.gameObject.SetActive(visible); wristHelp.gameObject.SetActive(!visible);
             if (visible) wristHelp.interactable = false;
