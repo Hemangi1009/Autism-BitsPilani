@@ -524,7 +524,7 @@ namespace BitsPilani.Module1.Playground {
                 Vector3 closer = childViewPoint.position - prop.position; closer.y = 0; prop.position += closer.normalized * .7f;
                 var anchor = prop.GetComponent<PlaygroundSurfaceAnchor>(); if (anchor) anchor.SnapToSupport();
             }
-            partyMusic.volume = .32f; partyMusic.pitch = 1.12f; crowd.volume = .18f; ui.SetTint(true); SpeakStep(6);
+            partyMusic.volume = .55f; partyMusic.pitch = 2f; partyMusic.spread = 220f; crowd.volume = .18f; ui.SetTint(true); SpeakStep(6);
             returnReady = false;
             ui.Show(ui.Copy("flow_c186ab9cbf"), ui.Copy("flow_0f2b97e17e"), ui.Copy("flow_7435b92a71"));
             ui.SetChildViewReturn(true, false, ReturnToMyView);
