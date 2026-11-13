@@ -11,6 +11,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_BitsPilani/Module1 - Playground/Scenes/Module1_Playground.unity
     guid: c4b224f3f14c6b14fbdd246379987839
+  - enabled: 1
+    path: Assets/_BitsPilani/Module4 - CarAndHome/Scene/Module4_Home.unity
+    guid: 905d99c3e55e042499b6a2a34f6339b9
+  - enabled: 1
+    path: Assets/_BitsPilani/Module4 - CarAndHome/Scene/Module4_Walk.unity
+    guid: 4d842c2c894de3e4080e53e2e0146845
   - enabled: 0
     path: Assets/_BitsPilani/MySample/Scene/BitsPilani.unity
     guid: 1cf38b25a71e02e4e99a682e851d2295
