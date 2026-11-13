@@ -1,0 +1,722 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6dffa7a9e72b4c04c9a385c19a34608a, type: 3}
+  m_Name: Module4_TrainingDefinition
+  m_EditorClassIdentifier: Assembly-CSharp::BitsPilani.Module4.Module4Definition
+  homeScene: Module4_Home
+  walkScene: Module4_Walk
+  initialLoadSeconds: 6
+  homeObservationSeconds: 20
+  walkObservationSeconds: 20
+  flashbackSeconds: 20
+  responseObservationSeconds: 10
+  replayObservationSeconds: 20
+  responseDialoguePauseSeconds: 2.5
+  fadeSeconds: 0.2
+  guidedPractice: 1
+  requireParticipantId: 1
+  requireSavedAnswer: 1
+  childEyeView: 1
+  childEyeHeight: 1.05
+  clues:
+  - He stopped walking
+  - He is crying without using words
+  - He keeps looking towards the park
+  - His body looks tense
+  - The park entrance is beside the path
+  - The mall is in the other direction
+  - No destination was explained at home
+  - He got ready in his usual going-out routine
+  - His shoes seem uncomfortable
+  - He seems tired after a long walk
+  - He may have noticed something unfamiliar
+  - He is asking for a snack
+  guesses:
+  - He expected to visit the park
+  - He is scared of something nearby
+  - He wants to stop walking
+  - He does not like this place
+  - He does not know where we are going
+  - He finds an unexpected change difficult
+  - He is uncomfortable or tired
+  - He needs help understanding today's plan
+  confidence:
+  - Not sure
+  - Somewhat sure
+  - Very sure
+  responses:
+  - Show pictures of today's plan
+  - 'Calmly explain: Today we are going to the mall, then home.'
+  - Reassure him we can talk once we reach the mall
+  - Repeat the instruction more firmly to make it clear
+  prevention:
+  - Use a picture plan before leaving
+  - Explain today's destination before leaving
+  - Keep the familiar routine so he feels reassured
+  - Explain the destination if he asks on the way
+  questions:
+  - What did you first think was happening?
+  - What changed your mind?
+  - What did your child need?
+  feedback: Your child may have expected a park trip because getting ready looked
+    the same as before. You knew you were going to the mall, but he had not been
+    told. His reaction can be a sign that what happened did not match what he expected.
+    A simple explanation or picture plan before leaving can help him understand what
+    comes next.
+  moduleStarted:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  participantAccepted:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  moduleCompleted:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  sceneLeaving:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  sceneArrived:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  homeStarted:
+    clip: {fileID: 8300000, guid: a31ebd61205ea5a48aefdb19fa45a2a9, type: 3}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  childGazeStarted:
+    clip: {fileID: 8300000, guid: 85c1e287aec77fd4fb2f0a70820bea23, type: 3}
+    delaySeconds: 2
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  childGazeCompleted:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  homeObservationStarted:
+    clip: {fileID: 8300000, guid: 774946e4adb2285409bf4331a8fe509b, type: 3}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  shoesPutOn:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  usualThingsPickedUp:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  parentSaysLetsGo:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  homeObservationFinished:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  goToWalkSelected:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  walkStarted:
+    clip: {fileID: 8300000, guid: 10b05e2ea23ac724c9398be34b2ba30b, type: 3}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  walkApproachStarted:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  walkCheckpointReached:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  walkObservationStarted:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  childLooksAtPark:
+    clip: {fileID: 8300000, guid: df1a9fd8c30468741ab05a51632aa157, type: 3}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  parkPassed:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  childUpset:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  walkObservationFinished:
+    clip: {fileID: 8300000, guid: 5b9b15487f1e4734e9469cc24d10e8d5, type: 3}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  clueStepStarted:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  clueToolOpened:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  clueSelected:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  clueRemoved:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  cluePageChanged:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  cluesCompleted:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  guessStepStarted:
+    clip: {fileID: 8300000, guid: 49e24fb9a5eb6e849b32d243d3de218f, type: 3}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  guessToolOpened:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  guessSelected:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  confidenceSaved:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  guessRemoved:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  guessPageChanged:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  guessesCompleted:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  lookBeyondOffered:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  lookBeyondSelected:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  childViewEntered:
+    clip: {fileID: 8300000, guid: 72d8e639d03434349ac03a50651750ce, type: 3}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  flashbackObservationFinished:
+    clip: {fileID: 8300000, guid: 940d6cb8be97fd94db744ef6ac0b6151, type: 3}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  returnToWalkReady:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  returnToWalkSelected:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  responseStepStarted:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  responseChoicesShown:
+    clip: {fileID: 8300000, guid: 8b007d0e5df34c248a482e56b98a4874, type: 3}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  cardPictureBoard:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  cardNotToday:
+    clip: {fileID: 8300000, guid: 6cd462d661e5c3a4791b124665400724, type: 3}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  cardKeepWalking:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  cardRaiseVoice:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  responseChosen:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  responseMidpoint:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  responseObservationFinished:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  guessReviewStarted:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  guessReviewCompleted:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  reflectionStarted:
+    clip: {fileID: 8300000, guid: 748e3c5226371a04890edbed6bc28cad, type: 3}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  reflectionQuestion1:
+    clip: {fileID: 8300000, guid: 3bbd2d3935be7304897245b90b18b39c, type: 3}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  reflectionQuestion2:
+    clip: {fileID: 8300000, guid: 4f2fabe18dfc50a4793b99e7eae5e7f6, type: 3}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  reflectionQuestion3:
+    clip: {fileID: 8300000, guid: fe0a6a5bca50ada45a48269285df3ca4, type: 3}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  answerRecordingStarted:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  answerSaved:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  reflectionCompleted:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  feedbackShown:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  replayOffered:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  replaySelected:
+    clip: {fileID: 8300000, guid: 1b6b59b05cb37184b8ece0a4ba032594, type: 3}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  replayHomeStarted:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  replayPictureBoard:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  replayNotToday:
+    clip: {fileID: 8300000, guid: 6cd462d661e5c3a4791b124665400724, type: 3}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  replayFamiliarRoutine:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  replayExplainIfAsked:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  expectationsSet:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  replayWalkStarted:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  replayParkPassed:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  replayWalkFinished:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+  summaryShown:
+    clip: {fileID: 0}
+    delaySeconds: 0
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []

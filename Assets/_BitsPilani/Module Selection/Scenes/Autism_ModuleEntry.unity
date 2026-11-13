@@ -3831,8 +3831,8 @@ MonoBehaviour:
   - Module1_Playground
   - 
   - 
-  - 
-  moduleAvailable: 01000000
+  - Module4_Home
+  moduleAvailable: 01000001
   saveToQuest: 1
   adbExecutable: C:\Program Files\Unity\Hub\Editor\6000.3.24f1\Editor\Data\PlaybackEngines\AndroidPlayer\SDK\platform-tools\adb.exe
   questDeviceSerial: 
