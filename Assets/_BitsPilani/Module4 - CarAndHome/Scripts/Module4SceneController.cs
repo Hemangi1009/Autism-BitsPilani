@@ -208,12 +208,12 @@ namespace BitsPilani.Module4 {
         }
         void RenderGuesses(){
             pendingGuess=-1;bool review=CurrentStage==Module4Stage.ReviewGuesses;ui.Step(review?6:4,review?"Review your guesses":"Note your guesses");
-            ui.Show(review?"Review your guesses":"What might be going on?",review?ReviewContext():"<b>Save at least 2 possible ideas.</b>\n\nChoose a guess, then how sure you are. You can keep more than one idea.",
+            ui.Show(review?"Review your guesses":"What might be going on?",review?ReviewContext():"<b>Save at least 1 possible idea.</b>\n\nChoose a guess, then how sure you are. You can keep more than one idea.",
                 review?"Choose a guess to change your confidence.":"Saved ideas: "+session.Data.guesses.Count,true);
             bool[] selected=new bool[definition.guesses.Length];for(int i=0;i<selected.Length;i++)selected[i]=FindGuess(definition.guesses[i])!=null;
             Cards(definition.guesses,selected,guessPage,SelectGuess);ui.Tools(false,true);
             ui.footer.text="PAGE "+(guessPage+1)+" OF "+Pages(definition.guesses.Length)+"   |   "+session.Data.guesses.Count+" saved ideas";
-            ui.Primary("Done",review?(UnityEngine.Events.UnityAction)CompleteGuessReview:CompleteGuesses,session.Data.guesses.Count>=2);
+            ui.Primary("Done",review?(UnityEngine.Events.UnityAction)CompleteGuessReview:CompleteGuesses,session.Data.guesses.Count>=1);
             ui.Secondary("More ideas",()=>{guessPage=(guessPage+1)%Pages(definition.guesses.Length);RenderGuesses();session.Play(Module4Event.guessPageChanged);},Pages(definition.guesses.Length)>1,Pages(definition.guesses.Length)>1);
         }
         public void SelectGuess(int index){
@@ -232,7 +232,7 @@ namespace BitsPilani.Module4 {
         Module4Guess FindGuess(string idea){return session.Data.guesses.Find(g=>g.idea==idea);}
         int Pages(int count){return Mathf.CeilToInt((float)count/Mathf.Max(1,ui.choices.Length));}
         void Cards(string[] source,bool[] selected,int page,Action<int> callback){int start=page*ui.choices.Length,count=Mathf.Min(ui.choices.Length,source.Length-start);var labels=new string[count];var marked=new bool[count];Array.Copy(source,start,labels,0,count);Array.Copy(selected,start,marked,0,count);ui.Draw(labels,marked,i=>callback(start+i));}
-        public void CompleteGuesses(){if(CurrentStage!=Module4Stage.NoteGuesses||pendingGuess>=0||session.Data.guesses.Count<2)return;session.Play(Module4Event.guessesCompleted);ui.Step(5,"Look beyond the scene");session.Stage(Module4Stage.HomeFlashback);ui.Tools(false,false);ui.Show("Look beyond the scene","See what happened at home from your child's side. Think about what he could actually know.","Every time you leave like this, you usually go to the park.");ui.Primary("Look Beyond the Scene",LookBeyond);session.Play(Module4Event.lookBeyondOffered);}
+        public void CompleteGuesses(){if(CurrentStage!=Module4Stage.NoteGuesses||pendingGuess>=0||session.Data.guesses.Count<1)return;session.Play(Module4Event.guessesCompleted);ui.Step(5,"Look beyond the scene");session.Stage(Module4Stage.HomeFlashback);ui.Tools(false,false);ui.Show("Look beyond the scene","See what happened at home from your child's side. Think about what he could actually know.","Every time you leave like this, you usually go to the park.");ui.Primary("Look Beyond the Scene",LookBeyond);session.Play(Module4Event.lookBeyondOffered);}
         public void LookBeyond(){if(transitioning||CurrentStage!=Module4Stage.HomeFlashback||homeScene)return;session.Play(Module4Event.lookBeyondSelected);StartCoroutine(LoadVisit(Module4Stage.HomeFlashback,definition.homeScene));}
         IEnumerator HomeFlashback(){
             Stage(Module4Stage.HomeFlashback,5,"From your child's side");rig.SetMovementLocked(true);child.At(child.preparationPosition);
@@ -260,7 +260,7 @@ namespace BitsPilani.Module4 {
             session.Data.firstResponseSeconds=definition.responseObservationSeconds;session.Play(Module4Event.responseObservationFinished);responding=false;rig.SetMovementLocked(false);
             Stage(Module4Stage.ReviewGuesses,6,"Review your guesses");session.Play(Module4Event.guessReviewStarted);RenderGuesses();
         }
-        public void CompleteGuessReview(){if(CurrentStage!=Module4Stage.ReviewGuesses||pendingGuess>=0||session.Data.guesses.Count<2)return;session.Play(Module4Event.guessReviewCompleted);session.Stage(Module4Stage.Reflect);session.Data.reflectionQuestion=1;StartCoroutine(BeginReflection());}
+        public void CompleteGuessReview(){if(CurrentStage!=Module4Stage.ReviewGuesses||pendingGuess>=0||session.Data.guesses.Count<1)return;session.Play(Module4Event.guessReviewCompleted);session.Stage(Module4Stage.Reflect);session.Data.reflectionQuestion=1;StartCoroutine(BeginReflection());}
         IEnumerator BeginReflection(){ui.Step(7,"Reflect");ui.Tools(false,false);yield return session.Narrate(Module4Event.reflectionStarted);yield return ReflectionQuestion();}
         IEnumerator ReflectionQuestion(){
             ui.Step(7,"Reflect");int q=Mathf.Clamp(session.Data.reflectionQuestion,1,3);ui.Reflection(definition.questions[q-1],q);

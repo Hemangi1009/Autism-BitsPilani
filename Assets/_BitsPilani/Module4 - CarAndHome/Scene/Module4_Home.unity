@@ -10048,15 +10048,15 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 277230839}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0.28258538, z: -0, w: 0.95924217}
+  m_LocalPosition: {x: -9.746447, y: 0.101, z: -4.017687}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 774429682}
   - {fileID: 1178966912}
   m_Father: {fileID: 1191819816}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -32.829, z: 0}
 --- !u!114 &277230841
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12224,7 +12224,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 11839656}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.99999994
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -39641,6 +39641,8 @@ MonoBehaviour:
   walkCheckpoint: {fileID: 0}
   checkpointRadius: 1.4
   checkpointMarker: {fileID: 0}
+  firstWalkArea: {fileID: 0}
+  replayWalkArea: {fileID: 0}
 --- !u!4 &1191819816
 Transform:
   m_ObjectHideFlags: 0

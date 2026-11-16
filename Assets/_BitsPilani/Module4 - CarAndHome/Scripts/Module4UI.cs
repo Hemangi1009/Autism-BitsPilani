@@ -48,7 +48,7 @@ namespace BitsPilani.Module4 {
             if(keyboard){keyboard.owner=flow;keyboard.Bind();}
             if(narrativeScrollbar)narrativeScrollbar.onValueChanged.AddListener(v=>narrative.verticalNormalizedPosition=v);
             if(childReturnButton){childReturnButton.onClick.RemoveAllListeners();childReturnButton.onClick.AddListener(flow.ReturnToWalk);}
-            SetChildReturn(false);RefreshId();RefreshFeedback();
+            if(toolsCanvas)toolsCanvas.gameObject.SetActive(false);SetChildReturn(false);RefreshId();RefreshFeedback();
         }
         public void RefreshId(){bool valid=idInput&&Module4Session.IsValidId(idInput.text);if(idDone)idDone.interactable=valid;if(keyboard)keyboard.Refresh();RefreshFeedback();}
         public void ShowId(bool visible){
@@ -80,7 +80,7 @@ namespace BitsPilani.Module4 {
             for(int i=0;i<choices.Length;i++){var c=choices[i];c.button.gameObject.SetActive(i<VisibleChoiceCount);c.button.onClick.RemoveAllListeners();if(i>=VisibleChoiceCount)continue;c.label.text=labels[i];c.button.interactable=callback!=null;int index=i;if(callback!=null)c.button.onClick.AddListener(()=>callback(index));var f=c.button.GetComponent<Module4ButtonFeedback>();if(f)f.SetChoiceSelected(marked!=null&&i<marked.Length&&marked[i]);}
             RefreshFeedback();if(VisibleChoiceCount>0)Layout(true);
         }
-        public void Tools(bool clues,bool guesses){if(toolsCanvas)toolsCanvas.gameObject.SetActive(clues||guesses);if(clueTool)clueTool.interactable=clues;if(guessTool)guessTool.interactable=guesses;RefreshFeedback();}
+        public void Tools(bool clues,bool guesses){if(toolsCanvas)toolsCanvas.gameObject.SetActive(false);if(clueTool)clueTool.interactable=clues;if(guessTool)guessTool.interactable=guesses;RefreshFeedback();}
         public void Busy(){foreach(var b in mainCanvas.GetComponentsInChildren<Button>(true))b.interactable=false;Tools(false,false);RefreshFeedback();}
         public void SetChildReturn(bool visible){if(childReturnCanvas)childReturnCanvas.gameObject.SetActive(visible);if(childReturnButton)childReturnButton.interactable=visible;}
         public void Reflection(string question,int number){
