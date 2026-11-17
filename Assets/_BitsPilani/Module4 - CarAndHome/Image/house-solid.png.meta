@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 4976d60fcf90d974c9ecccac7cbd81e3
+guid: fd1af90e5cab0b2418d18e81f7ad058f
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -5258538654932826055
-    second: angles-down-solid (1)_0
+      213: -8663779410544386151
+    second: house-solid_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -28,7 +28,7 @@ TextureImporter:
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
-  ignoreMipmapLimit: 1
+  ignoreMipmapLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -113,7 +113,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: angles-down-solid (1)_0
+      name: house-solid_0
       rect:
         serializedVersion: 2
         x: 0
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 938811b44fae507b0800000000000000
-      internalID: -5258538654932826055
+      spriteID: 99f982e578214c780800000000000000
+      internalID: -8663779410544386151
       vertices: []
       indices: 
       edges: []
