@@ -55,6 +55,9 @@ namespace BitsPilani.Module4 {
             if (uiTurnLock) uiTurnLock.desktopMousePreview = desktop;
             desktopActive = desktop; inputConfigured = true;
             if (vrUi) {
+                var events=vrUi.GetComponent<UnityEngine.EventSystems.EventSystem>();
+                if(events&&events.isActiveAndEnabled)UnityEngine.EventSystems.EventSystem.current=events;
+                if(vrUi.EventData!=null)vrUi.ClearAll();
                 foreach (var p in controllerPointers) if (p) {
                     if (p.ControllerSide == BNG.ControllerHand.Right) {
                         vrUi.RightPointerTransform = p.transform;

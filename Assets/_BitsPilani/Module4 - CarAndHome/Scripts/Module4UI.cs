@@ -7,7 +7,9 @@ namespace BitsPilani.Module4 {
         [Header("Scene-authored main panel - all styling stays editable")]
         public Canvas mainCanvas;public TMP_Text title,body,stepLabel,status,footer,hint;
         public Image statusBackground;public Slider progress;
-        public Button primary,secondary;public TMP_Text primaryLabel,secondaryLabel;
+        public Button primary,secondary;
+        [Header("Whole-step skip - scene-authored header button")]
+        public Button skipStep;public TMP_Text primaryLabel,secondaryLabel;
         public Module4Choice[] choices;
         [Header("Editable narrative layouts")]
         public ScrollRect narrative;public Scrollbar narrativeScrollbar;
@@ -39,8 +41,10 @@ namespace BitsPilani.Module4 {
         public int Question {get;private set;}
         public int VisibleChoiceCount {get;private set;}
         Module4SceneController owner;
+        bool bodyStyleChanged;FontStyles savedBodyStyle;FontWeight savedBodyWeight;
         public void Bind(Module4SceneController flow){
             owner=flow;
+            if(skipStep){skipStep.onClick.RemoveAllListeners();skipStep.onClick.AddListener(flow.SkipCurrentStep);skipStep.gameObject.SetActive(true);}
             if(clueTool){clueTool.onClick.RemoveAllListeners();clueTool.onClick.AddListener(flow.OpenClueTool);}
             if(guessTool){guessTool.onClick.RemoveAllListeners();guessTool.onClick.AddListener(flow.OpenGuessTool);}
             if(idDone){idDone.onClick.RemoveAllListeners();idDone.onClick.AddListener(()=>flow.AcceptParticipantId(idInput?idInput.text:""));}
@@ -57,7 +61,7 @@ namespace BitsPilani.Module4 {
         }
         public void Step(int number,string caption){if(stepLabel)stepLabel.text="MODULE 4  /  STEP "+number+" OF 8";if(toolsStep)toolsStep.text=caption;if(progress)progress.value=(number-1)/8f;}
         public void Show(string heading,string text,string state="",bool split=false){
-            IsShowingReflection=false;mainCanvas.gameObject.SetActive(true);
+            RestoreBodyStyle();IsShowingReflection=false;mainCanvas.gameObject.SetActive(true);
             if(dashboard)dashboard.SetActive(false);
             if(narrative)narrative.gameObject.SetActive(true);
             if(status)status.gameObject.SetActive(true);if(statusBackground)statusBackground.gameObject.SetActive(!string.IsNullOrEmpty(state));
@@ -91,11 +95,11 @@ namespace BitsPilani.Module4 {
             Layout(true);RefreshRecording();
         }
         float nextRecordingRefresh;
-        void Update(){if(IsShowingReflection&&Application.isPlaying&&Time.unscaledTime>=nextRecordingRefresh){nextRecordingRefresh=Time.unscaledTime+.1f;RefreshRecording();}}
+        void Update(){RefreshSkipButton();if(IsShowingReflection&&Application.isPlaying&&Time.unscaledTime>=nextRecordingRefresh){nextRecordingRefresh=Time.unscaledTime+.1f;RefreshRecording();}}
         public void RefreshRecording(){
             var session=Module4Session.Instance;if(!session||!owner||!owner.answers)return;
             var r=owner.answers;int count=session.Data.answers.FindAll(a=>a.question==Question).Count;
-            bool waiting=session.IsNarrating;
+            bool waiting=session.IsNarrating||owner.ReflectionVoicePending;
             recordAnswer.interactable=!waiting&&!r.IsStarting;
             recordLabel.text=waiting?"Please listen...":r.IsStarting?"Starting...":r.IsRecording?"Save recording":count>0?"Record another answer":"Record answer";
             nextAnswer.interactable=!waiting&&!r.IsRecording&&!r.IsStarting&&(!session.definition.requireSavedAnswer||session.HasAnswer(Question));
@@ -104,6 +108,31 @@ namespace BitsPilani.Module4 {
             status.text=waiting?"The Record button becomes available when the question VO ends.":r.Status;
             footer.text=r.IsRecording?"Your microphone answer is being recorded.":"You can save more than one clip for this question.";
             RefreshFeedback();
+        }
+        void RefreshSkipButton(){
+            if(!skipStep||!owner)return;
+            bool available=owner.CanSkipCurrentStep;
+            if(skipStep.interactable!=available){skipStep.interactable=available;var feedback=skipStep.GetComponent<Module4ButtonFeedback>();if(feedback)feedback.RefreshAppearance();}
+        }
+        public void FormatGuessReviewText(){
+            if(!body)return;
+            if(!bodyStyleChanged){savedBodyStyle=body.fontStyle;savedBodyWeight=body.fontWeight;bodyStyleChanged=true;}
+            body.fontStyle&=~FontStyles.Bold;body.fontWeight=FontWeight.Regular;body.ForceMeshUpdate();
+        }
+        void RestoreBodyStyle(){if(!bodyStyleChanged||!body)return;body.fontStyle=savedBodyStyle;body.fontWeight=savedBodyWeight;bodyStyleChanged=false;}
+        public void AttemptReview(Module4RunData data,Module4Definition definition){
+            Show("Review your first attempt","","");Step(7,"Review");
+            narrative.gameObject.SetActive(false);status.gameObject.SetActive(false);statusBackground.gameObject.SetActive(false);
+            dashboard.SetActive(true);firstTable.SetActive(true);compareTable.SetActive(false);
+            clueCount.text=data.clues.Count+" selected";guessCount.text=data.guesses.Count+" saved";
+            noClues.text=noCluesText;noClues.gameObject.SetActive(data.clues.Count==0);
+            noGuesses.text=noGuessesText;noGuesses.gameObject.SetActive(data.guesses.Count==0);
+            Fill(clueRows,clueScroll,data.clues.Count,i=>(i+1)+". "+data.clues[i],null);
+            Fill(guessRows,guessScroll,data.guesses.Count,i=>(i+1)+". "+data.guesses[i].idea,i=>"Confidence: "+definition.confidence[Mathf.Clamp(data.guesses[i].confidence,0,2)]);
+            firstAction.text=data.firstResponse;firstOutcome.text=data.firstOutcome;
+            firstTiming.text=data.firstResponseSeconds<0?"Not observed":"During the walk";
+            footer.text="Clues: "+data.clues.Count+"  |  Ideas: "+data.guesses.Count+"  |  Answer clips: "+data.answers.Count;
+            hint.text=defaultHint;
         }
         public void Summary(Module4RunData data,Module4Definition definition){
             Show("First attempt and replay","","");Step(8,"Summary");if(progress)progress.value=1;
@@ -114,10 +143,10 @@ namespace BitsPilani.Module4 {
             noGuesses.text=noGuessesText;noGuesses.gameObject.SetActive(data.guesses.Count==0);
             Fill(clueRows,clueScroll,data.clues.Count,i=>(i+1)+". "+data.clues[i],null);
             Fill(guessRows,guessScroll,data.guesses.Count,i=>(i+1)+". "+data.guesses[i].idea,i=>"Confidence: "+definition.confidence[Mathf.Clamp(data.guesses[i].confidence,0,2)]);
-            compareFirstAction.text=data.firstResponse;compareFirstOutcome.text=data.firstOutcome;compareFirstTiming.text="During the walk, after he became upset";
-            replayAction.text=data.replayResponse;replayOutcome.text=data.replayOutcome;replayTiming.text="At home, before leaving";
+            compareFirstAction.text=data.firstResponse;compareFirstOutcome.text=data.firstOutcome;compareFirstTiming.text=data.firstResponseIndex<0?"Not recorded":"During the walk";
+            replayAction.text=data.replayResponse;replayOutcome.text=data.replayOutcome;replayTiming.text=data.expectationsSet?"At home, before leaving":"Not recorded";
             footer.text="Clues: "+data.clues.Count+"  |  Ideas: "+data.guesses.Count+"  |  Answer clips: "+data.answers.Count;
-            hint.text="You knew the plan. What helped your child know it too?";
+            hint.text=defaultHint;
         }
         void Fill(Module4ReviewRow[] rows,ScrollRect scroll,int count,Func<int,string> value,Func<int,string> detail){
             for(int i=0;i<rows.Length;i++){var row=rows[i];row.root.gameObject.SetActive(i<count);if(i>=count)continue;row.value.text=value(i);if(row.detail)row.detail.text=detail==null?"":detail(i);}

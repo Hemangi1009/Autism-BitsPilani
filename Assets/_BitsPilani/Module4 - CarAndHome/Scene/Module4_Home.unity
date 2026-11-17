@@ -10080,6 +10080,7 @@ MonoBehaviour:
   progress: {fileID: 1903068647}
   primary: {fileID: 666653839}
   secondary: {fileID: 2003364018}
+  skipStep: {fileID: 500420817}
   primaryLabel: {fileID: 804828722}
   secondaryLabel: {fileID: 1508374994}
   choices:
@@ -16155,6 +16156,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Shoe_Rack
       objectReference: {fileID: 0}
+    - target: {fileID: 8771091787928289351, guid: 2fd11fa307da09c468c8f3327a85a3d5,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -17248,7 +17254,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1030996427, guid: abc00000000006650103374754665089, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.011997724
+      value: 0.005
       objectReference: {fileID: 0}
     - target: {fileID: 1030996427, guid: abc00000000006650103374754665089, type: 3}
       propertyPath: m_LocalPosition.z
@@ -17647,7 +17653,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &500420812
 RectTransform:
   m_ObjectHideFlags: 0
@@ -17715,7 +17721,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41f1c5417c9d7ab4b84e531f83f60a4b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnityEngine.UI.ProceduralImage.ProceduralImage
-  m_Material: {fileID: 1570053197}
+  m_Material: {fileID: 0}
   m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -24941,17 +24947,27 @@ PrefabInstance:
     - target: {fileID: 8036401071720548876, guid: 239ec7f82f20495408a19c5a4b47faa8,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.7384555
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8036401071720548876, guid: 239ec7f82f20495408a19c5a4b47faa8,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8036401071720548876, guid: 239ec7f82f20495408a19c5a4b47faa8,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.67430234
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8036401071720548876, guid: 239ec7f82f20495408a19c5a4b47faa8,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8036401071720548876, guid: 239ec7f82f20495408a19c5a4b47faa8,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 84.8
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8110957647139660440, guid: 239ec7f82f20495408a19c5a4b47faa8,
         type: 3}
@@ -38632,7 +38648,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 35.8
+  m_fontSize: 35.45
   m_fontSizeBase: 22
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -41622,6 +41638,10 @@ PrefabInstance:
     - target: {fileID: 1030985037, guid: abc00000000017130979613085141027, type: 3}
       propertyPath: m_Name
       value: Coat and bag stand
+      objectReference: {fileID: 0}
+    - target: {fileID: 1030985037, guid: abc00000000017130979613085141027, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1030985038, guid: abc00000000017130979613085141027, type: 3}
       propertyPath: m_LocalScale.x
@@ -59726,7 +59746,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1030991597, guid: abc00000000006999618588542337603, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.04352706
+      value: -0.002
       objectReference: {fileID: 0}
     - target: {fileID: 1030991597, guid: abc00000000006999618588542337603, type: 3}
       propertyPath: m_LocalPosition.z

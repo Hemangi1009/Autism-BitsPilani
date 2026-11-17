@@ -551,7 +551,7 @@ MonoBehaviour:
         m_Calls: []
   reflectionQuestion1:
     clip: {fileID: 8300000, guid: 3bbd2d3935be7304897245b90b18b39c, type: 3}
-    delaySeconds: 0
+    delaySeconds: 2
     onStarted:
       m_PersistentCalls:
         m_Calls: []

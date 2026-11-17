@@ -15,6 +15,7 @@ namespace BitsPilani.Module4 {
         public List<Module4Guess> guesses = new List<Module4Guess>();
         public List<Module4Answer> answers = new List<Module4Answer>();
         public List<Module4Log> events = new List<Module4Log>();
+        public List<string> skippedSteps = new List<string>();
         public string firstResponse = "No response selected", firstOutcome = "Not observed";
         public string replayResponse = "No plan selected", replayOutcome = "Not observed";
         public bool expectationsSet, replayUsed, completed;
@@ -49,8 +50,12 @@ namespace BitsPilani.Module4 {
         readonly Dictionary<GameObject,bool> suspendedObjects=new Dictionary<GameObject,bool>();
         readonly Dictionary<Behaviour,bool> suspendedDrivers=new Dictionary<Behaviour,bool>();
         public bool HasSuspendedWalk => suspendedWalk;
+        // Keep Skip locked until both scenes and their shared UI camera settle.
+        public bool PerspectiveTransitioning {get;private set;}
         public bool IsNarrating => busy || queue.Count>0;
         bool busy;
+        Coroutine voiceRoutine;VoiceJob activeVoiceJob;
+        public bool DiscardingPreparedHome {get;private set;}
         sealed class VoiceJob {public Module4Event id;public bool done;}
         readonly Queue<VoiceJob> queue = new Queue<VoiceJob>();
         void Awake() {
@@ -78,17 +83,35 @@ namespace BitsPilani.Module4 {
         public void Save(){if(!saveSessionToDisk||string.IsNullOrEmpty(SessionFolder))return;try{File.WriteAllText(Path.Combine(SessionFolder,"Session_"+Data.runId+".json"),JsonUtility.ToJson(Data,true));}catch(Exception ex){Debug.LogWarning("[M4][SessionSave] "+ex.Message);}}
         public void Play(Module4Event id){Enqueue(id);}
         VoiceJob Enqueue(Module4Event id){
-            Log("Event",id.ToString());var job=new VoiceJob{id=id};queue.Enqueue(job);if(!busy)StartCoroutine(Drain());return job;
+            Log("Event",id.ToString());var job=new VoiceJob{id=id};queue.Enqueue(job);if(!busy)voiceRoutine=StartCoroutine(Drain());return job;
         }
         public IEnumerator Narrate(Module4Event id){var job=Enqueue(id);while(!job.done)yield return null;}
         IEnumerator Drain(){
             busy=true;
-            while(queue.Count>0){var job=queue.Dequeue();var cue=definition?definition.Cue(job.id):null;
+            while(queue.Count>0){var job=queue.Dequeue();activeVoiceJob=job;var cue=definition?definition.Cue(job.id):null;
                 cue?.onStarted?.Invoke();
                 if(cue!=null&&cue.clip&&voice){if(cue.delaySeconds>0)yield return new WaitForSecondsRealtime(cue.delaySeconds);voice.clip=cue.clip;voice.Play();while(voice&&voice.isPlaying)yield return null;}
                 cue?.onCompleted?.Invoke();job.done=true;
             }
+            busy=false;activeVoiceJob=null;voiceRoutine=null;
+        }
+        public void CancelNarration(){
+            if(voiceRoutine!=null)StopCoroutine(voiceRoutine);voiceRoutine=null;
+            if(voice)voice.Stop();
+            if(activeVoiceJob!=null)activeVoiceJob.done=true;activeVoiceJob=null;
+            while(queue.Count>0)queue.Dequeue().done=true;
             busy=false;
+        }
+        // A prepared additive load must be released before another scene transition.
+        // Disable its authored roots before Start, then unload it without showing UI.
+        public IEnumerator DiscardPreparedPerspective(){
+            if(preparedHome==null)yield break;
+            DiscardingPreparedHome=true;RestoreLoadingPriority();
+            var operation=preparedHome;operation.allowSceneActivation=true;
+            while(!operation.isDone)yield return null;
+            var preparedScene=UnityEngine.SceneManagement.SceneManager.GetSceneByName(definition.homeScene);
+            if(preparedScene.IsValid()&&preparedScene.isLoaded){var unloading=UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(preparedScene);if(unloading!=null)while(!unloading.isDone)yield return null;}
+            preparedHome=null;DiscardingPreparedHome=false;Log("PreparedPerspectiveDiscarded");
         }
         public bool HasAnswer(int question){return Data.answers.Exists(a=>a.question==question&&a.userSaved);}
         public void FreshRun(){
@@ -113,7 +136,7 @@ namespace BitsPilani.Module4 {
         }
         void RestoreLoadingPriority(){if(loadingPriorityChanged){Application.backgroundLoadingPriority=previousLoadingPriority;loadingPriorityChanged=false;}}
         public IEnumerator OpenHomePerspective(Module4SceneController walk){
-            float start=Time.realtimeSinceStartup;suspendedWalk=walk;
+            PerspectiveTransitioning=true;float start=Time.realtimeSinceStartup;suspendedWalk=walk;
             SharedWalkUi=walk.rig.vrUi;
             if(SharedWalkUi){sharedUiParent=SharedWalkUi.transform.parent;SharedWalkUi.transform.SetParent(transform,false);}
             var recording=GetComponent<Module4VideoRecording>();if(recording)recording.SuspendSceneCapture();
@@ -135,11 +158,12 @@ namespace BitsPilani.Module4 {
             preparedHome=null;
             var home=UnityEngine.SceneManagement.SceneManager.GetSceneByName(definition.homeScene);
             UnityEngine.SceneManagement.SceneManager.SetActiveScene(home);
+            PerspectiveTransitioning=false;
             Log("HomePerspectiveLoaded","Walk retained; seconds="+(Time.realtimeSinceStartup-start).ToString("F2"));
         }
         void RememberAndHide(GameObject obj){suspendedObjects[obj]=obj.activeSelf;obj.SetActive(false);}
         public IEnumerator ResumeWalkPerspective(Module4SceneController home){
-            float start=Time.realtimeSinceStartup;
+            PerspectiveTransitioning=true;float start=Time.realtimeSinceStartup;
             var recording=GetComponent<Module4VideoRecording>();if(recording)recording.SuspendSceneCapture();
             var homeScene=home.gameObject.scene;
             foreach(var root in homeScene.GetRootGameObjects())root.SetActive(false);
@@ -152,15 +176,18 @@ namespace BitsPilani.Module4 {
             yield return suspendedWalk.ResumeAfterHomePerspective();
             var unloading=UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(homeScene);
             if(unloading!=null)while(!unloading.isDone)yield return null;
+            // Home teardown can replace canvas event cameras. Rebind before unlocking Skip.
+            suspendedWalk.rig.ConfigureUIInput();
             suspendedWalk=null;
-            SharedWalkUi=null;sharedUiParent=null;
+            SharedWalkUi=null;sharedUiParent=null;PerspectiveTransitioning=false;
             Log("WalkResumedWithoutReload","seconds="+(Time.realtimeSinceStartup-start).ToString("F2"));
         }
         void OnApplicationPause(bool pause){if(pause)Save();}
-        void OnApplicationQuit(){Save();}
+        void OnApplicationQuit(){if(preparedHome!=null&&!preparedHome.isDone)preparedHome.allowSceneActivation=true;Save();}
         void OnEnable(){UnityEngine.SceneManagement.SceneManager.sceneLoaded+=SceneLoaded;}
         void OnDisable(){UnityEngine.SceneManagement.SceneManager.sceneLoaded-=SceneLoaded;}
         void SceneLoaded(UnityEngine.SceneManagement.Scene scene,UnityEngine.SceneManagement.LoadSceneMode mode){
+            if(Instance==this&&DiscardingPreparedHome&&definition&&scene.name==definition.homeScene){foreach(var root in scene.GetRootGameObjects())root.SetActive(false);return;}
             if(Instance==this && definition && scene.name!=definition.homeScene && scene.name!=definition.walkScene){Save();Destroy(gameObject);}
         }
         void OnDestroy(){if(Instance==this){RestoreLoadingPriority();if(preparedHome!=null&&!preparedHome.isDone)preparedHome.allowSceneActivation=true;Instance=null;}}

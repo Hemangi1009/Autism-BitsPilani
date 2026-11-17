@@ -10,6 +10,10 @@ namespace BitsPilani.Module4 {
             while(elapsed<duration){elapsed+=Time.unscaledDeltaTime;group.alpha=Mathf.Lerp(start,target,Mathf.Clamp01(elapsed/duration));yield return null;}
             group.alpha=target;group.blocksRaycasts=toBlack;if(!toBlack)canvas.gameObject.SetActive(false);
         }
+        public void Clear(){
+            if(group){group.alpha=0;group.blocksRaycasts=false;}
+            if(canvas)canvas.gameObject.SetActive(false);
+        }
         public void Black(){if(canvas)canvas.gameObject.SetActive(true);if(group){group.alpha=1;group.blocksRaycasts=true;}}
     }
 }
