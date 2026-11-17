@@ -153,9 +153,10 @@ namespace BitsPilani.Module4 {
             if(CurrentStage==Module4Stage.HomeIntro){session.Play(Module4Event.goToWalkSelected);StartCoroutine(LoadVisit(Module4Stage.WalkObserve,definition.walkScene));}
             else if(CurrentStage==Module4Stage.ReplayHome&&session.Data.expectationsSet){session.Play(Module4Event.goToWalkSelected);StartCoroutine(LoadVisit(Module4Stage.ReplayWalk,definition.walkScene));}
         }
+        // Walk uses the child placement authored in the scene. Do not snap to the legacy walk marker.
         IEnumerator FirstWalk(){
             Stage(Module4Stage.WalkObserve,2,"Walk towards the park");rig.SetMovementLocked(false);
-            yield return WalkToCheckpoint(false);child.At(child.walkPosition);child.Pose(Module4ChildPose.Ready);
+            yield return WalkToCheckpoint(false);child.Pose(Module4ChildPose.Ready);
             ui.Show("Watch what changes","Watch your child as you continue along the path.","You can move around to observe your child.");ui.Busy();
             yield return session.Narrate(Module4Event.walkStarted);yield return session.Narrate(Module4Event.walkObservationStarted);
             float t=definition.walkObservationSeconds;
@@ -176,7 +177,7 @@ namespace BitsPilani.Module4 {
             if(firstWalkArea)firstWalkArea.Hide();if(replayWalkArea)replayWalkArea.Hide();
             if(area){walkCheckpoint=area.transform;area.Show();}
             WaitingForWalkCheckpoint=true;if(checkpointMarker)checkpointMarker.SetActive(!area);
-            child.At(child.walkPosition);child.Pose(Module4ChildPose.Ready);
+            child.Pose(Module4ChildPose.Ready);
             ui.Show(replay?"Try the walk again":"Walk with your child towards the park",
                 "Follow the pavement to the marked area beside the park turn. Look at your child and the two possible directions.",
                 "Walk into the marked area to continue. You can move freely.");ui.Busy();
@@ -259,7 +260,7 @@ namespace BitsPilani.Module4 {
             ui.Primary("Return to the Walk",ReturnToWalk);ui.SetChildReturn(true);session.Play(Module4Event.flashbackObservationFinished);session.Play(Module4Event.returnToWalkReady);
         }
         public void ReturnToWalk(){if(!homeScene||CurrentStage!=Module4Stage.HomeFlashback||!flashbackReady||transitioning)return;ui.SetChildReturn(false);session.Play(Module4Event.returnToWalkSelected);StartCoroutine(LoadVisit(Module4Stage.Respond,definition.walkScene));}
-        public void BeginRespond(){Stage(Module4Stage.Respond,6,"Respond to your child");rig.SetMovementLocked(false);child.At(child.walkPosition);child.Pose(Module4ChildPose.Upset);Cry(true);ui.Show("How will you respond?","Your child is still upset. Choose a response and watch what happens.","Select one response card.",true);ui.Draw(definition.responses,null,ChooseResponse);session.Play(Module4Event.responseStepStarted);session.Play(Module4Event.responseChoicesShown);}
+        public void BeginRespond(){Stage(Module4Stage.Respond,6,"Respond to your child");rig.SetMovementLocked(false);child.Pose(Module4ChildPose.Upset);Cry(true);ui.Show("How will you respond?","Your child is still upset. Choose a response and watch what happens.","Select one response card.",true);ui.Draw(definition.responses,null,ChooseResponse);session.Play(Module4Event.responseStepStarted);session.Play(Module4Event.responseChoicesShown);}
         public void ChooseResponse(int index){if(CurrentStage!=Module4Stage.Respond||responding||index<0||index>=definition.responses.Length)return;responding=true;StartCoroutine(Response(index));}
         IEnumerator Response(int index){
             ui.Show("Watch your child's response",definition.responses[index],"Interaction is paused while you watch.");ui.Busy();rig.SetMovementLocked(homeScene);
@@ -312,7 +313,7 @@ namespace BitsPilani.Module4 {
         IEnumerator ReplayWalk(){
             Stage(Module4Stage.ReplayWalk,8,"Try the walk again");rig.SetMovementLocked(false);
             yield return WalkToCheckpoint(true);
-            child.At(child.walkPosition);Cry(false);
+            Cry(false);
             // The replay outcome and conclusion are committed on arrival. Optional VO
             // events remain available, but no timer or narration queue delays the UI.
             session.Play(Module4Event.replayWalkStarted);
