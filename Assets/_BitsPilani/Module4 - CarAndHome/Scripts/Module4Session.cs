@@ -56,7 +56,29 @@ namespace BitsPilani.Module4 {
         bool busy;
         Coroutine voiceRoutine;VoiceJob activeVoiceJob;
         public bool DiscardingPreparedHome {get;private set;}
-        sealed class VoiceJob {public Module4Event id;public bool done;}
+        Module4SceneVoiceEvents sceneVoiceEvents;
+        public void BindSceneVoiceEvents(Module4SceneVoiceEvents events){sceneVoiceEvents=events;}
+        sealed class VoiceJob {public Module4Event id;public bool started,done;public Module4SceneVoiceEvents sceneEvents;public Module4VoiceCue cue;public string callbackKey;}
+        readonly HashSet<string> completedVoiceEvents=new HashSet<string>();
+        bool completingSkippedCallbacks;
+        VoiceJob MakeVoiceJob(Module4Event id){
+            var target=sceneVoiceEvents;
+            int sceneKey=target?target.GetInstanceID():UnityEngine.SceneManagement.SceneManager.GetActiveScene().handle;
+            return new VoiceJob{id=id,sceneEvents=target,cue=definition?definition.Cue(id):null,callbackKey=sceneKey+":"+Data.stage+":"+id};
+        }
+        void StartVoiceCallbacks(VoiceJob job){
+            if(job.started||job.done)return;job.started=true;
+            job.cue?.onStarted?.Invoke();
+            if(job.sceneEvents)job.sceneEvents.InvokeStarted(job.id);
+        }
+        void FinishVoiceCallbacks(VoiceJob job){
+            if(job.done)return;
+            StartVoiceCallbacks(job);if(job.done)return;
+            // Mark first so callbacks cannot recursively complete this job twice.
+            job.done=true;completedVoiceEvents.Add(job.callbackKey);
+            job.cue?.onCompleted?.Invoke();
+            if(job.sceneEvents)job.sceneEvents.InvokeCompleted(job.id);
+        }
         readonly Queue<VoiceJob> queue = new Queue<VoiceJob>();
         void Awake() {
             if(Instance && Instance!=this){Destroy(gameObject);return;}
@@ -83,24 +105,65 @@ namespace BitsPilani.Module4 {
         public void Save(){if(!saveSessionToDisk||string.IsNullOrEmpty(SessionFolder))return;try{File.WriteAllText(Path.Combine(SessionFolder,"Session_"+Data.runId+".json"),JsonUtility.ToJson(Data,true));}catch(Exception ex){Debug.LogWarning("[M4][SessionSave] "+ex.Message);}}
         public void Play(Module4Event id){Enqueue(id);}
         VoiceJob Enqueue(Module4Event id){
-            Log("Event",id.ToString());var job=new VoiceJob{id=id};queue.Enqueue(job);if(!busy)voiceRoutine=StartCoroutine(Drain());return job;
+            Log("Event",id.ToString());var job=MakeVoiceJob(id);
+            if(completingSkippedCallbacks){FinishVoiceCallbacks(job);return job;}
+            queue.Enqueue(job);if(!busy)voiceRoutine=StartCoroutine(Drain());return job;
         }
         public IEnumerator Narrate(Module4Event id){var job=Enqueue(id);while(!job.done)yield return null;}
         IEnumerator Drain(){
             busy=true;
-            while(queue.Count>0){var job=queue.Dequeue();activeVoiceJob=job;var cue=definition?definition.Cue(job.id):null;
-                cue?.onStarted?.Invoke();
-                if(cue!=null&&cue.clip&&voice){if(cue.delaySeconds>0)yield return new WaitForSecondsRealtime(cue.delaySeconds);voice.clip=cue.clip;voice.Play();while(voice&&voice.isPlaying)yield return null;}
-                cue?.onCompleted?.Invoke();job.done=true;
+            while(queue.Count>0){
+                var job=queue.Dequeue();activeVoiceJob=job;var cue=job.cue;
+                StartVoiceCallbacks(job);
+                if(!job.done&&cue!=null&&cue.clip&&voice){
+                    if(cue.delaySeconds>0)yield return new WaitForSecondsRealtime(cue.delaySeconds);
+                    if(!job.done){voice.clip=cue.clip;voice.Play();while(voice&&voice.isPlaying&&!job.done)yield return null;}
+                }
+                FinishVoiceCallbacks(job);
             }
             busy=false;activeVoiceJob=null;voiceRoutine=null;
         }
-        public void CancelNarration(){
+        public void CancelNarration(bool completeCallbacks=false){
             if(voiceRoutine!=null)StopCoroutine(voiceRoutine);voiceRoutine=null;
             if(voice)voice.Stop();
-            if(activeVoiceJob!=null)activeVoiceJob.done=true;activeVoiceJob=null;
-            while(queue.Count>0)queue.Dequeue().done=true;
-            busy=false;
+            // Snapshot and clear before invoking user callbacks. Skip must not strand
+            // an active event or play any queued VO while completing a step.
+            var cancelled=new List<VoiceJob>();
+            if(activeVoiceJob!=null)cancelled.Add(activeVoiceJob);
+            activeVoiceJob=null;while(queue.Count>0)cancelled.Add(queue.Dequeue());busy=false;
+            foreach(var job in cancelled){if(completeCallbacks)FinishVoiceCallbacks(job);else job.done=true;}
+        }
+        public void CompleteStepCallbacksOnSkip(Module4Stage step,bool homeScene){
+            if(completingSkippedCallbacks)return;
+            completingSkippedCallbacks=true;
+            try{
+                CancelNarration(true);
+                // Lifecycle events only: never invent a selected card, a saved answer,
+                // or a chosen response for a step the participant skipped.
+                foreach(var id in SkippedStepLifecycle(step,homeScene)){
+                    var job=MakeVoiceJob(id);
+                    if(completedVoiceEvents.Contains(job.callbackKey))continue;
+                    FinishVoiceCallbacks(job);Log("SkippedEventCompleted",id.ToString());
+                }
+            }finally{completingSkippedCallbacks=false;}
+        }
+        static Module4Event[] SkippedStepLifecycle(Module4Stage step,bool homeScene){
+            switch(step){
+                case Module4Stage.HomeIntro:return new[]{Module4Event.homeStarted,Module4Event.childGazeStarted,Module4Event.childGazeCompleted,Module4Event.homeObservationStarted,Module4Event.shoesPutOn,Module4Event.usualThingsPickedUp,Module4Event.parentSaysLetsGo,Module4Event.homeObservationFinished};
+                case Module4Stage.WalkObserve:return new[]{Module4Event.walkApproachStarted,Module4Event.walkCheckpointReached,Module4Event.walkStarted,Module4Event.walkObservationStarted,Module4Event.childLooksAtPark,Module4Event.parkPassed,Module4Event.childUpset,Module4Event.walkObservationFinished};
+                case Module4Stage.CollectClues:return new[]{Module4Event.clueStepStarted,Module4Event.clueToolOpened,Module4Event.cluesCompleted};
+                case Module4Stage.NoteGuesses:return new[]{Module4Event.guessStepStarted,Module4Event.guessToolOpened,Module4Event.guessesCompleted};
+                case Module4Stage.HomeFlashback:return homeScene
+                    ?new[]{Module4Event.childViewEntered,Module4Event.homeObservationStarted,Module4Event.shoesPutOn,Module4Event.usualThingsPickedUp,Module4Event.parentSaysLetsGo,Module4Event.flashbackObservationFinished,Module4Event.returnToWalkReady}
+                    :new[]{Module4Event.lookBeyondOffered,Module4Event.flashbackObservationFinished};
+                case Module4Stage.Respond:return new[]{Module4Event.responseStepStarted,Module4Event.responseChoicesShown,Module4Event.responseObservationFinished,Module4Event.guessReviewStarted,Module4Event.guessToolOpened,Module4Event.guessReviewCompleted};
+                case Module4Stage.ReviewGuesses:return new[]{Module4Event.guessReviewStarted,Module4Event.guessToolOpened,Module4Event.guessReviewCompleted};
+                case Module4Stage.Reflect:return new[]{Module4Event.reflectionStarted,Module4Event.reflectionCompleted};
+                case Module4Stage.Feedback:return new[]{Module4Event.feedbackShown,Module4Event.replayOffered};
+                case Module4Stage.ReplayHome:return new[]{Module4Event.replayHomeStarted,Module4Event.replayWalkFinished};
+                case Module4Stage.ReplayWalk:return new[]{Module4Event.walkApproachStarted,Module4Event.walkCheckpointReached,Module4Event.replayWalkStarted,Module4Event.replayParkPassed,Module4Event.replayWalkFinished};
+                default:return Array.Empty<Module4Event>();
+            }
         }
         // A prepared additive load must be released before another scene transition.
         // Disable its authored roots before Start, then unload it without showing UI.
@@ -115,6 +178,7 @@ namespace BitsPilani.Module4 {
         }
         public bool HasAnswer(int question){return Data.answers.Exists(a=>a.question==question&&a.userSaved);}
         public void FreshRun(){
+            completedVoiceEvents.Clear();
             var id=participantId;
             Data=new Module4RunData{participantId=id,runId=DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss"),startedUtc=DateTime.UtcNow.ToString("o")};
             Log("NewRun");

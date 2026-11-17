@@ -20,8 +20,11 @@ namespace BitsPilani.Module4 {
         [Header("Reflection recording UI")]
         public GameObject recordingGroup;public Button recordAnswer,nextAnswer;
         public TMP_Text recordLabel,nextLabel,questionCount;
-        [Header("Child-view return - scene authored, camera attached")]
+        [Header("Child-view return - scene authored, follows camera Y rotation only")]
+        [Tooltip("Keeps the authored placement and tilt, follows left/right camera rotation only, and stays at a fixed height while visible.")]
         public Canvas childReturnCanvas;public Button childReturnButton;
+        Vector3 returnCameraOffset;Quaternion returnCameraRotation;
+        float returnCameraHeight;bool returnPoseCaptured;
         [Header("Participant ID and virtual keyboard")]
         public Canvas idCanvas;public TMP_InputField idInput;public Button idDone;
         public Module4ParticipantKeyboard keyboard;
@@ -43,7 +46,7 @@ namespace BitsPilani.Module4 {
         Module4SceneController owner;
         bool bodyStyleChanged;FontStyles savedBodyStyle;FontWeight savedBodyWeight;
         public void Bind(Module4SceneController flow){
-            owner=flow;
+            owner=flow;CaptureReturnCameraPose();
             if(skipStep){skipStep.onClick.RemoveAllListeners();skipStep.onClick.AddListener(flow.SkipCurrentStep);skipStep.gameObject.SetActive(true);}
             if(clueTool){clueTool.onClick.RemoveAllListeners();clueTool.onClick.AddListener(flow.OpenClueTool);}
             if(guessTool){guessTool.onClick.RemoveAllListeners();guessTool.onClick.AddListener(flow.OpenGuessTool);}
@@ -86,7 +89,33 @@ namespace BitsPilani.Module4 {
         }
         public void Tools(bool clues,bool guesses){if(toolsCanvas)toolsCanvas.gameObject.SetActive(false);if(clueTool)clueTool.interactable=clues;if(guessTool)guessTool.interactable=guesses;RefreshFeedback();}
         public void Busy(){foreach(var b in mainCanvas.GetComponentsInChildren<Button>(true))b.interactable=false;Tools(false,false);RefreshFeedback();}
-        public void SetChildReturn(bool visible){if(childReturnCanvas)childReturnCanvas.gameObject.SetActive(visible);if(childReturnButton)childReturnButton.interactable=visible;}
+        public void SetChildReturn(bool visible){
+            if(!returnPoseCaptured)CaptureReturnCameraPose();
+            // Anchor height at child-view activation, not the earlier parent eye height.
+            if(visible&&childReturnCanvas&&!childReturnCanvas.gameObject.activeSelf&&owner&&owner.rig&&owner.rig.head)
+                returnCameraHeight=owner.rig.head.position.y;
+            if(childReturnCanvas)childReturnCanvas.gameObject.SetActive(visible);
+            if(childReturnButton)childReturnButton.interactable=visible;
+            UpdateReturnCameraPose();
+        }
+        void CaptureReturnCameraPose(){
+            if(returnPoseCaptured||!childReturnCanvas||!owner||!owner.rig||!owner.rig.head)return;
+            var camera=owner.rig.head;var target=childReturnCanvas.transform;
+            Quaternion yaw=Quaternion.Euler(0,camera.eulerAngles.y,0);
+            Quaternion basis=target.IsChildOf(camera)?camera.rotation:yaw;
+            returnCameraOffset=Quaternion.Inverse(basis)*(target.position-camera.position);
+            returnCameraRotation=Quaternion.Inverse(basis)*target.rotation;
+            returnCameraHeight=camera.position.y;returnPoseCaptured=true;
+        }
+        void OnEnable(){Application.onBeforeRender+=UpdateReturnCameraPose;}
+        void OnDisable(){Application.onBeforeRender-=UpdateReturnCameraPose;}
+        void LateUpdate(){UpdateReturnCameraPose();}
+        void UpdateReturnCameraPose(){
+            if(!returnPoseCaptured||!childReturnCanvas||!childReturnCanvas.gameObject.activeInHierarchy||!owner||!owner.rig||!owner.rig.head)return;
+            var camera=owner.rig.head;Quaternion yaw=Quaternion.Euler(0,camera.eulerAngles.y,0);
+            Vector3 origin=camera.position;origin.y=returnCameraHeight;
+            childReturnCanvas.transform.SetPositionAndRotation(origin+yaw*returnCameraOffset,yaw*returnCameraRotation);
+        }
         public void Reflection(string question,int number){
             Show("Reflect on what changed",question,"Record at least one answer before moving on.",true);
             IsShowingReflection=true;Question=number;recordingGroup.SetActive(true);

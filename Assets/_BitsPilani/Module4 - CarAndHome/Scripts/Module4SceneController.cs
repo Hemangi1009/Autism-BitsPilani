@@ -25,6 +25,23 @@ namespace BitsPilani.Module4 {
         public BitsPilani.Module1.Playground.PlaygroundStandArea firstWalkArea;
         [Tooltip("Replay walk destination. Its saved transform is never moved.")]
         public BitsPilani.Module1.Playground.PlaygroundStandArea replayWalkArea;
+        [Header("Walk scene - optional camera-follow object")]
+        [Tooltip("Drag a scene object here. At runtime it follows the camera left/right (Y-axis rotation only), keeping its authored offset, tilt and height. Looking up/down or rolling the head does not move or tilt it. Place it where you want it in the scene first. Its parent, scale and saved scene transform are not changed. Ignored in Home; leave empty to disable.")]
+        public Transform cameraFollowObject;
+        [Tooltip("Hide the assigned object during horizontal walking. Restore it after stopping only if this script hid it; an initially disabled object stays disabled.")]
+        public bool hideCameraObjectWhileWalking=true;
+        [Min(.01f),Tooltip("Horizontal movement speed in metres/second that counts as walking. Ignores vertical motion and small tracking jitter.")]
+        public float cameraObjectWalkingThreshold=.15f;
+        [Min(0),Tooltip("Seconds without walking before the object reappears. Prevents flickering between walking frames.")]
+        public float cameraObjectStopDelay=.25f;
+        Vector3 previousFollowHeadPosition,previousFollowRootPosition;
+        float previousFollowMotionTime,lastFollowWalkingTime;
+        bool followMotionSampleReady,followObjectHiddenByWalking;
+        Transform capturedFollowObject,capturedFollowCamera;
+        Vector3 followCameraOffset;
+        Quaternion followCameraRotation;
+        float followCameraHeight;
+        bool cameraFollowReady;
         public bool WaitingForWalkCheckpoint {get; private set;}
         Module4VideoRecording video;
         bool videoReady;
@@ -55,11 +72,13 @@ namespace BitsPilani.Module4 {
             session=Module4Session.Instance;
             if(session&&session.definition)definition=session.definition;
             if(!session||!definition||!rig||!ui||!child){Debug.LogError("[M4][Configuration] Assign definition, session, rig, UI and child.",this);yield break;}
+            session.BindSceneVoiceEvents(GetComponent<Module4SceneVoiceEvents>());
             answers=session.GetComponent<Module4AnswerRecorder>();answers.session=session;
             video=session.GetComponent<Module4VideoRecording>();if(video)video.BindScene(rig);
             ui.Bind(this);fader.duration=definition.fadeSeconds;fader.Black();rig.ConfigureUIInput();
             rig.SetMovementLocked(homeScene);
             yield return null;
+            cameraFollowReady=true;
             // Restore after BNG/emulator Start and the first tracked pose have run.
             if(!homeScene&&CurrentStage==Module4Stage.Respond&&session.hasWalkParentPose)
                 yield return rig.RestoreWalkParentPose(session);
@@ -357,6 +376,7 @@ namespace BitsPilani.Module4 {
             var operation=SceneManager.LoadSceneAsync(sceneName,LoadSceneMode.Single);while(operation!=null&&!operation.isDone)yield return null;
         }
         public IEnumerator ResumeAfterHomePerspective(){
+            session.BindSceneVoiceEvents(GetComponent<Module4SceneVoiceEvents>());
             transitioning=true;ui.SetChildReturn(false);fader.Black();rig.SetMovementLocked(true);
             yield return rig.RestoreWalkParentPose(session);
             if(video)video.BindScene(rig);rig.ConfigureUIInput();
@@ -368,7 +388,7 @@ namespace BitsPilani.Module4 {
             if(!CanSkipCurrentStep||lastSkipFrame==Time.frameCount)return;
             lastSkipFrame=Time.frameCount;var skipped=CurrentStage;skippingStep=true;
             StopAllCoroutines();gazeToken++;WaitingForChildGaze=false;WaitingForWalkCheckpoint=false;pendingGuess=-1;responding=false;ReflectionVoicePending=false;
-            session.CancelNarration();if(answers&&answers.IsRecording)answers.StopAndSave(false);
+            session.CompleteStepCallbacksOnSkip(skipped,homeScene);if(answers&&answers.IsRecording)answers.StopAndSave(false);
             // Coroutine cancellation must not leave an invisible fade blocking UI rays.
             fader.Clear();ui.Busy();Cry(false);
             if(firstWalkArea)firstWalkArea.Hide();if(replayWalkArea)replayWalkArea.Hide();if(checkpointMarker)checkpointMarker.SetActive(false);
@@ -406,6 +426,67 @@ namespace BitsPilani.Module4 {
             }
             rig.ConfigureUIInput();
             skippingStep=false;session.Log("SkipCompleted",CurrentStage+" | panel="+ui.title.text);
+        }
+        void OnEnable(){Application.onBeforeRender+=UpdateCameraFollowPose;}
+        void OnDisable(){Application.onBeforeRender-=UpdateCameraFollowPose;}
+        void LateUpdate(){
+            UpdateCameraFollowPose();
+            if(!homeScene&&cameraFollowReady&&cameraFollowObject&&rig&&rig.head&&cameraFollowObject!=rig.head&&!rig.head.IsChildOf(cameraFollowObject)&&!transform.IsChildOf(cameraFollowObject))
+                UpdateCameraObjectWalkingVisibility(rig.head);
+        }
+        void UpdateCameraFollowPose(){
+            if(homeScene||!cameraFollowReady||!cameraFollowObject||!rig||!rig.head)return;
+            Transform camera=rig.head;
+            Quaternion yaw=Quaternion.Euler(0,camera.eulerAngles.y,0);
+            if(capturedFollowObject!=cameraFollowObject||capturedFollowCamera!=camera){
+                // Release only visibility changes owned by the walking feature.
+                if(capturedFollowObject&&followObjectHiddenByWalking)capturedFollowObject.gameObject.SetActive(true);
+                followObjectHiddenByWalking=false;followMotionSampleReady=false;
+                capturedFollowObject=cameraFollowObject;capturedFollowCamera=camera;
+                // Reject anything that would move the camera itself and create a feedback loop.
+                if(cameraFollowObject==camera||camera.IsChildOf(cameraFollowObject)||transform.IsChildOf(cameraFollowObject)){
+                    Debug.LogWarning("[M4][CameraFollow] Assign an independent scene object, not the camera, its rig, or the flow-controller parent.",this);
+                    return;
+                }
+                // Capture the scene placement once; never impose a hard-coded offset.
+                // Camera children have an authored local offset. Strip inherited pitch/roll.
+                Quaternion basis=cameraFollowObject.IsChildOf(camera)?camera.rotation:yaw;
+                followCameraOffset=Quaternion.Inverse(basis)*(cameraFollowObject.position-camera.position);
+                followCameraRotation=Quaternion.Inverse(basis)*cameraFollowObject.rotation;
+                followCameraHeight=camera.position.y;
+                Debug.Log("[M4][CameraFollow] Following "+cameraFollowObject.name+" at its authored camera-relative placement.",this);
+            }
+            if(cameraFollowObject==camera||camera.IsChildOf(cameraFollowObject)||transform.IsChildOf(cameraFollowObject))return;
+            Vector3 origin=camera.position;origin.y=followCameraHeight;
+            cameraFollowObject.SetPositionAndRotation(origin+yaw*followCameraOffset,yaw*followCameraRotation);
+        }
+        void UpdateCameraObjectWalkingVisibility(Transform camera){
+            float now=Time.unscaledTime;
+            Vector3 rootPosition=rig.playerRoot?rig.playerRoot.position:camera.position;
+            float elapsed=now-previousFollowMotionTime;
+            bool walking=false;
+            // Re-prime after suspension/scene transitions instead of treating a restored pose as walking.
+            if(followMotionSampleReady&&elapsed>0&&elapsed<.25f){
+                Vector3 headDelta=camera.position-previousFollowHeadPosition;headDelta.y=0;
+                Vector3 rootDelta=rootPosition-previousFollowRootPosition;rootDelta.y=0;
+                // Snap/smooth turning can move the rig pivot while the head stays in place.
+                // Require horizontal travel of both, so turning alone does not hide the object.
+                float speed=Mathf.Min(headDelta.magnitude,rootDelta.magnitude)/elapsed;
+                walking=speed>=Mathf.Max(.01f,cameraObjectWalkingThreshold);
+            }
+            previousFollowHeadPosition=camera.position;previousFollowRootPosition=rootPosition;
+            previousFollowMotionTime=now;
+            if(!followMotionSampleReady)lastFollowWalkingTime=now-Mathf.Max(0,cameraObjectStopDelay);
+            followMotionSampleReady=true;
+            if(walking)lastFollowWalkingTime=now;
+            bool hide=hideCameraObjectWhileWalking&&(walking||now-lastFollowWalkingTime<Mathf.Max(0,cameraObjectStopDelay));
+            if(hide&&!followObjectHiddenByWalking&&cameraFollowObject.gameObject.activeSelf){
+                followObjectHiddenByWalking=true;cameraFollowObject.gameObject.SetActive(false);
+                Debug.Log("[M4][CameraFollow] Hidden while walking.",this);
+            }else if(!hide&&followObjectHiddenByWalking){
+                followObjectHiddenByWalking=false;cameraFollowObject.gameObject.SetActive(true);
+                Debug.Log("[M4][CameraFollow] Shown after walking stopped.",this);
+            }
         }
         void OnDestroy(){gazeToken++;if(childSound)childSound.Stop();}
     }

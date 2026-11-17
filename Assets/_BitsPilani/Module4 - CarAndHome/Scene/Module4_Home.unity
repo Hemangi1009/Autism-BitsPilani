@@ -39879,6 +39879,7 @@ GameObject:
   - component: {fileID: 1191819815}
   - component: {fileID: 1191819814}
   - component: {fileID: 1191819817}
+  - component: {fileID: 1191819818}
   m_Layer: 0
   m_Name: M4 TRAINING - scene flow
   m_TagString: Untagged
@@ -39982,6 +39983,19 @@ MonoBehaviour:
   parentRigBodyRenderers:
   - {fileID: 58961379}
   - {fileID: 58961378}
+--- !u!114 &1191819818
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1191819813}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2efccc17cc7285d439c225db2a12f885, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BitsPilani.Module4.Module4SceneVoiceEvents
+  events: []
 --- !u!1 &1193095644
 GameObject:
   m_ObjectHideFlags: 0
