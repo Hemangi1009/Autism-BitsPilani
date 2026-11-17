@@ -30,6 +30,10 @@ namespace BitsPilani.Module4 {
         public Module4ParticipantKeyboard keyboard;
         [Header("Review dashboard")]
         public GameObject dashboard;
+        [Min(1),Tooltip("Number of clue rows visible before scrolling on the review/summary tables. Expands height only; widths and row styling stay unchanged. Normal step layout is restored afterwards.")]
+        public int reviewVisibleClueRows=3;
+        sealed class ReviewRectState {public RectTransform rect;public Vector2 size,position;}
+        readonly System.Collections.Generic.List<ReviewRectState> reviewRectStates=new System.Collections.Generic.List<ReviewRectState>();
         public TMP_Text clueCount,guessCount,noClues,noGuesses;
         public Module4ReviewRow[] clueRows,guessRows;
         public ScrollRect clueScroll,guessScroll;
@@ -64,7 +68,7 @@ namespace BitsPilani.Module4 {
         }
         public void Step(int number,string caption){if(stepLabel)stepLabel.text="MODULE 4  /  STEP "+number+" OF 8";if(toolsStep)toolsStep.text=caption;if(progress)progress.value=(number-1)/8f;}
         public void Show(string heading,string text,string state="",bool split=false){
-            RestoreBodyStyle();IsShowingReflection=false;mainCanvas.gameObject.SetActive(true);
+            RestoreReviewHeight();RestoreBodyStyle();IsShowingReflection=false;mainCanvas.gameObject.SetActive(true);
             if(dashboard)dashboard.SetActive(false);
             if(narrative)narrative.gameObject.SetActive(true);
             if(status)status.gameObject.SetActive(true);if(statusBackground)statusBackground.gameObject.SetActive(!string.IsNullOrEmpty(state));
@@ -158,6 +162,7 @@ namespace BitsPilani.Module4 {
             noGuesses.text=noGuessesText;noGuesses.gameObject.SetActive(data.guesses.Count==0);
             Fill(clueRows,clueScroll,data.clues.Count,i=>(i+1)+". "+data.clues[i],null);
             Fill(guessRows,guessScroll,data.guesses.Count,i=>(i+1)+". "+data.guesses[i].idea,i=>"Confidence: "+definition.confidence[Mathf.Clamp(data.guesses[i].confidence,0,2)]);
+            ExpandReviewHeight();
             firstAction.text=data.firstResponse;firstOutcome.text=data.firstOutcome;
             firstTiming.text=data.firstResponseSeconds<0?"Not observed":"During the walk";
             footer.text="Clues: "+data.clues.Count+"  |  Ideas: "+data.guesses.Count+"  |  Answer clips: "+data.answers.Count;
@@ -172,10 +177,73 @@ namespace BitsPilani.Module4 {
             noGuesses.text=noGuessesText;noGuesses.gameObject.SetActive(data.guesses.Count==0);
             Fill(clueRows,clueScroll,data.clues.Count,i=>(i+1)+". "+data.clues[i],null);
             Fill(guessRows,guessScroll,data.guesses.Count,i=>(i+1)+". "+data.guesses[i].idea,i=>"Confidence: "+definition.confidence[Mathf.Clamp(data.guesses[i].confidence,0,2)]);
+            ExpandReviewHeight();
             compareFirstAction.text=data.firstResponse;compareFirstOutcome.text=data.firstOutcome;compareFirstTiming.text=data.firstResponseIndex<0?"Not recorded":"During the walk";
             replayAction.text=data.replayResponse;replayOutcome.text=data.replayOutcome;replayTiming.text=data.expectationsSet?"At home, before leaving":"Not recorded";
             footer.text="Clues: "+data.clues.Count+"  |  Ideas: "+data.guesses.Count+"  |  Answer clips: "+data.answers.Count;
             hint.text=defaultHint;
+        }
+        void RestoreReviewHeight(){
+            foreach(var state in reviewRectStates)if(state.rect){state.rect.sizeDelta=state.size;state.rect.anchoredPosition=state.position;}
+            reviewRectStates.Clear();
+        }
+        void ResizeReviewRect(RectTransform rect,float height,float shift){
+            if(!rect)return;
+            foreach(var existing in reviewRectStates)if(existing.rect==rect)return;
+            reviewRectStates.Add(new ReviewRectState{rect=rect,size=rect.sizeDelta,position=rect.anchoredPosition});
+            rect.sizeDelta+=new Vector2(0,height);rect.anchoredPosition+=new Vector2(0,shift);
+        }
+        void ExpandReviewCard(ScrollRect scroll,float extra){
+            if(!scroll)return;
+            ResizeReviewRect(scroll.transform as RectTransform,extra,0);
+            // These authored viewports use fixed heights rather than stretched anchors.
+            if(scroll.viewport)ResizeReviewRect(scroll.viewport,Mathf.Approximately(scroll.viewport.anchorMin.y,scroll.viewport.anchorMax.y)?extra:0,0);
+            var bar=scroll.verticalScrollbar?scroll.verticalScrollbar.transform as RectTransform:null;
+            if(bar)ResizeReviewRect(bar,Mathf.Approximately(bar.anchorMin.y,bar.anchorMax.y)?extra:0,0);
+            foreach(Transform child in scroll.transform){
+                var rect=child as RectTransform;
+                if(!rect||rect==scroll.viewport||rect==bar)continue;
+                if(rect.anchoredPosition.y>0&&Mathf.Approximately(rect.anchorMin.y,.5f)&&Mathf.Approximately(rect.anchorMax.y,.5f))
+                    ResizeReviewRect(rect,0,extra*.5f);
+            }
+        }
+        void ExpandReviewHeight(){
+            if(!clueScroll||!clueScroll.viewport||clueRows==null||clueRows.Length==0)return;
+            Canvas.ForceUpdateCanvases();
+            int visible=Mathf.Min(Mathf.Max(1,reviewVisibleClueRows),clueRows.Length);
+            var layout=clueScroll.content.GetComponent<VerticalLayoutGroup>();
+            float needed=layout?layout.padding.top+layout.padding.bottom+layout.spacing*(visible-1):0;
+            for(int i=0;i<visible;i++)needed+=Mathf.Max(clueRows[i].minimumHeight,clueRows[i].layout?clueRows[i].layout.preferredHeight:clueRows[i].root.rect.height);
+            float extra=Mathf.Max(0,needed-clueScroll.viewport.rect.height);
+            if(extra>0){
+                // Height only. Keep the original table rows intact and create space
+                // around them instead of squeezing the response table or shrinking text.
+                var canvasRect=(RectTransform)mainCanvas.transform;
+                ResizeReviewRect(canvasRect,extra,0);
+                var panel=title.transform.parent as RectTransform;
+                if(panel&&panel!=canvasRect)ResizeReviewRect(panel,Mathf.Approximately(panel.anchorMin.y,panel.anchorMax.y)?extra:0,0);
+                ResizeReviewRect(dashboard.transform as RectTransform,extra,0);
+                ExpandReviewCard(clueScroll,extra);
+                ExpandReviewCard(guessScroll,extra);
+                if(firstTable)ResizeReviewRect(firstTable.transform as RectTransform,0,-extra*.5f);
+                if(compareTable)ResizeReviewRect(compareTable.transform as RectTransform,0,-extra*.5f);
+                // Keep the authored gold trim aligned with the lifted header.
+                var accent=panel?panel.Find("Gold accent") as RectTransform:null;
+                if(accent&&Mathf.Approximately(accent.anchorMin.y,.5f)&&Mathf.Approximately(accent.anchorMax.y,.5f))
+                    ResizeReviewRect(accent,0,extra*.5f);
+                ResizeReviewRect(title.rectTransform,0,extra*.5f);
+                if(stepLabel)ResizeReviewRect(stepLabel.rectTransform,0,extra*.5f);
+                if(skipStep)ResizeReviewRect(skipStep.transform as RectTransform,0,extra*.5f);
+                if(footer)ResizeReviewRect(footer.rectTransform,0,-extra*.5f);
+                if(hint)ResizeReviewRect(hint.rectTransform,0,-extra*.5f);
+                if(progress)ResizeReviewRect(progress.transform as RectTransform,0,-extra*.5f);
+                if(primary)ResizeReviewRect(primary.transform as RectTransform,0,-extra*.5f);
+                if(secondary)ResizeReviewRect(secondary.transform as RectTransform,0,-extra*.5f);
+            }
+            Canvas.ForceUpdateCanvases();
+            LayoutRebuilder.ForceRebuildLayoutImmediate(clueScroll.content);
+            ScrollVisibility(clueScroll,clueScroll.verticalScrollbar);
+            if(guessScroll){LayoutRebuilder.ForceRebuildLayoutImmediate(guessScroll.content);ScrollVisibility(guessScroll,guessScroll.verticalScrollbar);}
         }
         void Fill(Module4ReviewRow[] rows,ScrollRect scroll,int count,Func<int,string> value,Func<int,string> detail){
             for(int i=0;i<rows.Length;i++){var row=rows[i];row.root.gameObject.SetActive(i<count);if(i>=count)continue;row.value.text=value(i);if(row.detail)row.detail.text=detail==null?"":detail(i);}

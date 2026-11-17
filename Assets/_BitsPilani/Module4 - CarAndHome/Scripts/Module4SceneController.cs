@@ -28,7 +28,7 @@ namespace BitsPilani.Module4 {
         [Header("Walk scene - optional camera-follow object")]
         [Tooltip("Drag a scene object here. At runtime it follows the camera left/right (Y-axis rotation only), keeping its authored offset, tilt and height. Looking up/down or rolling the head does not move or tilt it. Place it where you want it in the scene first. Its parent, scale and saved scene transform are not changed. Ignored in Home; leave empty to disable.")]
         public Transform cameraFollowObject;
-        [Tooltip("Hide the assigned object during horizontal walking. Restore it after stopping only if this script hid it; an initially disabled object stays disabled.")]
+        [Tooltip("Hide the assigned object visual display and interaction during horizontal walking, then restore their previous enabled settings after stopping. Never changes GameObject active state, so VO Start/Completed SetActive events remain in control.")]
         public bool hideCameraObjectWhileWalking=true;
         [Min(.01f),Tooltip("Horizontal movement speed in metres/second that counts as walking. Ignores vertical motion and small tracking jitter.")]
         public float cameraObjectWalkingThreshold=.15f;
@@ -37,6 +37,10 @@ namespace BitsPilani.Module4 {
         Vector3 previousFollowHeadPosition,previousFollowRootPosition;
         float previousFollowMotionTime,lastFollowWalkingTime;
         bool followMotionSampleReady,followObjectHiddenByWalking;
+        readonly System.Collections.Generic.Dictionary<Renderer,bool> walkingRenderers=new System.Collections.Generic.Dictionary<Renderer,bool>();
+        readonly System.Collections.Generic.Dictionary<Canvas,bool> walkingCanvases=new System.Collections.Generic.Dictionary<Canvas,bool>();
+        readonly System.Collections.Generic.Dictionary<UnityEngine.EventSystems.BaseRaycaster,bool> walkingRaycasters=new System.Collections.Generic.Dictionary<UnityEngine.EventSystems.BaseRaycaster,bool>();
+        readonly System.Collections.Generic.Dictionary<Collider,bool> walkingColliders=new System.Collections.Generic.Dictionary<Collider,bool>();
         Transform capturedFollowObject,capturedFollowCamera;
         Vector3 followCameraOffset;
         Quaternion followCameraRotation;
@@ -428,7 +432,7 @@ namespace BitsPilani.Module4 {
             skippingStep=false;session.Log("SkipCompleted",CurrentStage+" | panel="+ui.title.text);
         }
         void OnEnable(){Application.onBeforeRender+=UpdateCameraFollowPose;}
-        void OnDisable(){Application.onBeforeRender-=UpdateCameraFollowPose;}
+        void OnDisable(){Application.onBeforeRender-=UpdateCameraFollowPose;RestoreWalkingDisplay();followMotionSampleReady=false;}
         void LateUpdate(){
             UpdateCameraFollowPose();
             if(!homeScene&&cameraFollowReady&&cameraFollowObject&&rig&&rig.head&&cameraFollowObject!=rig.head&&!rig.head.IsChildOf(cameraFollowObject)&&!transform.IsChildOf(cameraFollowObject))
@@ -440,8 +444,8 @@ namespace BitsPilani.Module4 {
             Quaternion yaw=Quaternion.Euler(0,camera.eulerAngles.y,0);
             if(capturedFollowObject!=cameraFollowObject||capturedFollowCamera!=camera){
                 // Release only visibility changes owned by the walking feature.
-                if(capturedFollowObject&&followObjectHiddenByWalking)capturedFollowObject.gameObject.SetActive(true);
-                followObjectHiddenByWalking=false;followMotionSampleReady=false;
+                RestoreWalkingDisplay();
+                followMotionSampleReady=false;
                 capturedFollowObject=cameraFollowObject;capturedFollowCamera=camera;
                 // Reject anything that would move the camera itself and create a feedback loop.
                 if(cameraFollowObject==camera||camera.IsChildOf(cameraFollowObject)||transform.IsChildOf(cameraFollowObject)){
@@ -480,13 +484,27 @@ namespace BitsPilani.Module4 {
             followMotionSampleReady=true;
             if(walking)lastFollowWalkingTime=now;
             bool hide=hideCameraObjectWhileWalking&&(walking||now-lastFollowWalkingTime<Mathf.Max(0,cameraObjectStopDelay));
-            if(hide&&!followObjectHiddenByWalking&&cameraFollowObject.gameObject.activeSelf){
-                followObjectHiddenByWalking=true;cameraFollowObject.gameObject.SetActive(false);
-                Debug.Log("[M4][CameraFollow] Hidden while walking.",this);
+            if(hide&&!followObjectHiddenByWalking&&cameraFollowObject.gameObject.activeInHierarchy){
+                // Keep the root active state owned by scene/VO callbacks. In particular,
+                // stopping must never undo a checkpoint event's SetActive(false).
+                followObjectHiddenByWalking=true;
+                foreach(var renderer in cameraFollowObject.GetComponentsInChildren<Renderer>(true)){walkingRenderers[renderer]=renderer.enabled;renderer.enabled=false;}
+                foreach(var canvas in cameraFollowObject.GetComponentsInChildren<Canvas>(true)){walkingCanvases[canvas]=canvas.enabled;canvas.enabled=false;}
+                foreach(var raycaster in cameraFollowObject.GetComponentsInChildren<UnityEngine.EventSystems.BaseRaycaster>(true)){walkingRaycasters[raycaster]=raycaster.enabled;raycaster.enabled=false;}
+                foreach(var collider in cameraFollowObject.GetComponentsInChildren<Collider>(true)){walkingColliders[collider]=collider.enabled;collider.enabled=false;}
+                Debug.Log("[M4][CameraFollow] Display hidden while walking; scene event active state preserved.",this);
             }else if(!hide&&followObjectHiddenByWalking){
-                followObjectHiddenByWalking=false;cameraFollowObject.gameObject.SetActive(true);
-                Debug.Log("[M4][CameraFollow] Shown after walking stopped.",this);
+                RestoreWalkingDisplay();
+                Debug.Log("[M4][CameraFollow] Walking display settings restored; scene event active state preserved.",this);
             }
+        }
+        void RestoreWalkingDisplay(){
+            foreach(var entry in walkingRenderers)if(entry.Key)entry.Key.enabled=entry.Value;
+            foreach(var entry in walkingCanvases)if(entry.Key)entry.Key.enabled=entry.Value;
+            foreach(var entry in walkingRaycasters)if(entry.Key)entry.Key.enabled=entry.Value;
+            foreach(var entry in walkingColliders)if(entry.Key)entry.Key.enabled=entry.Value;
+            walkingRenderers.Clear();walkingCanvases.Clear();walkingRaycasters.Clear();walkingColliders.Clear();
+            followObjectHiddenByWalking=false;
         }
         void OnDestroy(){gazeToken++;if(childSound)childSound.Stop();}
     }
