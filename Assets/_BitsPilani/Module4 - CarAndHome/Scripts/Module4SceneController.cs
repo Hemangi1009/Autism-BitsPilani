@@ -28,15 +28,16 @@ namespace BitsPilani.Module4 {
         [Header("Walk scene - optional camera-follow object")]
         [Tooltip("Drag a scene object here. At runtime it follows the camera left/right (Y-axis rotation only), keeping its authored offset, tilt and height. Looking up/down or rolling the head does not move or tilt it. Place it where you want it in the scene first. Its parent, scale and saved scene transform are not changed. Ignored in Home; leave empty to disable.")]
         public Transform cameraFollowObject;
-        [Tooltip("Hide the assigned object visual display and interaction during horizontal walking, then restore their previous enabled settings after stopping. Never changes GameObject active state, so VO Start/Completed SetActive events remain in control.")]
+        // Keep serialized field names so existing scene assignments/settings survive.
+        [InspectorName("Hide While Left Joystick Is Moved")]
+        [Tooltip("Hide this object's visuals and interaction while the left-controller joystick is outside its center dead zone. Restore immediately on return to center. Camera movement and the right joystick do not control visibility. VO SetActive events remain in control.")]
         public bool hideCameraObjectWhileWalking=true;
-        [Min(.01f),Tooltip("Horizontal movement speed in metres/second that counts as walking. Ignores vertical motion and small tracking jitter.")]
+        [InspectorName("Left Joystick Dead Zone"),Range(.01f,.95f)]
+        [Tooltip("Left thumbstick magnitude (0-1) below which it counts as centered. Allows small controller drift without hiding the object. Reads the same BNG left-thumbstick input used by the rig.")]
         public float cameraObjectWalkingThreshold=.15f;
-        [Min(0),Tooltip("Seconds without walking before the object reappears. Prevents flickering between walking frames.")]
-        public float cameraObjectStopDelay=.25f;
-        Vector3 previousFollowHeadPosition,previousFollowRootPosition;
-        float previousFollowMotionTime,lastFollowWalkingTime;
-        bool followMotionSampleReady,followObjectHiddenByWalking;
+        // Legacy serialized value only. Joystick centering now restores immediately.
+        [HideInInspector] public float cameraObjectStopDelay=.25f;
+        bool followObjectHiddenByWalking;
         readonly System.Collections.Generic.Dictionary<Renderer,bool> walkingRenderers=new System.Collections.Generic.Dictionary<Renderer,bool>();
         readonly System.Collections.Generic.Dictionary<Canvas,bool> walkingCanvases=new System.Collections.Generic.Dictionary<Canvas,bool>();
         readonly System.Collections.Generic.Dictionary<UnityEngine.EventSystems.BaseRaycaster,bool> walkingRaycasters=new System.Collections.Generic.Dictionary<UnityEngine.EventSystems.BaseRaycaster,bool>();
@@ -435,11 +436,11 @@ namespace BitsPilani.Module4 {
             skippingStep=false;session.Log("SkipCompleted",CurrentStage+" | panel="+ui.title.text);
         }
         void OnEnable(){Application.onBeforeRender+=UpdateCameraFollowPose;}
-        void OnDisable(){Application.onBeforeRender-=UpdateCameraFollowPose;RestoreWalkingDisplay();followMotionSampleReady=false;}
+        void OnDisable(){Application.onBeforeRender-=UpdateCameraFollowPose;RestoreWalkingDisplay();}
         void LateUpdate(){
             UpdateCameraFollowPose();
             if(!homeScene&&cameraFollowReady&&cameraFollowObject&&rig&&rig.head&&cameraFollowObject!=rig.head&&!rig.head.IsChildOf(cameraFollowObject)&&!transform.IsChildOf(cameraFollowObject))
-                UpdateCameraObjectWalkingVisibility(rig.head);
+                UpdateCameraObjectJoystickVisibility();
         }
         void UpdateCameraFollowPose(){
             if(homeScene||!cameraFollowReady||!cameraFollowObject||!rig||!rig.head)return;
@@ -448,7 +449,6 @@ namespace BitsPilani.Module4 {
             if(capturedFollowObject!=cameraFollowObject||capturedFollowCamera!=camera){
                 // Release only visibility changes owned by the walking feature.
                 RestoreWalkingDisplay();
-                followMotionSampleReady=false;
                 capturedFollowObject=cameraFollowObject;capturedFollowCamera=camera;
                 // Reject anything that would move the camera itself and create a feedback loop.
                 if(cameraFollowObject==camera||camera.IsChildOf(cameraFollowObject)||transform.IsChildOf(cameraFollowObject)){
@@ -467,26 +467,13 @@ namespace BitsPilani.Module4 {
             Vector3 origin=camera.position;origin.y=followCameraHeight;
             cameraFollowObject.SetPositionAndRotation(origin+yaw*followCameraOffset,yaw*followCameraRotation);
         }
-        void UpdateCameraObjectWalkingVisibility(Transform camera){
-            float now=Time.unscaledTime;
-            Vector3 rootPosition=rig.playerRoot?rig.playerRoot.position:camera.position;
-            float elapsed=now-previousFollowMotionTime;
-            bool walking=false;
-            // Re-prime after suspension/scene transitions instead of treating a restored pose as walking.
-            if(followMotionSampleReady&&elapsed>0&&elapsed<.25f){
-                Vector3 headDelta=camera.position-previousFollowHeadPosition;headDelta.y=0;
-                Vector3 rootDelta=rootPosition-previousFollowRootPosition;rootDelta.y=0;
-                // Snap/smooth turning can move the rig pivot while the head stays in place.
-                // Require horizontal travel of both, so turning alone does not hide the object.
-                float speed=Mathf.Min(headDelta.magnitude,rootDelta.magnitude)/elapsed;
-                walking=speed>=Mathf.Max(.01f,cameraObjectWalkingThreshold);
-            }
-            previousFollowHeadPosition=camera.position;previousFollowRootPosition=rootPosition;
-            previousFollowMotionTime=now;
-            if(!followMotionSampleReady)lastFollowWalkingTime=now-Mathf.Max(0,cameraObjectStopDelay);
-            followMotionSampleReady=true;
-            if(walking)lastFollowWalkingTime=now;
-            bool hide=hideCameraObjectWhileWalking&&(walking||now-lastFollowWalkingTime<Mathf.Max(0,cameraObjectStopDelay));
+        void UpdateCameraObjectJoystickVisibility(){
+            // Input intent, not camera/rig velocity: hide even if locomotion is blocked,
+            // and keep visible during physical/headset movement with the stick centered.
+            var input=BNG.InputBridge.Instance;
+            Vector2 leftAxis=input?input.LeftThumbstickAxis:Vector2.zero;
+            float deadZone=Mathf.Clamp(cameraObjectWalkingThreshold,.01f,.95f);
+            bool hide=hideCameraObjectWhileWalking&&leftAxis.sqrMagnitude>deadZone*deadZone;
             if(hide&&!followObjectHiddenByWalking&&cameraFollowObject.gameObject.activeInHierarchy){
                 // Keep the root active state owned by scene/VO callbacks. In particular,
                 // stopping must never undo a checkpoint event's SetActive(false).
@@ -495,10 +482,10 @@ namespace BitsPilani.Module4 {
                 foreach(var canvas in cameraFollowObject.GetComponentsInChildren<Canvas>(true)){walkingCanvases[canvas]=canvas.enabled;canvas.enabled=false;}
                 foreach(var raycaster in cameraFollowObject.GetComponentsInChildren<UnityEngine.EventSystems.BaseRaycaster>(true)){walkingRaycasters[raycaster]=raycaster.enabled;raycaster.enabled=false;}
                 foreach(var collider in cameraFollowObject.GetComponentsInChildren<Collider>(true)){walkingColliders[collider]=collider.enabled;collider.enabled=false;}
-                Debug.Log("[M4][CameraFollow] Display hidden while walking; scene event active state preserved.",this);
+                Debug.Log("[M4][CameraFollow] Display hidden while left joystick is moved; scene event active state preserved.",this);
             }else if(!hide&&followObjectHiddenByWalking){
                 RestoreWalkingDisplay();
-                Debug.Log("[M4][CameraFollow] Walking display settings restored; scene event active state preserved.",this);
+                Debug.Log("[M4][CameraFollow] Left joystick centered or hide disabled; display settings restored; scene event active state preserved.",this);
             }
         }
         void RestoreWalkingDisplay(){
