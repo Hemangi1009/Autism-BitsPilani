@@ -64,7 +64,10 @@ namespace BitsPilani.Module4 {
             initializing=true;
             if(parentBody)parentBody.SetActive(false);if(firstWalkArea)firstWalkArea.Hide();if(replayWalkArea)replayWalkArea.Hide();
             var activeSession=Module4Session.Instance;
-            if(homeScene&&activeSession&&activeSession.DiscardingPreparedHome){if(rig)rig.transform.root.gameObject.SetActive(false);gameObject.SetActive(false);return;}
+            if(homeScene&&activeSession&&activeSession.DiscardingPreparedHome){
+                if(activeSession.DiscardingPreparedHomeForExit){if(rig){rig.StopAllCoroutines();rig.enabled=false;}enabled=false;return;}
+                if(rig)rig.transform.root.gameObject.SetActive(false);gameObject.SetActive(false);return;
+            }
             // Use the existing live BNG event system during the temporary Home visit.
             // Keeping two systems would leave controller pointers bound to a hidden rig.
             if(homeScene&&activeSession&&activeSession.HasSuspendedWalk&&activeSession.SharedWalkUi&&rig){

@@ -56,6 +56,7 @@ namespace BitsPilani.Module4 {
         bool busy;
         Coroutine voiceRoutine;VoiceJob activeVoiceJob;
         public bool DiscardingPreparedHome {get;private set;}
+        public bool DiscardingPreparedHomeForExit {get;private set;}
         Module4SceneVoiceEvents sceneVoiceEvents;
         public void BindSceneVoiceEvents(Module4SceneVoiceEvents events){sceneVoiceEvents=events;}
         sealed class VoiceJob {public Module4Event id;public bool started,done;public Module4SceneVoiceEvents sceneEvents;public Module4VoiceCue cue;public string callbackKey;}
@@ -167,14 +168,17 @@ namespace BitsPilani.Module4 {
         }
         // A prepared additive load must be released before another scene transition.
         // Disable its authored roots before Start, then unload it without showing UI.
-        public IEnumerator DiscardPreparedPerspective(){
+        public IEnumerator DiscardPreparedPerspective(bool exitingModule=false){
             if(preparedHome==null)yield break;
-            DiscardingPreparedHome=true;RestoreLoadingPriority();
+            DiscardingPreparedHomeForExit=exitingModule;DiscardingPreparedHome=true;RestoreLoadingPriority();
             var operation=preparedHome;operation.allowSceneActivation=true;
             while(!operation.isDone)yield return null;
+            // Exit-only: allow unused package rig components to finish Start before OnDisable.
+            // The sceneLoaded handler hides visuals/audio/input, so the scene is never presented.
+            if(exitingModule)yield return null;
             var preparedScene=UnityEngine.SceneManagement.SceneManager.GetSceneByName(definition.homeScene);
             if(preparedScene.IsValid()&&preparedScene.isLoaded){var unloading=UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(preparedScene);if(unloading!=null)while(!unloading.isDone)yield return null;}
-            preparedHome=null;DiscardingPreparedHome=false;Log("PreparedPerspectiveDiscarded");
+            preparedHome=null;DiscardingPreparedHome=false;DiscardingPreparedHomeForExit=false;Log("PreparedPerspectiveDiscarded");
         }
         public bool HasAnswer(int question){return Data.answers.Exists(a=>a.question==question&&a.userSaved);}
         public void FreshRun(){
@@ -251,7 +255,22 @@ namespace BitsPilani.Module4 {
         void OnEnable(){UnityEngine.SceneManagement.SceneManager.sceneLoaded+=SceneLoaded;}
         void OnDisable(){UnityEngine.SceneManagement.SceneManager.sceneLoaded-=SceneLoaded;}
         void SceneLoaded(UnityEngine.SceneManagement.Scene scene,UnityEngine.SceneManagement.LoadSceneMode mode){
-            if(Instance==this&&DiscardingPreparedHome&&definition&&scene.name==definition.homeScene){foreach(var root in scene.GetRootGameObjects())root.SetActive(false);return;}
+            if(Instance==this&&DiscardingPreparedHome&&definition&&scene.name==definition.homeScene){
+                foreach(var root in scene.GetRootGameObjects()){
+                    if(!DiscardingPreparedHomeForExit){root.SetActive(false);continue;}
+                    // Keep the unused rig active for one initialization frame without rendering
+                    // or accepting input; its simulator otherwise throws when disabled before Start.
+                    foreach(var renderer in root.GetComponentsInChildren<Renderer>(true))renderer.enabled=false;
+                    foreach(var canvas in root.GetComponentsInChildren<Canvas>(true))canvas.enabled=false;
+                    foreach(var camera in root.GetComponentsInChildren<Camera>(true))camera.enabled=false;
+                    foreach(var listener in root.GetComponentsInChildren<AudioListener>(true))listener.enabled=false;
+                    foreach(var audio in root.GetComponentsInChildren<AudioSource>(true))audio.Stop();
+                    foreach(var input in root.GetComponentsInChildren<UnityEngine.EventSystems.BaseInputModule>(true))input.enabled=false;
+                    foreach(var events in root.GetComponentsInChildren<UnityEngine.EventSystems.EventSystem>(true))events.enabled=false;
+                    foreach(var pointer in root.GetComponentsInChildren<BNG.UIPointer>(true))pointer.enabled=false;
+                }
+                return;
+            }
             if(Instance==this && definition && scene.name!=definition.homeScene && scene.name!=definition.walkScene){Save();Destroy(gameObject);}
         }
         void OnDestroy(){if(Instance==this){RestoreLoadingPriority();if(preparedHome!=null&&!preparedHome.isDone)preparedHome.allowSceneActivation=true;Instance=null;}}

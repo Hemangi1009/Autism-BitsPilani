@@ -135,6 +135,7 @@ GameObject:
   - component: {fileID: 2461975}
   - component: {fileID: 2461974}
   - component: {fileID: 2461973}
+  - component: {fileID: 2461978}
   - component: {fileID: 2461972}
   m_Layer: 5
   m_Name: Yes - save and return
@@ -177,8 +178,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BitsPilani.Module4.Module4ButtonFeedback
   hoverScale: 1.025
   hoverSmoothTime: 0.1
-  hoverBackground: {r: 0, g: 0, b: 0, a: 1}
-  hoverText: {r: 1, g: 1, b: 1, a: 1}
+  hoverBackground: {r: 0.81960785, g: 0.81960785, b: 0.81960785, a: 1}
+  hoverText: {r: 0, g: 0, b: 0, a: 1}
   disabledBackground: {r: 0.92, g: 0.92, b: 0.92, a: 1}
   disabledText: {r: 0.37, g: 0.37, b: 0.37, a: 1}
   selectedBackground: {r: 0.88, g: 0.88, b: 0.88, a: 1}
@@ -299,6 +300,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2461970}
   m_CullTransparentMesh: 1
+--- !u!114 &2461978
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2461970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8714c362c0c8a6449a9559a31cdab9a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UniformModifier
+  radius: 24
 --- !u!1001 &2759376
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5472,6 +5486,7 @@ GameObject:
   - component: {fileID: 106733248}
   - component: {fileID: 106733247}
   - component: {fileID: 106733246}
+  - component: {fileID: 106733250}
   - component: {fileID: 106733245}
   m_Layer: 5
   m_Name: Home confirmation - Are you sure
@@ -5500,7 +5515,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 740, y: 633}
+  m_AnchoredPosition: {x: 900, y: 671}
   m_SizeDelta: {x: 400, y: 230}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &106733245
@@ -5588,6 +5603,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 106733243}
   m_CullTransparentMesh: 1
+--- !u!114 &106733250
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 106733243}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8714c362c0c8a6449a9559a31cdab9a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UniformModifier
+  radius: 24
 --- !u!1 &107415216
 GameObject:
   m_ObjectHideFlags: 0
@@ -21112,7 +21140,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -26651,7 +26679,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4278190080
   m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -26664,7 +26692,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -26848,6 +26876,7 @@ GameObject:
   - component: {fileID: 755779115}
   - component: {fileID: 755779114}
   - component: {fileID: 755779113}
+  - component: {fileID: 755779118}
   - component: {fileID: 755779112}
   m_Layer: 5
   m_Name: No - continue module
@@ -26890,8 +26919,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BitsPilani.Module4.Module4ButtonFeedback
   hoverScale: 1.025
   hoverSmoothTime: 0.1
-  hoverBackground: {r: 0, g: 0, b: 0, a: 1}
-  hoverText: {r: 1, g: 1, b: 1, a: 1}
+  hoverBackground: {r: 0.81960785, g: 0.81960785, b: 0.81960785, a: 1}
+  hoverText: {r: 0, g: 0, b: 0, a: 1}
   disabledBackground: {r: 0.92, g: 0.92, b: 0.92, a: 1}
   disabledText: {r: 0.37, g: 0.37, b: 0.37, a: 1}
   selectedBackground: {r: 0.88, g: 0.88, b: 0.88, a: 1}
@@ -27012,6 +27041,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 755779110}
   m_CullTransparentMesh: 1
+--- !u!114 &755779118
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 755779110}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8714c362c0c8a6449a9559a31cdab9a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UniformModifier
+  radius: 24
 --- !u!1 &758829312
 GameObject:
   m_ObjectHideFlags: 0
@@ -37159,9 +37201,9 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 0, g: 0, b: 0, a: 1}
-    m_HighlightedColor: {r: 0.22, g: 0.22, b: 0.22, a: 1}
+    m_HighlightedColor: {r: 0.54901963, g: 0.54901963, b: 0.54901963, a: 1}
     m_PressedColor: {r: 0.35, g: 0.35, b: 0.35, a: 1}
-    m_SelectedColor: {r: 0.22, g: 0.22, b: 0.22, a: 1}
+    m_SelectedColor: {r: 1, g: 1, b: 1, a: 1}
     m_DisabledColor: {r: 0.55, g: 0.55, b: 0.55, a: 1}
     m_ColorMultiplier: 1
     m_FadeDuration: 0
@@ -43001,7 +43043,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4278190080
   m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -43014,7 +43056,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -51225,7 +51267,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2

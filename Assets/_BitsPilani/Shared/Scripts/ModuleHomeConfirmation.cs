@@ -64,18 +64,39 @@ namespace BitsPilani.Shared {
             // Existing step Busy() gates include all canvas buttons. Keep only the new
             // Home controls available when exit is safe; the modal blocks the step below.
             bool ready=CanExitNow();
-            if(homeButton)homeButton.interactable=ready;
-            if(yesButton)yesButton.interactable=ready;
-            if(noButton)noButton.interactable=!exiting;
+            SetControlState(homeButton,ready);
+            SetControlState(yesButton,ready);
+            SetControlState(noButton,!exiting);
+        }
+        static void RefreshControl(Button button){
+            if(!button||!button.gameObject.activeInHierarchy)return;
+            var feedback4=button.GetComponent<Module4ButtonFeedback>();if(feedback4)feedback4.RefreshAppearance();
+            var feedback1=button.GetComponent<PlaygroundButtonFeedback>();if(feedback1)feedback1.RefreshAppearance();
+        }
+        static void SetControlState(Button button,bool interactable){
+            if(!button||button.interactable==interactable)return;
+            button.interactable=interactable;RefreshControl(button);
         }
         void SetPopup(bool visible){
             if(confirmationPanel)confirmationPanel.SetActive(visible);
             if(modalBlocker)modalBlocker.SetActive(visible);
-            if(!visible&&exitStatus)exitStatus.text="";
+            if(!visible){
+                if(exitStatus)exitStatus.text="";
+                // Hidden popup controls retain their normal authored colors in the Inspector.
+                foreach(var button in new[]{yesButton,noButton})if(button){
+                    var feedback4=button.GetComponent<Module4ButtonFeedback>();if(feedback4)feedback4.RestoreAuthoredAppearance();
+                    var feedback1=button.GetComponent<PlaygroundButtonFeedback>();if(feedback1)feedback1.RestoreAuthoredAppearance();
+                }
+            }
         }
         public void OpenConfirmation(){
+            if(IsConfirming){ConfirmNo();return;}
             if(!CanExitNow())return;
-            SetPopup(true);Debug.Log("[ModuleHome] Confirmation opened; module continues.",this);
+            // Set gates before activating the popup, so its first visible frame uses
+            // the authored normal background rather than the previous disabled state.
+            SetControlState(yesButton,true);SetControlState(noButton,true);
+            SetPopup(true);RefreshControl(yesButton);RefreshControl(noButton);
+            Debug.Log("[ModuleHome] Confirmation opened; module continues.",this);
         }
         public void ConfirmNo(){
             if(exiting)return;
@@ -104,6 +125,14 @@ namespace BitsPilani.Shared {
             }else if(module4){
                 session4=Module4Session.Instance;
                 module4.StopAllCoroutines();module4.enabled=false;
+                // Once Yes is confirmed no outgoing ray input is needed. A discarded
+                // additive scene may temporarily take over its caster during Awake.
+                if(module4.rig){
+                    module4.rig.StopAllCoroutines();module4.rig.enabled=false;
+                    if(module4.rig.vrUi){module4.rig.vrUi.enabled=false;var eventSystem=module4.rig.vrUi.GetComponent<UnityEngine.EventSystems.EventSystem>();if(eventSystem)eventSystem.enabled=false;}
+                    if(module4.rig.desktopUi)module4.rig.desktopUi.enabled=false;
+                    foreach(var pointer in module4.rig.controllerPointers)if(pointer)pointer.enabled=false;
+                }
                 if(session4){
                     session4.CancelNarration();
                     var answers=session4.GetComponent<Module4AnswerRecorder>();
@@ -117,7 +146,7 @@ namespace BitsPilani.Shared {
             if(saving!=null&&saving.IsFaulted)Debug.LogError("[ModuleHome] Save failed; recorder pending files are retained: "+saving.Exception,this);
             if(session4){
                 // Release a preloaded Home before another load, otherwise Unity's queue can stall.
-                yield return session4.DiscardPreparedPerspective();
+                yield return session4.DiscardPreparedPerspective(true);
                 // A child-view visit retains Walk's event system under the persistent session.
                 // Return it to scene ownership so it cannot outlive the rig it points at.
                 var sharedUi=session4.SharedWalkUi;

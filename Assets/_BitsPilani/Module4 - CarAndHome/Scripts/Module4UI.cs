@@ -92,7 +92,7 @@ namespace BitsPilani.Module4 {
             RefreshFeedback();if(VisibleChoiceCount>0)Layout(true);
         }
         public void Tools(bool clues,bool guesses){if(toolsCanvas)toolsCanvas.gameObject.SetActive(false);if(clueTool)clueTool.interactable=clues;if(guessTool)guessTool.interactable=guesses;RefreshFeedback();}
-        public void Busy(){foreach(var b in mainCanvas.GetComponentsInChildren<Button>(true))b.interactable=false;Tools(false,false);RefreshFeedback();}
+        public void Busy(){foreach(var b in mainCanvas.GetComponentsInChildren<Button>(true))if(!b.GetComponentInParent<BitsPilani.Shared.ModuleHomeConfirmation>(true))b.interactable=false;Tools(false,false);RefreshFeedback();}
         public void SetChildReturn(bool visible){
             if(!returnPoseCaptured)CaptureReturnCameraPose();
             // Anchor height at child-view activation, not the earlier parent eye height.
@@ -252,7 +252,12 @@ namespace BitsPilani.Module4 {
             LayoutRebuilder.ForceRebuildLayoutImmediate(scroll.content);scroll.verticalNormalizedPosition=1;ScrollVisibility(scroll,scroll.verticalScrollbar);
         }
         void ScrollVisibility(ScrollRect scroll,Scrollbar bar){bool overflow=scroll.content.rect.height>scroll.viewport.rect.height+1;scroll.vertical=overflow;if(bar){bar.gameObject.SetActive(overflow);bar.interactable=overflow;bar.size=Mathf.Clamp01(scroll.viewport.rect.height/Mathf.Max(1,scroll.content.rect.height));var cg=bar.GetComponent<CanvasGroup>();if(cg){cg.alpha=overflow?1:0;cg.blocksRaycasts=overflow;cg.interactable=overflow;}}}
-        public void RefreshFeedback(){foreach(var f in GetComponentsInChildren<Module4ButtonFeedback>(true))f.RefreshAppearance();if(mainCanvas)foreach(var f in mainCanvas.GetComponentsInChildren<Module4ButtonFeedback>(true))f.RefreshAppearance();}
+        public void RefreshFeedback(){
+            // Home confirmation owns its button gates and captures its scene-authored colors.
+            // Step refreshes must not paint a hidden popup as disabled before it opens.
+            foreach(var f in GetComponentsInChildren<Module4ButtonFeedback>(true))if(!f.GetComponentInParent<BitsPilani.Shared.ModuleHomeConfirmation>(true))f.RefreshAppearance();
+            if(mainCanvas)foreach(var f in mainCanvas.GetComponentsInChildren<Module4ButtonFeedback>(true))if(!f.GetComponentInParent<BitsPilani.Shared.ModuleHomeConfirmation>(true))f.RefreshAppearance();
+        }
     }
 }
 
