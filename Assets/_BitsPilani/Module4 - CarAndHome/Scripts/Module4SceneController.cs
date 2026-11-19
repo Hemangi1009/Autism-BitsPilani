@@ -37,15 +37,12 @@ namespace BitsPilani.Module4 {
         public float cameraObjectWalkingThreshold=.15f;
         // Legacy serialized value only. Joystick centering now restores immediately.
         [HideInInspector] public float cameraObjectStopDelay=.25f;
-        [Header("Look Beyond - optional delayed child-view object (Home only)")]
-        [Tooltip("Assign an independent scene object, placed where you want it relative to the authored camera. Hidden outside child view. After the delay, follows camera position horizontally and Y rotation only, like Return to Walk, with fixed height and authored tilt. Leave empty to disable.")]
-        public Transform childViewFollowObject;
+        [Header("Look Beyond - optional delayed object (Home only)")]
+        [Tooltip("Assign a scene object at its desired location. Enables after the delay in child view and disables when leaving. This script never moves or rotates it. Leave empty to disable.")]
+        [InspectorName("Child View Object")] public Transform childViewFollowObject;
         [Min(0), Tooltip("Seconds after entering the child's Look Beyond view before this object appears. Uses real time; returning, skipping or leaving cancels the pending appearance.")]
         public float childViewObjectDelay=2f;
-        Transform capturedChildViewObject;
-        Vector3 childViewCameraOffset;
-        Quaternion childViewCameraRotation;
-        float childViewCameraHeight,childViewObjectShowAt;
+        float childViewObjectShowAt;
         bool childViewObjectPending,childViewObjectShown;
         bool followObjectHiddenByWalking;
         readonly System.Collections.Generic.Dictionary<Renderer,bool> walkingRenderers=new System.Collections.Generic.Dictionary<Renderer,bool>();
@@ -73,7 +70,7 @@ namespace BitsPilani.Module4 {
         void Awake(){
             // Skip is locked until scene setup and the first fade finish.
             initializing=true;
-            CaptureChildViewObjectPose();HideChildViewObject();
+            HideChildViewObject();
             if(parentBody)parentBody.SetActive(false);if(firstWalkArea)firstWalkArea.Hide();if(replayWalkArea)replayWalkArea.Hide();
             var activeSession=Module4Session.Instance;
             if(homeScene&&activeSession&&activeSession.DiscardingPreparedHome){
@@ -447,10 +444,10 @@ namespace BitsPilani.Module4 {
             rig.ConfigureUIInput();
             skippingStep=false;session.Log("SkipCompleted",CurrentStage+" | panel="+ui.title.text);
         }
-        void OnEnable(){Application.onBeforeRender+=UpdateCameraFollowPose;Application.onBeforeRender+=UpdateChildViewObjectPose;}
-        void OnDisable(){Application.onBeforeRender-=UpdateCameraFollowPose;Application.onBeforeRender-=UpdateChildViewObjectPose;HideChildViewObject();RestoreWalkingDisplay();}
+        void OnEnable(){Application.onBeforeRender+=UpdateCameraFollowPose;}
+        void OnDisable(){Application.onBeforeRender-=UpdateCameraFollowPose;HideChildViewObject();RestoreWalkingDisplay();}
         void LateUpdate(){
-            UpdateChildViewObjectPose();
+            UpdateChildViewObject();
             UpdateCameraFollowPose();
             if(!homeScene&&cameraFollowReady&&cameraFollowObject&&rig&&rig.head&&cameraFollowObject!=rig.head&&!rig.head.IsChildOf(cameraFollowObject)&&!transform.IsChildOf(cameraFollowObject))
                 UpdateCameraObjectJoystickVisibility();
@@ -459,22 +456,9 @@ namespace BitsPilani.Module4 {
             return homeScene&&childViewFollowObject&&rig&&rig.head&&childViewFollowObject!=rig.head&&
                 !rig.head.IsChildOf(childViewFollowObject)&&!transform.IsChildOf(childViewFollowObject);
         }
-        bool CaptureChildViewObjectPose(){
-            if(!ValidChildViewObject())return false;
-            if(capturedChildViewObject==childViewFollowObject)return true;
-            var camera=rig.head;
-            Quaternion yaw=Quaternion.Euler(0,camera.eulerAngles.y,0);
-            Quaternion basis=childViewFollowObject.IsChildOf(camera)?camera.rotation:yaw;
-            // Capture before moving into child view, matching the return button's authored offset.
-            childViewCameraOffset=Quaternion.Inverse(basis)*(childViewFollowObject.position-camera.position);
-            childViewCameraRotation=Quaternion.Inverse(basis)*childViewFollowObject.rotation;
-            capturedChildViewObject=childViewFollowObject;
-            return true;
-        }
         void BeginChildViewObject(){
             HideChildViewObject();
-            if(!rig||!rig.InChildView||!CaptureChildViewObjectPose())return;
-            childViewCameraHeight=rig.head.position.y;
+            if(!ValidChildViewObject()||!rig.InChildView)return;
             childViewObjectShowAt=Time.unscaledTime+Mathf.Max(0,childViewObjectDelay);
             childViewObjectPending=true;
             Debug.Log("[M4][ChildViewObject] Scheduled "+childViewFollowObject.name+" after "+Mathf.Max(0,childViewObjectDelay)+" seconds.",this);
@@ -483,17 +467,14 @@ namespace BitsPilani.Module4 {
             childViewObjectPending=false;childViewObjectShown=false;
             if(ValidChildViewObject())childViewFollowObject.gameObject.SetActive(false);
         }
-        void UpdateChildViewObjectPose(){
+        void UpdateChildViewObject(){
             if(!childViewObjectPending&&!childViewObjectShown)return;
             if(!ValidChildViewObject()||transitioning||skippingStep||CurrentStage!=Module4Stage.HomeFlashback||!rig.InChildView){HideChildViewObject();return;}
             if(childViewObjectPending&&Time.unscaledTime<childViewObjectShowAt)return;
-            var camera=rig.head;Quaternion yaw=Quaternion.Euler(0,camera.eulerAngles.y,0);
-            Vector3 origin=camera.position;origin.y=childViewCameraHeight;
-            childViewFollowObject.SetPositionAndRotation(origin+yaw*childViewCameraOffset,yaw*childViewCameraRotation);
             if(childViewObjectPending){
                 childViewObjectPending=false;childViewObjectShown=true;
                 childViewFollowObject.gameObject.SetActive(true);
-                Debug.Log("[M4][ChildViewObject] Shown with fixed-height, camera-yaw follow: "+childViewFollowObject.name,this);
+                Debug.Log("[M4][ChildViewObject] Shown at its scene-authored position: "+childViewFollowObject.name,this);
             }
         }
         void UpdateCameraFollowPose(){

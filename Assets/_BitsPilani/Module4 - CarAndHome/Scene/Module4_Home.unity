@@ -10582,6 +10582,8 @@ MonoBehaviour:
   questionCount: {fileID: 2088389486}
   childReturnCanvas: {fileID: 906497713}
   childReturnButton: {fileID: 210159145}
+  returnReanchorAngle: 30
+  returnRepositionSeconds: 0.25
   idCanvas: {fileID: 1178966915}
   idInput: {fileID: 201260316}
   idDone: {fileID: 845985495}
@@ -26365,10 +26367,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 828007471228689727, guid: 239ec7f82f20495408a19c5a4b47faa8,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1523499929}
-    - targetCorrespondingSourceObject: {fileID: 828007471228689727, guid: 239ec7f82f20495408a19c5a4b47faa8,
-        type: 3}
-      insertIndex: -1
       addedObject: {fileID: 906497710}
     - targetCorrespondingSourceObject: {fileID: 828007471228689727, guid: 239ec7f82f20495408a19c5a4b47faa8,
         type: 3}
@@ -32124,7 +32122,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 0
+  m_PresetInfoIsWorld: 1
 --- !u!223 &906497713
 Canvas:
   m_ObjectHideFlags: 0
@@ -35226,7 +35224,7 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 996502844}
   m_Enabled: 1
-  m_Alpha: 1
+  m_Alpha: 0
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
@@ -53206,14 +53204,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1523499928}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0, y: 0.081, z: 1.391}
+  m_LocalRotation: {x: -0, y: 0.03814583, z: -0, w: 0.99927217}
+  m_LocalPosition: {x: 3.335, y: 1.081, z: -20.709}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1437441070}
-  m_Father: {fileID: 734029232}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 4.372, z: 0}
 --- !u!1 &1533253297
 GameObject:
   m_ObjectHideFlags: 0
@@ -54646,7 +54644,7 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1579598717}
   m_Enabled: 1
-  m_Alpha: 1
+  m_Alpha: 0
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
@@ -73347,6 +73345,7 @@ SceneRoots:
   m_Roots:
   - {fileID: 734029231}
   - {fileID: 650516849}
+  - {fileID: 1523499929}
   - {fileID: 1191819816}
   - {fileID: 713200114}
   - {fileID: 1259727637}

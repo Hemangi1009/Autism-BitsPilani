@@ -63,15 +63,24 @@ namespace BitsPilani.Module4 {
             if (Application.isPlaying) RefreshGuidance(Time.unscaledTime);
         }
 
+        bool HideForChildViewReturn() {
+            if(!flow||!flow.homeScene)return false;
+            bool childView=flow.CurrentStage==Module4Stage.HomeFlashback||(flow.rig&&flow.rig.InChildView);
+            if(!childView)return false;
+            // Ready is set before the return UI is drawn. Suppress guidance for the whole
+            // return-ready phase, including while the button reanchors or an override is assigned.
+            return flow.FlashbackReady||(flow.ui&&flow.ui.childReturnCanvas&&flow.ui.childReturnCanvas.gameObject.activeInHierarchy);
+        }
+
         public Transform ResolveTarget() {
+            if(HideForChildViewReturn())return null;
             if(targetOverride)return targetOverride;
             if(!flow||!flow.ui||flow.IsTransitioning)return null;
             var ui=flow.ui;
-            if(ui.idCanvas&&ui.idCanvas.gameObject.activeInHierarchy)return ui.idCanvas.transform;
+            if(ui.idCanvas&&ui.idCanvas.gameObject.activeInHierarchy)return null; //ui.idCanvas.transform;
             if(flow.WaitingForChildGaze)return flow.childGaze;
             if(flow.WaitingForWalkCheckpoint)return flow.walkCheckpoint;
-            if(ui.childReturnCanvas&&ui.childReturnCanvas.gameObject.activeInHierarchy)return ui.childReturnCanvas.transform;
-            if(flow.rig&&flow.rig.InChildView)return null; //flow.parentBody?flow.parentBody.transform:flow.childGaze;
+            if(flow.rig&&flow.rig.InChildView)return flow.childViewFollowObject && flow.childViewFollowObject.gameObject.activeInHierarchy ? flow.childViewFollowObject : null; //null; //flow.parentBody?flow.parentBody.transform:flow.childGaze;
             bool observing=flow.CurrentStage==Module4Stage.WalkObserve || flow.CurrentStage==Module4Stage.ReplayWalk || flow.CurrentStage==Module4Stage.HomeIntro;
             bool continueReady=ui.primary&&ui.primary.gameObject.activeInHierarchy&&ui.primary.interactable;
             if(observing&&!continueReady&&flow.child)return flow.child.head?flow.child.head:flow.child.transform;

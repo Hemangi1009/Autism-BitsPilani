@@ -20,11 +20,19 @@ namespace BitsPilani.Module4 {
         [Header("Reflection recording UI")]
         public GameObject recordingGroup;public Button recordAnswer,nextAnswer;
         public TMP_Text recordLabel,nextLabel,questionCount;
-        [Header("Child-view return - scene authored, follows camera Y rotation only")]
-        [Tooltip("Keeps the authored placement and tilt, follows left/right camera rotation only, and stays at a fixed height while visible.")]
+        [Header("Child-view return - stable anchor with camera yaw threshold")]
+        [Tooltip("Keeps its authored camera-relative placement and tilt. Stays still until the camera turns beyond the reanchor angle, then moves to a new fixed position. Ignores camera pitch and roll.")]
         public Canvas childReturnCanvas;public Button childReturnButton;
         Vector3 returnCameraOffset;Quaternion returnCameraRotation;
+        [Range(1,180), Tooltip("Camera yaw change from the last anchor before Return to Walk moves again. Small head movements leave it stationary.")]
+        public float returnReanchorAngle=30f;
+        [Min(0), Tooltip("Seconds to move smoothly to the new anchor. Zero snaps once. The destination stays fixed during this move.")]
+        public float returnRepositionSeconds=.25f;
         float returnCameraHeight;bool returnPoseCaptured;
+        bool returnAnchorReady,returnRepositioning;
+        float returnAnchorYaw,returnMoveStarted,returnMoveDuration;
+        Vector3 returnWorldPosition,returnMoveFrom,returnMoveTo;
+        Quaternion returnWorldRotation,returnRotateFrom,returnRotateTo;
         [Header("Participant ID and virtual keyboard")]
         public Canvas idCanvas;public TMP_InputField idInput;public Button idDone;
         public Module4ParticipantKeyboard keyboard;
@@ -95,9 +103,12 @@ namespace BitsPilani.Module4 {
         public void Busy(){foreach(var b in mainCanvas.GetComponentsInChildren<Button>(true))if(!b.GetComponentInParent<BitsPilani.Shared.ModuleHomeConfirmation>(true))b.interactable=false;Tools(false,false);RefreshFeedback();}
         public void SetChildReturn(bool visible){
             if(!returnPoseCaptured)CaptureReturnCameraPose();
-            // Anchor height at child-view activation, not the earlier parent eye height.
-            if(visible&&childReturnCanvas&&!childReturnCanvas.gameObject.activeSelf&&owner&&owner.rig&&owner.rig.head)
+            bool opening=visible&&childReturnCanvas&&(!childReturnCanvas.gameObject.activeSelf||!returnAnchorReady);
+            if(opening&&owner&&owner.rig&&owner.rig.head){
                 returnCameraHeight=owner.rig.head.position.y;
+                AnchorReturnCameraPose();
+            }
+            if(!visible){returnAnchorReady=false;returnRepositioning=false;}
             if(childReturnCanvas)childReturnCanvas.gameObject.SetActive(visible);
             if(childReturnButton)childReturnButton.interactable=visible;
             UpdateReturnCameraPose();
@@ -114,11 +125,39 @@ namespace BitsPilani.Module4 {
         void OnEnable(){Application.onBeforeRender+=UpdateReturnCameraPose;}
         void OnDisable(){Application.onBeforeRender-=UpdateReturnCameraPose;}
         void LateUpdate(){UpdateReturnCameraPose();}
+        void AnchorReturnCameraPose(){
+            if(!returnPoseCaptured||!owner||!owner.rig||!owner.rig.head)return;
+            var camera=owner.rig.head;
+            returnAnchorYaw=camera.eulerAngles.y;
+            Quaternion yaw=Quaternion.Euler(0,returnAnchorYaw,0);
+            Vector3 origin=camera.position;origin.y=returnCameraHeight;
+            returnWorldPosition=origin+yaw*returnCameraOffset;
+            returnWorldRotation=yaw*returnCameraRotation;
+            returnAnchorReady=true;returnRepositioning=false;
+        }
         void UpdateReturnCameraPose(){
             if(!returnPoseCaptured||!childReturnCanvas||!childReturnCanvas.gameObject.activeInHierarchy||!owner||!owner.rig||!owner.rig.head)return;
-            var camera=owner.rig.head;Quaternion yaw=Quaternion.Euler(0,camera.eulerAngles.y,0);
-            Vector3 origin=camera.position;origin.y=returnCameraHeight;
-            childReturnCanvas.transform.SetPositionAndRotation(origin+yaw*returnCameraOffset,yaw*returnCameraRotation);
+            if(!returnAnchorReady)AnchorReturnCameraPose();
+            var camera=owner.rig.head;
+            // A dead zone around the last anchor prevents following tiny tracking changes.
+            if(!returnRepositioning&&Mathf.Abs(Mathf.DeltaAngle(returnAnchorYaw,camera.eulerAngles.y))>=Mathf.Clamp(returnReanchorAngle,1,180)){
+                returnAnchorYaw=camera.eulerAngles.y;
+                Quaternion yaw=Quaternion.Euler(0,returnAnchorYaw,0);
+                Vector3 origin=camera.position;origin.y=returnCameraHeight;
+                returnMoveFrom=returnWorldPosition;returnRotateFrom=returnWorldRotation;
+                returnMoveTo=origin+yaw*returnCameraOffset;returnRotateTo=yaw*returnCameraRotation;
+                returnMoveStarted=Time.unscaledTime;returnMoveDuration=Mathf.Max(0,returnRepositionSeconds);
+                returnRepositioning=true;
+            }
+            if(returnRepositioning){
+                float t=returnMoveDuration<=0?1:Mathf.Clamp01((Time.unscaledTime-returnMoveStarted)/returnMoveDuration);
+                float eased=Mathf.SmoothStep(0,1,t);
+                returnWorldPosition=Vector3.Lerp(returnMoveFrom,returnMoveTo,eased);
+                returnWorldRotation=Quaternion.Slerp(returnRotateFrom,returnRotateTo,eased);
+                if(t>=1)returnRepositioning=false;
+            }
+            // Reapply the fixed world pose even if the authored canvas is parented to the camera.
+            childReturnCanvas.transform.SetPositionAndRotation(returnWorldPosition,returnWorldRotation);
         }
         public void Reflection(string question,int number){
             Show("Reflect on what changed",question,"Record at least one answer before moving on.",true);
