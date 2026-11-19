@@ -71,7 +71,7 @@ namespace BitsPilani.Module4 {
             if(flow.WaitingForChildGaze)return flow.childGaze;
             if(flow.WaitingForWalkCheckpoint)return flow.walkCheckpoint;
             if(ui.childReturnCanvas&&ui.childReturnCanvas.gameObject.activeInHierarchy)return ui.childReturnCanvas.transform;
-            if(flow.rig&&flow.rig.InChildView)return flow.parentBody?flow.parentBody.transform:flow.childGaze;
+            if(flow.rig&&flow.rig.InChildView)return null; //flow.parentBody?flow.parentBody.transform:flow.childGaze;
             bool observing=flow.CurrentStage==Module4Stage.WalkObserve || flow.CurrentStage==Module4Stage.ReplayWalk || flow.CurrentStage==Module4Stage.HomeIntro;
             bool continueReady=ui.primary&&ui.primary.gameObject.activeInHierarchy&&ui.primary.interactable;
             if(observing&&!continueReady&&flow.child)return flow.child.head?flow.child.head:flow.child.transform;

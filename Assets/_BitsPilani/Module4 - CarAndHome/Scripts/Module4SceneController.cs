@@ -37,6 +37,16 @@ namespace BitsPilani.Module4 {
         public float cameraObjectWalkingThreshold=.15f;
         // Legacy serialized value only. Joystick centering now restores immediately.
         [HideInInspector] public float cameraObjectStopDelay=.25f;
+        [Header("Look Beyond - optional delayed child-view object (Home only)")]
+        [Tooltip("Assign an independent scene object, placed where you want it relative to the authored camera. Hidden outside child view. After the delay, follows camera position horizontally and Y rotation only, like Return to Walk, with fixed height and authored tilt. Leave empty to disable.")]
+        public Transform childViewFollowObject;
+        [Min(0), Tooltip("Seconds after entering the child's Look Beyond view before this object appears. Uses real time; returning, skipping or leaving cancels the pending appearance.")]
+        public float childViewObjectDelay=2f;
+        Transform capturedChildViewObject;
+        Vector3 childViewCameraOffset;
+        Quaternion childViewCameraRotation;
+        float childViewCameraHeight,childViewObjectShowAt;
+        bool childViewObjectPending,childViewObjectShown;
         bool followObjectHiddenByWalking;
         readonly System.Collections.Generic.Dictionary<Renderer,bool> walkingRenderers=new System.Collections.Generic.Dictionary<Renderer,bool>();
         readonly System.Collections.Generic.Dictionary<Canvas,bool> walkingCanvases=new System.Collections.Generic.Dictionary<Canvas,bool>();
@@ -63,6 +73,7 @@ namespace BitsPilani.Module4 {
         void Awake(){
             // Skip is locked until scene setup and the first fade finish.
             initializing=true;
+            CaptureChildViewObjectPose();HideChildViewObject();
             if(parentBody)parentBody.SetActive(false);if(firstWalkArea)firstWalkArea.Hide();if(replayWalkArea)replayWalkArea.Hide();
             var activeSession=Module4Session.Instance;
             if(homeScene&&activeSession&&activeSession.DiscardingPreparedHome){
@@ -280,13 +291,14 @@ namespace BitsPilani.Module4 {
             if(perspectiveBodies)perspectiveBodies.EnterChildView(rig);else if(parentBody)parentBody.SetActive(true);
             if(definition.childEyeView){rig.EnterChildView(childViewPoint,definition.childEyeHeight);child.SetBodyVisible(false);}
             flashbackReady=false;ui.SetChildReturn(false);
+            BeginChildViewObject();
             // Show the current step immediately, including while its entry VO is playing.
             ui.Show("From your child's side","Watch your child getting ready to leave.","Watch the static scene. Interaction is paused.");ui.Busy();
             yield return session.Narrate(Module4Event.childViewEntered);yield return HomeTimeline(definition.flashbackSeconds,true);
             flashbackReady=true;ui.Show("Review what you noticed","You can now return to the walk.","Select Return to the Walk when ready.");
             ui.Primary("Return to the Walk",ReturnToWalk);ui.SetChildReturn(true);session.Play(Module4Event.flashbackObservationFinished);session.Play(Module4Event.returnToWalkReady);
         }
-        public void ReturnToWalk(){if(!homeScene||CurrentStage!=Module4Stage.HomeFlashback||!flashbackReady||transitioning)return;ui.SetChildReturn(false);session.Play(Module4Event.returnToWalkSelected);StartCoroutine(LoadVisit(Module4Stage.Respond,definition.walkScene));}
+        public void ReturnToWalk(){if(!homeScene||CurrentStage!=Module4Stage.HomeFlashback||!flashbackReady||transitioning)return;HideChildViewObject();ui.SetChildReturn(false);session.Play(Module4Event.returnToWalkSelected);StartCoroutine(LoadVisit(Module4Stage.Respond,definition.walkScene));}
         public void BeginRespond(){Stage(Module4Stage.Respond,6,"Respond to your child");rig.SetMovementLocked(false);child.Pose(Module4ChildPose.Upset);Cry(true);ui.Show("How will you respond?","Your child is still upset. Choose a response and watch what happens.","Select one response card.",true);ui.Draw(definition.responses,null,ChooseResponse);session.Play(Module4Event.responseStepStarted);session.Play(Module4Event.responseChoicesShown);}
         public void ChooseResponse(int index){if(CurrentStage!=Module4Stage.Respond||responding||index<0||index>=definition.responses.Length)return;responding=true;StartCoroutine(Response(index));}
         IEnumerator Response(int index){
@@ -365,7 +377,7 @@ namespace BitsPilani.Module4 {
         void ShowCompleted(){ReturnToEntry();}
         public void ReturnToEntry(){if(transitioning||CurrentStage!=Module4Stage.Complete)return;StartCoroutine(LoadVisit(Module4Stage.Complete,"Autism_ModuleEntry"));}
         IEnumerator LoadVisit(Module4Stage target,string sceneName){
-            if(transitioning)yield break;transitioning=true;ui.Busy();ui.SetChildReturn(false);rig.SetMovementLocked(true);gazeToken++;
+            if(transitioning)yield break;transitioning=true;HideChildViewObject();ui.Busy();ui.SetChildReturn(false);rig.SetMovementLocked(true);gazeToken++;
             if(!homeScene&&target==Module4Stage.HomeFlashback)rig.CaptureWalkParentPose(session);
             session.Play(Module4Event.sceneLeaving);while(session.IsNarrating)yield return null;
             if(answers&&answers.IsRecording)answers.StopAndSave();
@@ -394,7 +406,7 @@ namespace BitsPilani.Module4 {
         }
         public void SkipCurrentStep(){
             if(!CanSkipCurrentStep||lastSkipFrame==Time.frameCount)return;
-            lastSkipFrame=Time.frameCount;var skipped=CurrentStage;skippingStep=true;
+            lastSkipFrame=Time.frameCount;var skipped=CurrentStage;skippingStep=true;HideChildViewObject();
             StopAllCoroutines();gazeToken++;WaitingForChildGaze=false;WaitingForWalkCheckpoint=false;pendingGuess=-1;responding=false;ReflectionVoicePending=false;
             session.CompleteStepCallbacksOnSkip(skipped,homeScene);if(answers&&answers.IsRecording)answers.StopAndSave(false);
             // Coroutine cancellation must not leave an invisible fade blocking UI rays.
@@ -435,12 +447,54 @@ namespace BitsPilani.Module4 {
             rig.ConfigureUIInput();
             skippingStep=false;session.Log("SkipCompleted",CurrentStage+" | panel="+ui.title.text);
         }
-        void OnEnable(){Application.onBeforeRender+=UpdateCameraFollowPose;}
-        void OnDisable(){Application.onBeforeRender-=UpdateCameraFollowPose;RestoreWalkingDisplay();}
+        void OnEnable(){Application.onBeforeRender+=UpdateCameraFollowPose;Application.onBeforeRender+=UpdateChildViewObjectPose;}
+        void OnDisable(){Application.onBeforeRender-=UpdateCameraFollowPose;Application.onBeforeRender-=UpdateChildViewObjectPose;HideChildViewObject();RestoreWalkingDisplay();}
         void LateUpdate(){
+            UpdateChildViewObjectPose();
             UpdateCameraFollowPose();
             if(!homeScene&&cameraFollowReady&&cameraFollowObject&&rig&&rig.head&&cameraFollowObject!=rig.head&&!rig.head.IsChildOf(cameraFollowObject)&&!transform.IsChildOf(cameraFollowObject))
                 UpdateCameraObjectJoystickVisibility();
+        }
+        bool ValidChildViewObject(){
+            return homeScene&&childViewFollowObject&&rig&&rig.head&&childViewFollowObject!=rig.head&&
+                !rig.head.IsChildOf(childViewFollowObject)&&!transform.IsChildOf(childViewFollowObject);
+        }
+        bool CaptureChildViewObjectPose(){
+            if(!ValidChildViewObject())return false;
+            if(capturedChildViewObject==childViewFollowObject)return true;
+            var camera=rig.head;
+            Quaternion yaw=Quaternion.Euler(0,camera.eulerAngles.y,0);
+            Quaternion basis=childViewFollowObject.IsChildOf(camera)?camera.rotation:yaw;
+            // Capture before moving into child view, matching the return button's authored offset.
+            childViewCameraOffset=Quaternion.Inverse(basis)*(childViewFollowObject.position-camera.position);
+            childViewCameraRotation=Quaternion.Inverse(basis)*childViewFollowObject.rotation;
+            capturedChildViewObject=childViewFollowObject;
+            return true;
+        }
+        void BeginChildViewObject(){
+            HideChildViewObject();
+            if(!rig||!rig.InChildView||!CaptureChildViewObjectPose())return;
+            childViewCameraHeight=rig.head.position.y;
+            childViewObjectShowAt=Time.unscaledTime+Mathf.Max(0,childViewObjectDelay);
+            childViewObjectPending=true;
+            Debug.Log("[M4][ChildViewObject] Scheduled "+childViewFollowObject.name+" after "+Mathf.Max(0,childViewObjectDelay)+" seconds.",this);
+        }
+        void HideChildViewObject(){
+            childViewObjectPending=false;childViewObjectShown=false;
+            if(ValidChildViewObject())childViewFollowObject.gameObject.SetActive(false);
+        }
+        void UpdateChildViewObjectPose(){
+            if(!childViewObjectPending&&!childViewObjectShown)return;
+            if(!ValidChildViewObject()||transitioning||skippingStep||CurrentStage!=Module4Stage.HomeFlashback||!rig.InChildView){HideChildViewObject();return;}
+            if(childViewObjectPending&&Time.unscaledTime<childViewObjectShowAt)return;
+            var camera=rig.head;Quaternion yaw=Quaternion.Euler(0,camera.eulerAngles.y,0);
+            Vector3 origin=camera.position;origin.y=childViewCameraHeight;
+            childViewFollowObject.SetPositionAndRotation(origin+yaw*childViewCameraOffset,yaw*childViewCameraRotation);
+            if(childViewObjectPending){
+                childViewObjectPending=false;childViewObjectShown=true;
+                childViewFollowObject.gameObject.SetActive(true);
+                Debug.Log("[M4][ChildViewObject] Shown with fixed-height, camera-yaw follow: "+childViewFollowObject.name,this);
+            }
         }
         void UpdateCameraFollowPose(){
             if(homeScene||!cameraFollowReady||!cameraFollowObject||!rig||!rig.head)return;
@@ -496,7 +550,7 @@ namespace BitsPilani.Module4 {
             walkingRenderers.Clear();walkingCanvases.Clear();walkingRaycasters.Clear();walkingColliders.Clear();
             followObjectHiddenByWalking=false;
         }
-        void OnDestroy(){gazeToken++;if(childSound)childSound.Stop();}
+        void OnDestroy(){HideChildViewObject();gazeToken++;if(childSound)childSound.Stop();}
     }
 }
 
